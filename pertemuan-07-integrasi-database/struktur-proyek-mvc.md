@@ -1,3 +1,5 @@
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+
 # Topik 9 - Struktur Proyek MVC
 
 ---
@@ -307,4 +309,4 @@ Untuk menguji pemahaman Anda mengenai MVC dan Manipulasi Collections, selesaikan
    
     b) Modifikasi fungsi setStok(int stok) di dalam Model Buku.java agar jika nilai yang dimasukkan kurang dari 0, nilainya otomatis menjadi 0, sehingga Controller tidak perlu melakukan pengecekan berulang-ulang.
 
----
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />

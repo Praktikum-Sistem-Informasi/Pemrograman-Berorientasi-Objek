@@ -1,4 +1,6 @@
-# 3️⃣ PERTEMUAN 3 - Access Modifier dan Encapsulation
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+
+# Topik 5 - Access Modifier dan Encapsulation
 
 ---
 
@@ -307,11 +309,9 @@ public Buku(String judul) {
 
 ## 📚 Daftar Referensi
 
-[1] W3Schools, **"Java Encapsulation"**.  
-Tersedia di: https://www.w3schools.com/java/java_encapsulation.asp
+[1] W3Schools, **"Java Encapsulation"**. Tersedia di: [tautan](https://www.w3schools.com/java/java_encapsulation.asp)
 
-[2] Petani Kode, **"Belajar Java OOP: Memahami Enkapsulasi (Penyembunyian Data)"**.  
-Tersedia di: https://www.petanikode.com/java-oop-encapsulation/
+[2] Petani Kode, **"Belajar Java OOP: Memahami Enkapsulasi (Penyembunyian Data)"**. Tersedia di: [tautan](https://www.petanikode.com/java-oop-encapsulation/)
 
 ---
 
@@ -335,9 +335,6 @@ Buat program sesuai dengan instruksi berikut:
 
 4. Uji coba class `Anggota` melalui `MainApp.java` dengan memasukkan umur **8 tahun**.
 
-**Tujuan:**  
-Memahami penerapan **Encapsulation**, khususnya penggunaan `private`, Getter, Setter, dan validasi data.
-
 ---
 
 ### Challenge 2 — Class `AkunBank`
@@ -358,5 +355,4 @@ Buat program sesuai dengan instruksi berikut:
    - Jika jumlah penarikan melebihi saldo, tampilkan pesan error.
    - Jika jumlah penarikan valid, kurangi saldo sesuai jumlah yang ditarik.
 
-**Tujuan:**  
-Memahami bagaimana **Encapsulation** dapat digunakan untuk melindungi data dan memastikan perubahan nilai atribut mengikuti aturan atau validasi yang telah ditentukan.
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />

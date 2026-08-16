@@ -28,14 +28,14 @@ Pada materi ini, terdapat 3 kata kunci/anotasi utama yang wajib Anda pahami fung
 
 ## 📂 RESOURCES
 
-> 💡 **File demo tersedia di folder `contoh_kode/pertemuan_5`**
+> 💡 **File demo tersedia di folder `Contoh-Kode/Pertemuan-5`**
 
 | File | Deskripsi |
 | :--- | :--- |
-| `src/model/Koleksi.java` | *Superclass* dengan contoh *Method Overloading* & method yang siap di-*override* |
-| `src/model/Buku.java` | *Subclass 1* yang meng-override method `tampilkanInfo()` |
-| `src/model/Majalah.java` | *Subclass 2* yang meng-override method `tampilkanInfo()` |
-| `src/main/MainApp.java` | Kelas utama untuk pengujian *Heterogeneous List* & eksekusi *Overloading/Overriding* |
+| `Koleksi.java` | *Superclass* dengan contoh *Method Overloading* & method yang siap di-*override* |
+| `Buku.java` | *Subclass 1* yang meng-override method `tampilkanInfo()` |
+| `Majalah.java` | *Subclass 2* yang meng-override method `tampilkanInfo()` |
+| `MainApp.java` | Kelas utama untuk pengujian *Heterogeneous List* & eksekusi *Overloading/Overriding* |
 
 ---
 
@@ -443,3 +443,5 @@ Buku b = (Buku) k; // Memaksa downcasting tanpa cek instanceof
    c) Lakukan perulangan `for` untuk memanggil method `bersuara()` dari tiap elemen di dalam `ArrayList` tersebut.
 
 <img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

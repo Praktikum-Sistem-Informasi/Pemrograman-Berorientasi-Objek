@@ -14,32 +14,32 @@
 
 | Pertemuan | Topik | Status |
 | :-------: | ----------------------------------------------------------------------------------- | :----: |
-|     1     | [Dasar Pemrograman Java & Java Collection](Pertemuan_1/) |   ✅   |
-|     2     | [Package, Class, Object & Penggunaan Git pada NetBeans](Pertemuan_2/) |   ✅   |
-|     3     | [Access Modifier dan Encapsulation](Pertemuan_3/) |   ✅   |
-|     4     | [Inheritance (Pewarisan)](Pertemuan_4/) |   ✅   |
-|     5     | [Polymorphism (Polimorfisme)](Pertemuan_5/) |   ✅   |
-|     6     | [Abstraction dan Struktur Proyek MVC](Pertemuan_6/) |   ✅   |
-|     7     | [Integrasi Database (JDBC dan ORM)](Pertemuan_7/) |   ✅   |
-|     8     | [GUI dengan Java Swing](Pertemuan_8/) |   ✅   |
+|     1     | [Dasar Pemrograman Java & Java Collection](Pertemuan-1/) |   ✅   |
+|     2     | [Package, Class, Object & Penggunaan Git pada NetBeans](Pertemuan-2/) |   ✅   |
+|     3     | [Access Modifier dan Encapsulation](Pertemuan-3/) |   ✅   |
+|     4     | [Inheritance (Pewarisan)](Pertemuan-4/) |   ✅   |
+|     5     | [Polymorphism (Polimorfisme)](Pertemuan-5/) |   ✅   |
+|     6     | [Abstraction dan Struktur Proyek MVC](Pertemuan-6/) |   ✅   |
+|     7     | [Integrasi Database (JDBC dan ORM)](Pertemuan-7/) |   ✅   |
+|     8     | [GUI dengan Java Swing](Pertemuan-8/) |   ✅   |
 
 ---
 
-## 🗂️ Demo Files (`contoh_kode/`)
+## 🗂️ Demo Files (`Contoh-Kode/`)
 
 Potongan kode per topik, cocok untuk referensi cepat dan bahan *live coding*.
 
 | Folder | Isi Materi / Program |
 | ------------------------------------------------------ | ---------------------------------------- |
-| [`contoh_kode/pertemuan_1/`](contoh_kode/pertemuan_1/) | Dasar Sintaks, Loop, Array & ArrayList |
-| [`contoh_kode/pertemuan_2/`](contoh_kode/pertemuan_2/) | Anatomi Class, Constructor & Repositori Git |
-| [`contoh_kode/pertemuan_3/`](contoh_kode/pertemuan_3/) | Access Modifier (`private`/`protected`) & Getter-Setter |
-| [`contoh_kode/pertemuan_4/`](contoh_kode/pertemuan_4/) | Superclass, Subclass, `super()`, & Kata Kunci `final` |
-| [`contoh_kode/pertemuan_5/`](contoh_kode/pertemuan_5/) | Overloading, Overriding, `@Override`, & Heterogeneous List |
-| [`contoh_kode/pertemuan_6/`](contoh_kode/pertemuan_6/) | Abstract Class, Interface, & Try-Catch Exception |
-| [`contoh_kode/pertemuan_7/`](contoh_kode/pertemuan_7/) | Arsitektur Package Model, View, & Controller |
-| [`contoh_kode/pertemuan_8/`](contoh_kode/pertemuan_8/) | Driver JDBC, MySQL Connection, PreparedStatement, & CRUD |
-| [`contoh_kode/pertemuan_9/`](contoh_kode/pertemuan_9/) | JFrame, Layout Manager, Component Event Listener |
+| [`Contoh-Kode/Pertemuan-1/`](Contoh-Kode/Pertemuan-1/) | Dasar Sintaks, Loop, Array & ArrayList |
+| [`Contoh-Kode/Pertemuan-2/`](Contoh-Kode/Pertemuan-2/) | Anatomi Class, Constructor & Repositori Git |
+| [`Contoh-Kode/Pertemuan-3/`](Contoh-Kode/Pertemuan-3/) | Access Modifier (`private`/`protected`) & Getter-Setter |
+| [`Contoh-Kode/Pertemuan-4/`](Contoh-Kode/Pertemuan-4/) | Superclass, Subclass, `super()`, & Kata Kunci `final` |
+| [`Contoh-Kode/Pertemuan-5/`](Contoh-Kode/Pertemuan-5/) | Overloading, Overriding, `@Override`, & Heterogeneous List |
+| [`Contoh-Kode/Pertemuan-6/`](Contoh-Kode/Pertemuan-6/) | Abstract Class, Interface, & Try-Catch Exception |
+| [`Contoh-Kode/Pertemuan-7/`](Contoh-Kode/Pertemuan-7/) | Arsitektur Package Model, View, & Controller |
+| [`Contoh-Kode/Pertemuan-8/`](Contoh-Kode/Pertemuan-8/) | Driver JDBC, MySQL Connection, PreparedStatement, & CRUD |
+| [`Contoh-Kode/Pertemuan-9/`](Contoh-Kode/Pertemuan-9/) | JFrame, Layout Manager, Component Event Listener |
 
 ---
 

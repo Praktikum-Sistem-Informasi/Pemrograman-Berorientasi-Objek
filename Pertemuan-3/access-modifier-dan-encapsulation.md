@@ -28,12 +28,12 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 
 ## 📂 RESOURCES
 
-> 💡 **File demo tersedia di folder `contoh_kode/pertemuan_3`**
+> 💡 **File demo tersedia di folder `Contoh-Kode/Pertemuan-3`**
 
 | File | Deskripsi |
 | :--- | :--- |
-| `src/model/Buku.java` | Kelas *Model* yang menerapkan enkapsulasi atribut `private`, Getter/Setter, dan validasi data |
-| `src/main/MainApp.java` | Kelas utama penguji keamanan enkapsulasi dan pembuktian kegagalan akses langsung |
+| `Buku.java` | Kelas *Model* yang menerapkan enkapsulasi atribut `private`, Getter/Setter, dan validasi data |
+| `MainApp.java` | Kelas utama penguji keamanan enkapsulasi dan pembuktian kegagalan akses langsung |
 
 ---
 
@@ -356,3 +356,5 @@ Buat program sesuai dengan instruksi berikut:
    - Jika jumlah penarikan valid, kurangi saldo sesuai jumlah yang ditarik.
 
 <img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

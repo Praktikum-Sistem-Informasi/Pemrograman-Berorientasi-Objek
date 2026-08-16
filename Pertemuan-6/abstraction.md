@@ -1,3 +1,5 @@
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+
 # Topik 8 - Abstraction
 
 ---
@@ -26,17 +28,17 @@ Setelah mengikuti pertemuan ini, Anda diharapkan mampu:
 
 ## 📂 RESOURCES (SUMBER KODE DEMO)
 
-> 💡 **File demo tersedia di `contoh_kode/pertemuan_6/`**
+> 💡 **File demo tersedia di `Contoh-Kode/Pertemuan-6/`**
 
 | **File** | **Deskripsi** |
 |---|---|
-| `src/model/Pinjamable.java` | Interface (Kontrak kemampuan peminjaman) |
-| `src/model/Koleksi.java` | Abstract Class (Kerangka identitas dasar bacaan) |
-| `src/model/Buku.java` | Subclass dari `Koleksi`, mengimplementasikan `Pinjamable` |
-| `src/model/Majalah.java` | Subclass dari `Koleksi` (Tanpa kemampuan peminjaman) |
-| `src/controller/KoleksiController.java` | Logika pengelolaan data dan demonstrasi polimorfisme/interface |
-| `src/view/KoleksiView.java` | Antarmuka pengguna (I/O CLI) |
-| `src/main/MainApp.java` | Entry point program (Penghubung MVC) |
+| `Pinjamable.java` | Interface (Kontrak kemampuan peminjaman) |
+| `Koleksi.java` | Abstract Class (Kerangka identitas dasar bacaan) |
+| `Buku.java` | Subclass dari `Koleksi`, mengimplementasikan `Pinjamable` |
+| `Majalah.java` | Subclass dari `Koleksi` (Tanpa kemampuan peminjaman) |
+| `KoleksiController.java` | Logika pengelolaan data dan demonstrasi polimorfisme/interface |
+| `KoleksiView.java` | Antarmuka pengguna (I/O CLI) |
+| `MainApp.java` | Entry point program (Penghubung MVC) |
 
 ---
 
@@ -555,3 +557,7 @@ Perpustakaan kini berekspansi ke layanan digital.
 * Kelas `EBook` ini **harus** merupakan turunan (`extends`) dari kelas abstrak `Koleksi` (gunakan class `Koleksi` dari contoh modul).
 * Kelas `EBook` ini juga **harus** mengimplementasikan **dua antarmuka sekaligus**, yaitu `Pinjamable` dan `AksesDigital`.
 * Demonstrasikan logika `bacaOnline()` dan proses peminjaman *e-book* berjalan dengan baik di method `main()`.
+
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

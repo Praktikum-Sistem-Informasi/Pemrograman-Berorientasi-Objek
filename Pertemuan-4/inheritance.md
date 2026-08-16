@@ -28,14 +28,14 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 
 ## 📂 RESOURCES
 
-> 💡 **File demo tersedia di folder `contoh_kode/pertemuan_4`**
+> 💡 **File demo tersedia di folder `Contoh-Kode/Pertemuan-4`**
 
 | File | Deskripsi |
 | :--- | :--- |
-| `src/model/Koleksi.java` | *Superclass* (Kelas Induk) penyedia atribut umum |
-| `src/model/Buku.java` | *Subclass 1* turunan dari `Koleksi` |
-| `src/model/Majalah.java` | *Subclass 2* turunan dari `Koleksi` |
-| `src/main/MainApp.java` | Kelas utama untuk pengujian hubungan *IS-A* |
+| `Koleksi.java` | *Superclass* (Kelas Induk) penyedia atribut umum |
+| `Buku.java` | *Subclass 1* turunan dari `Koleksi` |
+| `Majalah.java` | *Subclass 2* turunan dari `Koleksi` |
+| `MainApp.java` | Kelas utama untuk pengujian hubungan *IS-A* |
 
 ---
 
@@ -357,3 +357,5 @@ public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int
    c) Buat objek **`Mahasiswa`** di `main()` dan jalankan semua method.
 
 <img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

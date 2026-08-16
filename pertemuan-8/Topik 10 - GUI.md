@@ -1,4 +1,6 @@
-# Topik 10 - GUI / Java Swing
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+
+# Topik 10 - GUI dengan Java Swing
 
 ---
 
@@ -29,7 +31,7 @@ Pada materi ini, terdapat komponen dan konsep utama yang wajib Anda pahami fungs
 
 ## 📂 RESOURCES
 
-> 💡 **File demo tersedia di folder `contoh_kode/pertemuan_10`**
+> 💡 **File demo tersedia di folder `Contoh-Kode/Pertemuan-8`**
 
 | File | Deskripsi |
 | :--- | :--- |
@@ -355,3 +357,7 @@ Adaptasikan proyek *Live Coding* sebelumnya dengan fitur **Eksekusi Hapus Baris*
 1. Rakit tombol `JButton` baru berwarna merah yang dilabeli "Hapus Data Terpilih".
 2. Terapkan perintah pendeteksi `tblMahasiswa.getSelectedRow()` pada tombol ini untuk mengetahui di indeks *row* mana pengguna menyiagakan kursornya pada tabel.
 3. Di dalam logika internal, operasikan metode `model.removeRow(index)` agar tabel dapat menghancurkan baris tersebut secara *real-time*. Tambahkan proteksi validasi bersyarat `if(index >= 0)` agar program tidak hancur saat pengguna menekan tombol sebelum memilih data.
+
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

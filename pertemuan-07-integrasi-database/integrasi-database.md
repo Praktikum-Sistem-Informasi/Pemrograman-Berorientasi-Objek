@@ -387,7 +387,7 @@ public class Buku {
 
 ---
 
-### Step 5: Membuat DAO — Lapisan CRUD Murni JDBC (`src/dao/BukuDAO.java`)
+### Step 5: Membuat DAO (`src/dao/BukuDAO.java`)
 
 Ini adalah **inti** dari materi satu-satunya kelas yang boleh berisi query SQL.
 
@@ -621,7 +621,7 @@ public class BukuView {
         int stok = Integer.parseInt(scanner.nextLine());
 
         boolean berhasil = controller.tambahBuku(id, judul, penulis, tahun, stok);
-        System.out.println(berhasil ? "✅ Buku berhasil ditambahkan!" : "❌ Gagal menambahkan buku.");
+        System.out.println(berhasil ? "Buku berhasil ditambahkan!" : "Gagal menambahkan buku.");
     }
 
     private void lihatSemuaBuku() {
@@ -639,7 +639,7 @@ public class BukuView {
         System.out.print("Masukkan ID Koleksi: ");
         String id = scanner.nextLine();
         Buku b = controller.cariBuku(id);
-        System.out.println(b != null ? b : "❌ Buku dengan ID tersebut tidak ditemukan.");
+        System.out.println(b != null ? b : "Buku dengan ID tersebut tidak ditemukan.");
     }
 
     private void updateBuku() {
@@ -655,14 +655,14 @@ public class BukuView {
         int stok = Integer.parseInt(scanner.nextLine());
 
         boolean berhasil = controller.updateBuku(id, judul, penulis, tahun, stok);
-        System.out.println(berhasil ? "✅ Buku berhasil diupdate!" : "❌ Gagal update buku (pastikan ID benar).");
+        System.out.println(berhasil ? "Buku berhasil diperbarui!" : "Gagal memperbarui buku.");
     }
 
     private void hapusBuku() {
         System.out.print("ID Koleksi yang akan dihapus: ");
         String id = scanner.nextLine();
         boolean berhasil = controller.hapusBuku(id);
-        System.out.println(berhasil ? "✅ Buku berhasil dihapus!" : "❌ Gagal menghapus buku (pastikan ID benar).");
+        System.out.println(berhasil ? "Buku berhasil dihapus!" : "Gagal menghapus buku.");
     }
 }
 ```

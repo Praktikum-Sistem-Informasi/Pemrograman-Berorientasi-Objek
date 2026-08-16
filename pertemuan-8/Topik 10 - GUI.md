@@ -136,7 +136,7 @@ Pada sesi ini, kita akan merancang aplikasi visual untuk menginput data Mahasisw
 1. Pada *Project* Anda, klik kanan pada *package* `view` -> Pilih **New** -> **JFrame Form...**
 2. Beri nama *Class Name*: `MainFrame` dan klik Finish.
 
-![Tampilan lembar kerja kosong JFrame di NetBeans](images\image-1.png)
+![Tampilan awal](images/image-1.png)
 
 ### Step 2: Desain Antarmuka (Drag & Drop)
 

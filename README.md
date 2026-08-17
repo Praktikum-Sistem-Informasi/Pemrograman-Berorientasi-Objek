@@ -36,10 +36,9 @@ Potongan kode per topik, cocok untuk referensi cepat dan bahan *live coding*.
 | [`Contoh-Kode/Pertemuan-3/`](Contoh-Kode/Pertemuan-3/) | Access Modifier (`private`/`protected`) & Getter-Setter |
 | [`Contoh-Kode/Pertemuan-4/`](Contoh-Kode/Pertemuan-4/) | Superclass, Subclass, `super()`, & Kata Kunci `final` |
 | [`Contoh-Kode/Pertemuan-5/`](Contoh-Kode/Pertemuan-5/) | Overloading, Overriding, `@Override`, & Heterogeneous List |
-| [`Contoh-Kode/Pertemuan-6/`](Contoh-Kode/Pertemuan-6/) | Abstract Class, Interface, & Try-Catch Exception |
-| [`Contoh-Kode/Pertemuan-7/`](Contoh-Kode/Pertemuan-7/) | Arsitektur Package Model, View, & Controller |
-| [`Contoh-Kode/Pertemuan-8/`](Contoh-Kode/Pertemuan-8/) | Driver JDBC, MySQL Connection, PreparedStatement, & CRUD |
-| [`Contoh-Kode/Pertemuan-9/`](Contoh-Kode/Pertemuan-9/) | JFrame, Layout Manager, Component Event Listener |
+| [`Contoh-Kode/Pertemuan-6/`](Contoh-Kode/Pertemuan-6/) | Abstract Class, Interface, Try-Catch Exception & Arsitektur Package Model, View, & Controller|
+| [`Contoh-Kode/Pertemuan-7/`](Contoh-Kode/Pertemuan-7/) | Driver JDBC, MySQL Connection, PreparedStatement, & CRUD |
+| [`Contoh-Kode/Pertemuan-8/`](Contoh-Kode/Pertemuan-8/) | JFrame, Layout Manager, Component Event Listener |
 
 ---
 
@@ -72,12 +71,12 @@ git clone [https://github.com/username/Praktikum-PBO-Java.git](https://github.co
 
 | Nama | NIM |
 | :-------: | ----------------------------------------------------------------------------------- |
-|     Dwi Pebriyanto Pradana     | 2409116012 |
-|     Muhammad Rizky Febrianto     | 2409116045 |
-|     Chiqo Nanda Rial Pratama     | 2409116046 |
-|     Nur Ihsan     | 2409116051 |
-|     Fikri Abiyyu Rahman     | 2409116063 |
-|     Zyrus Alfredo Randan Malinggato     | 2409116120 |
+|     [Dwi Pebriyanto Pradana](https://github.com/Wipebri)     | 2409116012 |
+|     [Muhammad Rizky Febrianto](https://github.com/itskyfe)     | 2409116045 |
+|     [Chiqo Nanda Rial Pratama](https://github.com/chiqonanda)     | 2409116046 |
+|     [Nur Ihsan](https://github.com/Ihsann333)     | 2409116051 |
+|     [Fikri Abiyyu Rahman](https://github.com/Keperi)     | 2409116063 |
+|     [Zyrus Alfredo Randan Malinggato](https://github.com/ZyrusAlfredo)     | 2409116120 |
 
 ---
 

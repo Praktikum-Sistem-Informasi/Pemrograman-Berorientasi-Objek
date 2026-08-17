@@ -1,3 +1,5 @@
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+
 # Topik 10 - Integrasi Database (JDBC dan ORM)
 
 ---
@@ -36,13 +38,13 @@ Pada materi ini, terdapat 5 kata kunci utama yang wajib Anda pahami fungsi dan d
 | :--- | :--- |
 | `db_perpustakaan.sql` | Script SQL pembuatan database & tabel `buku` |
 | `pom.xml` | Konfigurasi *dependency* Maven (MySQL Connector/J) |
-| `src/koneksi/Koneksi.java` | Kelas penghubung ke basis data MySQL |
-| `src/model/Buku.java` | *Blueprint* objek `Buku` merepresentasikan satu baris tabel |
-| `src/dao/BukuDAO.java` | *Data Access Object* — kumpulan query CRUD murni JDBC |
-| `src/controller/BukuController.java` | Jembatan logika antara `view` dan `dao` |
-| `src/view/BukuView.java` | Tampilan antarmuka berbasis konsol |
-| `src/main/TestKoneksi.java` | Kelas uji coba koneksi awal ke basis data |
-| `src/main/MainApp.java` | Kelas utama untuk menjalankan aplikasi CRUD Perpustakaan |
+| `Koneksi.java` | Kelas penghubung ke basis data MySQL |
+| `Buku.java` | *Blueprint* objek `Buku` merepresentasikan satu baris tabel |
+| `BukuDAO.java` | *Data Access Object* — kumpulan query CRUD murni JDBC |
+| `BukuController.java` | Jembatan logika antara `view` dan `dao` |
+| `BukuView.java` | Tampilan antarmuka berbasis konsol |
+| `TestKoneksi.java` | Kelas uji coba koneksi awal ke basis data |
+| `MainApp.java` | Kelas utama untuk menjalankan aplikasi CRUD Perpustakaan |
 
 ---
 
@@ -813,4 +815,6 @@ ps.executeUpdate();
 
 4. **(Eksplorasi Mandiri)** Cari tahu perbedaan antara `executeUpdate()` dan `executeBatch()`. Kapan `executeBatch()` lebih menguntungkan digunakan?
 
----
+<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

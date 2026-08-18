@@ -1,6 +1,6 @@
 <img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
 
-# Topik 10 - GUI dengan Java Swing
+# Topik 11 - GUI dengan Java Swing
 
 ---
 

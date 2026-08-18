@@ -25,7 +25,7 @@ Pada materi ini, terdapat beberapa kata kunci utama yang perlu dipahami fungsi d
 
 ## 📂 RESOURCES
 
-💡 **Kode demo tersedia di materi ini silahkan ikuti `PART 2: Langkah Live Coding` **
+💡 **Kode demo tersedia di materi ini silahkan ikuti `PART 2: Langkah Live Coding`**
 
 | **File** | **Deskripsi** |
 |---|---|

@@ -55,13 +55,13 @@ Pada materi ini, terdapat kata kunci utama yang wajib Anda pahami fungsi dan pen
 <img width="1600" height="900" alt="WhatsApp Image 2026-08-12 at 23 34 11" src="https://github.com/user-attachments/assets/7b9e7c9a-9ce9-4170-a93d-0a3e280346e5" />
 
 3. Pilih menu **File → New Project**, atau klik ikon **New Project** (ikon folder berwarna
-coklat), atau tekan **Ctrl + Shift + N**. Pada jendela yang muncul, pilih kategori **Java with Ant** dan
+coklat), atau tekan **Ctrl + Shift + N**. Pada jendela yang muncul, pilih kategori **Java with Maven** dan
 jenis project **Java Application**, lalu klik Next.
 <img width="1600" height="900" alt="WhatsApp Image 2026-08-12 at 23 38 58" src="https://github.com/user-attachments/assets/c38be79a-19f8-404c-9148-373be5eea18a" />
-<img width="1600" height="900" alt="WhatsApp Image 2026-08-12 at 23 39 07" src="https://github.com/user-attachments/assets/1b2ed458-1a0f-4c77-8641-c594b13c926f" />
+<img width="915" height="638" alt="image" src="https://github.com/user-attachments/assets/5e0fe46c-535a-4d58-adc0-63f93343987f" />
 
 4. Beri nama project (misal: `Pertemuan1_DasarJava`) dan tentukan lokasi penyimpanannya.
-<img width="1600" height="901" alt="WhatsApp Image 2026-08-15 at 09 08 44" src="https://github.com/user-attachments/assets/524ba1a6-0b18-4a9d-b135-937b38d03c65" />
+<img width="912" height="633" alt="image" src="https://github.com/user-attachments/assets/cc2ffc7e-f760-40bc-91b4-498158195cb2" />
 
 5. Klik **Finish** untuk membuat project baru..
 
@@ -70,7 +70,7 @@ jenis project **Java Application**, lalu klik Next.
 ## PART 2: Struktur Dasar Program Java
 
 ### Struktur Dasar
-Struktur dasar dari sebuah program Java terdiri dari sebuah kelas utama (main class) yang di dalamnya terdapat fungsi utama (main()). Fungsi main ini adalah pintu masuk utama (entry point) program. Ketika program dijalankan, semua perintah di dalam fungsi main akan dieksekusi secara berurutan dari atas ke bawah.
+Struktur dasar dari sebuah program Java terdiri dari sebuah kelas utama (main class) yang di dalamnya terdapat fungsi utama (main()). Fungsi main yaitu sebagai **kelas utama** ini adalah pintu masuk utama (entry point) program. Ketika program dijalankan, semua perintah di dalam fungsi main akan dieksekusi secara berurutan dari atas ke bawah.
 
 ```
                  ┌──────────────────────────────┐
@@ -181,9 +181,34 @@ public class InputBuku {
 ```
 
 ## PART 3: Variabel dan Tipe Data
-Variabel adalah wadah di dalam memori komputer yang digunakan untuk menyimpan data sementara saat program berjalan. Dalam bahasa Java, setiap variabel wajib memiliki tipe data tertentu yang menentukan jenis nilai yang dapat disimpan di dalamnya.
+**Variabel** adalah wadah di dalam memori komputer yang digunakan untuk menyimpan data selama program berjalan. Dalam bahasa Java, setiap variabel harus memiliki tipe data yang menentukan jenis nilai yang dapat disimpan.
+Secara umum, variabel dalam Java terdiri dari tiga bagian:
+- Tipe data, yaitu jenis data yang dapat disimpan.
+- Nama variabel, yaitu nama yang digunakan untuk mengakses variabel.
+- Nilai variabel, yaitu data yang disimpan di dalam variabel.
 
-Jenis Tipe Data Dasar
+**Deklarasi variabel** adalah proses menentukan tipe data dan nama variabel tanpa memberikan nilai awal. Sedangkan, **inisialisasi variabel** adalah proses memberikan nilai awal kepada variabel yang telah dideklarasikan.
+
+Contoh Deklarasi Variabel:
+```java
+int umur;
+String nama;
+```
+
+Contoh Inisialisasi Variabel:
+```java
+umur = 20;
+nama = "Fulan";
+```
+
+Contoh Deklarasi dan Inisialisasi Variabel bersamaan:
+```java
+int umur = 20;
+String nama = "Ihsan";
+```
+
+**Tipe data** adalah jenis data yang menentukan nilai apa yang dapat disimpan oleh sebuah variabel. Dalam Java, setiap variabel harus memiliki tipe data.
+Beberapa tipe data dasar dalam Java:
 1. **int (integer):** menyimpan bilangan bulat tanpa desimal (contoh: stok buku, jumlah halaman, tahun terbit).
 2. **double:** menyimpan bilangan desimal atau pecahan (contoh: 3.14, -8.8).
 3. **boolean:** menyimpan nilai logika, hanya bernilai true (benar) atau false (salah) (contoh: status ketersediaan buku).

@@ -1,4 +1,4 @@
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+![Header](../assets/Header.png)
 
 # Topik 10 - Integrasi Database (JDBC dan ORM)
 
@@ -815,6 +815,6 @@ ps.executeUpdate();
 
 4. **(Eksplorasi Mandiri)** Cari tahu perbedaan antara `executeUpdate()` dan `executeBatch()`. Kapan `executeBatch()` lebih menguntungkan digunakan?
 
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+![Footer](../assets/Footer.png)
 
 <p align="center"><a href="#top">Kembali ke atas</a></p>

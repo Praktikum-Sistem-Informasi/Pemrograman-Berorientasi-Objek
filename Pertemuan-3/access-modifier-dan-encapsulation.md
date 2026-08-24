@@ -1,4 +1,4 @@
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+![Header](../assets/Header.png)
 
 # Topik 5 - Access Modifier dan Encapsulation
 
@@ -355,6 +355,6 @@ Buat program sesuai dengan instruksi berikut:
    - Jika jumlah penarikan melebihi saldo, tampilkan pesan error.
    - Jika jumlah penarikan valid, kurangi saldo sesuai jumlah yang ditarik.
 
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+![Footer](../assets/Footer.png)
 
 <p align="center"><a href="#top">Kembali ke atas</a></p>

@@ -1,4 +1,4 @@
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+![Header](../assets/Header.png)
 
 # Topik 2 - Collection
 
@@ -249,6 +249,6 @@ Pada kedua contoh tersebut, data dapat diakses berdasarkan index. Perbedaannya, 
 2. Buat program menggunakan ArrayList untuk menyimpan beberapa nama buku. Tambahkan minimal 4 buku menggunakan add(), kemudian tampilkan seluruh data dan jumlah buku menggunakan size().
 3. Buat program yang menggunakan Array dan ArrayList untuk menyimpan data yang sama. Tampilkan hasilnya dan jelaskan perbedaan cara menambahkan serta mengetahui jumlah data pada keduanya.
 
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+![Footer](../assets/Footer.png)
 
 <p align="center"><a href="#top">Kembali ke atas</a></p>

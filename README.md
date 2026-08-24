@@ -1,4 +1,4 @@
-<img width="1080" height="560" alt="image" src="https://github.com/user-attachments/assets/aa4d00ae-6c4f-47ab-9c65-9f6249eb5c2c" />
+![Cover](/assets/Cover.png)
 
 ---
 
@@ -8,7 +8,7 @@
   <a href="https://git-scm.com/"><img src="https://img.shields.io/badge/GIT-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git"></a>
 </p>
 
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+![Header](/assets/Header.png)
 
 ## 📚 Daftar Materi
 
@@ -83,6 +83,6 @@ git clone [https://github.com/username/Praktikum-PBO-Java.git](https://github.co
 > [!NOTE]
 > *Jangan Lupa Titik Koma* — Sandhika Galih
 
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+![Footer](/assets/Footer.png)
 
 <p align="center"><a href="#top">Kembali ke atas</a></p>

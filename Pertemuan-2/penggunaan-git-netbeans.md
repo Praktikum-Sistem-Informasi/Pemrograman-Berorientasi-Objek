@@ -1,4 +1,4 @@
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/651a9846-af0c-4643-86df-c39b129057cf" />
+![Header](../assets/Header.png)
 
 # Topik 4 - Penggunaan GIT pada NetBeans
 
@@ -265,6 +265,6 @@ Tidak semua file dalam folder proyek perlu dilacak Git — contohnya hasil kompi
 
    c) Kembali ke proyek/komputer awal, lakukan **Pull**, dan amati perubahan yang masuk ke proyekmu.
 
-<img width="1080" height="96" alt="image" src="https://github.com/user-attachments/assets/aac10c9a-53bf-41a8-b976-61d03b1cc115" />
+![Footer](../assets/Footer.png)
 
 <p align="center"><a href="#top">Kembali ke atas</a></p>

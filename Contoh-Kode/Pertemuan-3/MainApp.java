@@ -3,54 +3,76 @@
 // Letakkan file ini pada src/main/MainApp.java
 // ===========================================================
 
-package main;
+import Model.Buku;
 
-import model.Buku;
+public class Main {
 
-public class MainApp {
     public static void main(String[] args) {
-        System.out.println("=================================================");
-        System.out.println("   PERTEMUAN 3: ACCESS MODIFIER & ENCAPSULATION  ");
-        System.out.println("=================================================\n");
 
-        // 1. INSTANSIASI OBJEK DENGAN DATA VALID
-        System.out.println("--- 1. Membuat Objek Buku Normal ---");
-        Buku buku1 = new Buku("B001", "Pemrograman Java", "James Gosling", 5);
+        // Membuat object Buku
+        Buku buku1 = new Buku(
+            "B001",
+            "Laskar Pelangi",
+            "Andrea Hirata",
+            2020,
+            30
+        );
+
+        Buku buku2 = new Buku(
+            "B002",
+            "Bumi Manusia",
+            "Pramoedya Ananta Toer",
+            2023,
+            85
+        );
+
+        // Menampilkan informasi awal buku
+        System.out.println("=== INFORMASI AWAL ===");
+        buku1.tampilkanInfo();
+        buku2.tampilkanInfo();
+
+        // Mengakses data menggunakan Getter
+        System.out.println("\n=== MENGAKSES DATA DENGAN GETTER ===");
+        System.out.println("ID Buku      : " + buku1.getIdBuku());
+        System.out.println("Judul        : " + buku1.getJudul());
+        System.out.println("Penulis      : " + buku1.getPenulis());
+        System.out.println("Tahun Terbit : " + buku1.getTahunTerbit());
+        System.out.println("Stok         : " + buku1.getStok());
+
+        // Mengubah data menggunakan Setter
+        System.out.println("\n=== MENGUBAH DATA DENGAN SETTER ===");
+
+        buku1.setIdBuku("B001-UPDATE");
+        buku1.setJudul("Laskar Pelangi - Edisi Baru");
+        buku1.setPenulis("Andrea Hirata");
+        buku1.setTahunTerbit(2024);
+        buku1.setStok(50);
+
+        // Menampilkan data setelah diubah
+        System.out.println("\nData setelah diubah:");
         buku1.tampilkanInfo();
 
-        // 2. DEMO AKSES ILEGAL (PEMBUKTIAN ACCESS MODIFIER PRIVATE)
-        System.out.println("\n--- 2. Uji Coba Akses Langsung Atribut Private ---");
-        // KODE DI BAWAH INI JIKA DI-UNCOMMENT AKAN CAUSE COMPILER ERROR:
-        // buku1.stok = -10; // ERROR: stok has private access in model.Buku
-        // buku1.judul = ""; // ERROR: judul has private access in model.Buku
-        System.out.println("[SISTEM]: Atribut 'stok' & 'judul' bersifat PRIVATE.");
-        System.out.println("[SISTEM]: Langsung mengubah buku1.stok = -10 ditolak oleh Java Compiler!");
+        // Mencoba memasukkan data yang tidak valid
+        System.out.println("\n=== PENGUJIAN VALIDASI ===");
 
-        // 3. DEMO SETTER DENGAN VALIDASI (PERCOBAAN INPUT INVALID)
-        System.out.println("\n--- 3. Mengubah Data Lewat Setter (Input Salah) ---");
-        System.out.println("Mencoba set stok menjadi -15...");
-        buku1.setStok(-15); // Akan memicu pesan error validasi dari Setter
+        System.out.println("\n1. Menguji judul kosong:");
+        buku1.setJudul("");
 
-        System.out.println("Mencoba set judul menjadi string kosong...");
-        buku1.setJudul(""); // Akan memicu pesan error validasi dari Setter
+        System.out.println("\n2. Menguji penulis kosong:");
+        buku1.setPenulis("");
 
-        // Tampilkan kondisi data setelah dites dengan input salah
-        System.out.println("\nKondisi Objek Setelah Input Invalid:");
+        System.out.println("\n3. Menguji tahun terbit tidak valid:");
+        buku1.setTahunTerbit(-500);
+
+        System.out.println("\n4. Menguji stok terlalu kecil:");
+        buku1.setStok(10);
+
+        System.out.println("\n5. Menguji stok terlalu besar:");
+        buku1.setStok(150);
+
+        // Menampilkan data setelah validasi
+        System.out.println("\n=== DATA SETELAH VALIDASI ===");
         buku1.tampilkanInfo();
-
-        // 4. DEMO SETTER DENGAN INPUT VALID
-        System.out.println("\n--- 4. Mengubah Data Lewat Setter (Input Valid) ---");
-        System.out.println("Mengubah stok menjadi 12...");
-        buku1.setStok(12);
-
-        System.out.println("Mengubah judul menjadi 'Java PBO Lanjut'...");
-        buku1.setJudul("Java PBO Lanjut");
-
-        // Tampilkan kondisi data akhir menggunakan Getter
-        System.out.println("\nKondisi Objek Akhir (Diakses lewat Getter):");
-        System.out.println("ID Buku : " + buku1.getIdBuku());
-        System.out.println("Judul   : " + buku1.getJudul());
-        System.out.println("Penulis : " + buku1.getPenulis());
-        System.out.println("Stok    : " + buku1.getStok());
     }
+}
 }

@@ -6,76 +6,113 @@
 package model;
 
 public class Buku {
-    // 1. ATRIBUT DIUBAH MENJADI PRIVATE (ENKAPSULASI)
-    // Pihak luar kelas tidak bisa langsung mengakses atau mengubah variabel ini.
     private String idBuku;
     private String judul;
     private String penulis;
+    private int tahunTerbit;
     private int stok;
 
-    // 2. CONSTRUCTOR
-    public Buku(String idBuku, String judul, String penulis, int stok) {
+    // Constructor
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit, int stok) {
         this.idBuku = idBuku;
-        setJudul(judul);   // Gunakan setter agar ikut tervalidasi saat objek dibuat
-        this.penulis = penulis;
-        setStok(stok);     // Gunakan setter agar stok awal tidak boleh minus
+        setJudul(judul);
+        setPenulis(penulis);
+        setTahunTerbit(tahunTerbit);
+        setStok(stok);
     }
 
-    // =========================================================================
-    // GETTER AND SETTER (PINTU AKSES TERKONTROL)
-    // =========================================================================
-
-    // Getter & Setter untuk ID Buku
+    // Getter untuk ID Buku
     public String getIdBuku() {
         return idBuku;
     }
 
+    // Setter untuk ID Buku
     public void setIdBuku(String idBuku) {
-        this.idBuku = idBuku;
+        if (idBuku != null && !idBuku.trim().isEmpty()) {
+            this.idBuku = idBuku;
+        } else {
+            System.out.println("ID buku tidak boleh kosong!");
+        }
     }
 
-    // Getter & Setter untuk Judul (Dengan Validasi)
+    // Getter untuk judul
     public String getJudul() {
         return judul;
     }
 
+    // Setter untuk judul
     public void setJudul(String judul) {
-        // VALIDASI: Judul tidak boleh kosong atau hanya berisi spasi
         if (judul != null && !judul.trim().isEmpty()) {
             this.judul = judul;
         } else {
-            System.out.println(">> ERROR VALIDASI: Judul buku tidak boleh kosong! Set ke 'Tanpa Judul'.");
-            this.judul = "Tanpa Judul";
+            System.out.println("Judul tidak boleh kosong!");
         }
     }
 
-    // Getter & Setter untuk Penulis
+    // Getter untuk penulis
     public String getPenulis() {
         return penulis;
     }
 
+    // Setter untuk penulis
     public void setPenulis(String penulis) {
-        this.penulis = penulis;
+        if (penulis != null && !penulis.trim().isEmpty()) {
+            this.penulis = penulis;
+        } else {
+            System.out.println("Penulis tidak boleh kosong!");
+        }
     }
 
-    // Getter & Setter untuk Stok (Dengan Validasi Ketat)
+    // Getter untuk tahun terbit
+    public int getTahunTerbit() {
+        return tahunTerbit;
+    }
+
+    // Setter untuk tahun terbit
+    public void setTahunTerbit(int tahunTerbit) {
+        if (tahunTerbit >= 1900 && tahunTerbit <= 2026) {
+            this.tahunTerbit = tahunTerbit;
+        } else {
+            System.out.println(
+                "Tahun terbit harus berada di antara 1900 dan 2026!"
+            );
+        }
+    }
+
+    // Getter untuk stok
     public int getStok() {
         return stok;
     }
 
+    // Setter untuk stok
     public void setStok(int stok) {
-        // VALIDASI: Stok tidak boleh kurang dari 0
-        if (stok >= 0) {
+        if (stok >= 20 && stok <= 100) {
             this.stok = stok;
         } else {
-            System.out.println(">> ERROR VALIDASI: Stok tidak boleh negatif (" + stok + ")! Stok di-set ke 0.");
-            this.stok = 0;
+            System.out.println(
+                "Stok harus berada di antara 20 dan 100!"
+            );
         }
     }
 
-    // Method Perilaku Objek
-    public void tampilkanInfo() {
-        System.out.printf("%-6s | %-25s | %-20s | %-5d\n", 
-                idBuku, judul, penulis, stok);
+    // Method untuk menampilkan data menggunakan Getter
+    public void tampilkanData() {
+        System.out.println("ID buku       : " + getIdBuku());
+        System.out.println("Judul buku    : " + getJudul());
+        System.out.println("Penulis       : " + getPenulis());
+        System.out.println("Tahun terbit  : " + getTahunTerbit());
+        System.out.println("Stok          : " + getStok());
     }
+
+    // Method untuk menampilkan informasi buku
+    public void tampilkanInfo() {
+        System.out.println("-------------------------------");
+        System.out.println("ID Buku      : " + this.idBuku);
+        System.out.println("Judul        : " + this.judul);
+        System.out.println("Penulis      : " + this.penulis);
+        System.out.println("Tahun Terbit : " + this.tahunTerbit);
+        System.out.println("Stok         : " + this.stok);
+        System.out.println("-------------------------------");
+    }
+}
 }

@@ -6,17 +6,12 @@
 package model;
 
 public class Buku {
-
-    // 1. Atribut (State)
-    // Pada tahap ini atribut masih dapat diakses langsung dari luar class
     String idBuku;
     String judul;
     String penulis;
     int tahunTerbit;
     int stok;
-
-    // 2. Constructor
-    // Method khusus untuk menginisialisasi objek saat pemanggilan 'new'
+    
     public Buku(String idBuku, String judul, String penulis, int tahunTerbit, int stok) {
         this.idBuku = idBuku;
         this.judul = judul;
@@ -25,7 +20,6 @@ public class Buku {
         this.stok = stok;
     }
 
-    // 3. Method untuk menampilkan detail buku
     public void tampilkanInfo() {
         System.out.println("-------------------------------");
         System.out.println("ID Buku      : " + this.idBuku);

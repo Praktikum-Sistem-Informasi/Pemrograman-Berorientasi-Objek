@@ -3,76 +3,250 @@
 // Letakkan file ini pada src/main/MainApp.java
 // ===========================================================
 
-import Model.Buku;
+package main;
 
-public class Main {
+import model.Buku;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class MainApp {
 
     public static void main(String[] args) {
 
-        // Membuat object Buku
-        Buku buku1 = new Buku(
+        // Menyimpan objek Buku ke dalam ArrayList
+        ArrayList<Buku> daftarBuku = new ArrayList<>();
+
+        // Membuat objek Buku menggunakan constructor
+        daftarBuku.add(new Buku(
             "B001",
-            "Laskar Pelangi",
-            "Andrea Hirata",
+            "Pemrograman Java",
+            "James Gosling",
             2020,
-            30
-        );
+            20
+        ));
 
-        Buku buku2 = new Buku(
+        daftarBuku.add(new Buku(
             "B002",
-            "Bumi Manusia",
-            "Pramoedya Ananta Toer",
-            2023,
-            85
-        );
+            "Struktur Data",
+            "Ada Lovelace",
+            2021,
+            20
+        ));
 
-        // Menampilkan informasi awal buku
-        System.out.println("=== INFORMASI AWAL ===");
-        buku1.tampilkanInfo();
-        buku2.tampilkanInfo();
+        Scanner scanner = new Scanner(System.in);
+        boolean berjalan = true;
 
-        // Mengakses data menggunakan Getter
-        System.out.println("\n=== MENGAKSES DATA DENGAN GETTER ===");
-        System.out.println("ID Buku      : " + buku1.getIdBuku());
-        System.out.println("Judul        : " + buku1.getJudul());
-        System.out.println("Penulis      : " + buku1.getPenulis());
-        System.out.println("Tahun Terbit : " + buku1.getTahunTerbit());
-        System.out.println("Stok         : " + buku1.getStok());
+        while (berjalan) {
 
-        // Mengubah data menggunakan Setter
-        System.out.println("\n=== MENGUBAH DATA DENGAN SETTER ===");
+            System.out.println("\n==========================================");
+            System.out.println("       SISTEM PERPUSTAKAAN");
+            System.out.println("==========================================");
+            System.out.println("1. Tampilkan Semua Buku");
+            System.out.println("2. Tambah Buku Baru");
+            System.out.println("3. Cari Buku");
+            System.out.println("4. Update Stok Buku");
+            System.out.println("5. Hapus Buku");
+            System.out.println("6. Keluar");
+            System.out.println("==========================================");
+            System.out.print("Pilih menu (1-6): ");
 
-        buku1.setIdBuku("B001-UPDATE");
-        buku1.setJudul("Laskar Pelangi - Edisi Baru");
-        buku1.setPenulis("Andrea Hirata");
-        buku1.setTahunTerbit(2024);
-        buku1.setStok(50);
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();
 
-        // Menampilkan data setelah diubah
-        System.out.println("\nData setelah diubah:");
-        buku1.tampilkanInfo();
+            switch (pilihan) {
 
-        // Mencoba memasukkan data yang tidak valid
-        System.out.println("\n=== PENGUJIAN VALIDASI ===");
+                // ==========================================
+                // 1. TAMPILKAN SEMUA BUKU
+                // ==========================================
+                case 1:
+                    System.out.println("\n=== DAFTAR BUKU ===");
 
-        System.out.println("\n1. Menguji judul kosong:");
-        buku1.setJudul("");
+                    if (daftarBuku.isEmpty()) {
+                        System.out.println("Belum ada data buku.");
+                    } else {
 
-        System.out.println("\n2. Menguji penulis kosong:");
-        buku1.setPenulis("");
+                        for (Buku b : daftarBuku) {
+                            b.tampilkanInfo();
+                        }
+                    }
 
-        System.out.println("\n3. Menguji tahun terbit tidak valid:");
-        buku1.setTahunTerbit(-500);
+                    break;
 
-        System.out.println("\n4. Menguji stok terlalu kecil:");
-        buku1.setStok(10);
+                // ==========================================
+                // 2. TAMBAH BUKU
+                // ==========================================
+                case 2:
+                    System.out.println("\n=== TAMBAH BUKU BARU ===");
 
-        System.out.println("\n5. Menguji stok terlalu besar:");
-        buku1.setStok(150);
+                    System.out.print("Masukkan ID Buku      : ");
+                    String id = scanner.nextLine();
 
-        // Menampilkan data setelah validasi
-        System.out.println("\n=== DATA SETELAH VALIDASI ===");
-        buku1.tampilkanInfo();
+                    System.out.print("Masukkan Judul Buku   : ");
+                    String judul = scanner.nextLine();
+
+                    System.out.print("Masukkan Nama Penulis : ");
+                    String penulis = scanner.nextLine();
+
+                    System.out.print("Masukkan Tahun Terbit : ");
+                    int tahunTerbit = scanner.nextInt();
+
+                    System.out.print("Masukkan Stok         : ");
+                    int stok = scanner.nextInt();
+                    scanner.nextLine();
+
+                    // Membuat objek Buku baru
+                    Buku bukuBaru = new Buku(
+                        id,
+                        judul,
+                        penulis,
+                        tahunTerbit,
+                        stok
+                    );
+
+                    // Menambahkan objek ke ArrayList
+                    daftarBuku.add(bukuBaru);
+
+                    System.out.println(
+                        "Buku berhasil dibuat dan ditambahkan!"
+                    );
+
+                    break;
+
+                // ==========================================
+                // 3. CARI BUKU
+                // ==========================================
+                case 3:
+                    System.out.println("\n=== CARI BUKU ===");
+
+                    System.out.print("Masukkan kata kunci judul: ");
+                    String kataKunci = scanner.nextLine();
+
+                    boolean ditemukan = false;
+
+                    for (Buku b : daftarBuku) {
+
+                        // Mengakses judul melalui Getter
+                        if (b.getJudul().toLowerCase()
+                                .contains(kataKunci.toLowerCase())) {
+
+                            b.tampilkanInfo();
+                            ditemukan = true;
+                        }
+                    }
+
+                    if (!ditemukan) {
+                        System.out.println("Buku tidak ditemukan.");
+                    }
+
+                    break;
+
+                // ==========================================
+                // 4. UPDATE STOK
+                // ==========================================
+                case 4:
+                    System.out.println("\n=== UPDATE STOK BUKU ===");
+
+                    System.out.print("Masukkan ID Buku: ");
+                    String idUpdate = scanner.nextLine();
+
+                    Buku bukuDitemukan = null;
+
+                    for (Buku b : daftarBuku) {
+
+                        // Mengakses ID melalui Getter
+                        if (b.getIdBuku().equalsIgnoreCase(idUpdate)) {
+
+                            bukuDitemukan = b;
+                            break;
+                        }
+                    }
+
+                    if (bukuDitemukan != null) {
+
+                        System.out.print("Masukkan Stok Baru: ");
+                        int stokBaru = scanner.nextInt();
+                        scanner.nextLine();
+
+                        // Mengubah stok melalui Setter
+                        bukuDitemukan.setStok(stokBaru);
+
+                        System.out.println(
+                            "Stok buku berhasil diubah!"
+                        );
+
+                    } else {
+
+                        System.out.println(
+                            "ID Buku tidak ditemukan!"
+                        );
+                    }
+
+                    break;
+
+                // ==========================================
+                // 5. HAPUS BUKU
+                // ==========================================
+                case 5:
+                    System.out.println("\n=== HAPUS BUKU ===");
+
+                    System.out.print(
+                        "Masukkan ID Buku yang akan dihapus: "
+                    );
+
+                    String idHapus = scanner.nextLine();
+
+                    Buku bukuHapus = null;
+
+                    for (Buku b : daftarBuku) {
+
+                        // Mengakses ID melalui Getter
+                        if (b.getIdBuku().equalsIgnoreCase(idHapus)) {
+
+                            bukuHapus = b;
+                            break;
+                        }
+                    }
+
+                    if (bukuHapus != null) {
+
+                        daftarBuku.remove(bukuHapus);
+
+                        System.out.println(
+                            "Buku '" + bukuHapus.getJudul()
+                            + "' berhasil dihapus!"
+                        );
+
+                    } else {
+
+                        System.out.println(
+                            "ID Buku tidak ditemukan!"
+                        );
+                    }
+
+                    break;
+
+                // ==========================================
+                // 6. KELUAR
+                // ==========================================
+                case 6:
+                    berjalan = false;
+
+                    System.out.println(
+                        "\nProgram selesai."
+                    );
+
+                    break;
+
+                // ==========================================
+                // PILIHAN TIDAK VALID
+                // ==========================================
+                default:
+                    System.out.println(
+                        "Pilihan tidak valid!"
+                    );
+            }
+        }
+
+        scanner.close();
     }
-}
 }

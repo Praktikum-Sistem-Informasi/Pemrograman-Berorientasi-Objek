@@ -32,9 +32,9 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 
 | File | Deskripsi |
 | :--- | :--- |
-| `Koleksi.java` | *Superclass* (Kelas Induk) penyedia atribut umum |
-| `Buku.java` | *Subclass 1* turunan dari `Koleksi` |
-| `Majalah.java` | *Subclass 2* turunan dari `Koleksi` |
+| `Buku.java` | *Superclass* (Kelas Induk) penyedia atribut dan method umum |
+| `BukuCetak.java` | *Subclass 1* turunan dari `Buku` untuk media fisik |
+| `EBook.java` | *Subclass 2* turunan dari `Buku` untuk media digital |
 | `MainApp.java` | Kelas utama untuk pengujian hubungan *IS-A* |
 
 ---
@@ -49,34 +49,37 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 
 ## 🚀 PART 1: Pemahaman Konsep
 
-
-```
+```text
           ┌─────────────────────────┐
-          │  Koleksi (Superclass)   │  ← Induk (Atribut Umum: id, judul, tahun)
+          │     Buku (Superclass)   │  ← Induk (Atribut Umum: idBuku, judul, penulis, tahunTerbit)
           └────────────┬────────────┘
                        │
          ┌─────────────┴─────────────┐
          │ (extends)                 │ (extends)
 ┌────────┴────────┐         ┌────────┴────────┐
-│  Buku (Subclass)│         │Majalah(Subclass)│  ← Anak (Atribut Spesifik)
+│BukuCetak(Subclass)│         │ EBook(Subclass) │  ← Anak (Atribut Spesifik)
 └─────────────────┘         └─────────────────┘
 
 ```
 
 > 📌 **ANALOGI DUNIA NYATA:**
-> - **Koleksi** adalah cetakan umum. **Buku** *IS-A* (adalah sebuah) **Koleksi**. **Majalah** *IS-A* (adalah sebuah) **Koleksi**.
-> - Buku dan Majalah tidak perlu membuat ulang atribut `idKoleksi`, `judul`, atau `tahunTerbit` dari nol. Mereka cukup **mewarisi** sifat dari kelas `Koleksi`.
+> * **Buku** adalah cetakan umum. **BukuCetak** *IS-A* (adalah sebuah) **Buku**. **EBook** *IS-A* (adalah sebuah) **Buku**.
+> * BukuCetak dan EBook tidak perlu membuat ulang atribut `idBuku`, `judul`, `penulis`, atau `tahunTerbit` dari nol. Mereka cukup **mewarisi** sifat dari kelas `Buku`.
+> 
+> 
 
 ---
 
 ### 1. Apa itu Inheritance (Pewarisan)?
+
 *Inheritance* adalah mekanisme di mana sebuah kelas (*Subclass*) menerima/mewarisi atribut (*field*) dan perilaku (*method*) dari kelas lain (*Superclass*).
 
-* **Hubungan *IS-A*:** Merupakan syarat mutlak pewarisan. Contoh: `Buku` *IS-A* `Koleksi` (Buku adalah sebuah Koleksi) atau `Mobil` *IS-A* `Kendaraan`.
+* **Hubungan *IS-A*:** Merupakan syarat mutlak pewarisan. Contoh: `BukuCetak` *IS-A* `Buku` (Buku Cetak adalah sebuah Buku) atau `Mobil` *IS-A* `Kendaraan`.
 * **Single Inheritance di Java:** Java **tidak mendukung** *Multiple Inheritance* menggunakan kelas biasa (satu kelas anak tidak bisa `extends` ke dua kelas induk sekaligus) untuk menghindari konflik kode (*Diamond Problem*).
 * **Hak Akses `protected`:** Atribut bertipe `protected` pada kelas induk dapat diakses langsung oleh semua kelas anak (*subclass*) maupun kelas lain di package yang sama, namun tertutup bagi kelas luar di beda package.
 
 ---
+
 ### 2. Mengapa Inheritance Penting?
 
 * **Fondasi Utama PBO:** Merupakan salah satu pilar inti PBO yang menjadi syarat wajib untuk memahami `Polymorphism` dan `Abstraction`.
@@ -86,73 +89,81 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 ---
 
 ### 3. Pendalaman Kata Kunci `super`
+
 Kata kunci `super` adalah variabel referensi yang digunakan untuk merujuk langsung ke objek dari **Kelas Induk (*Superclass*)**. Ada dua kegunaan utama `super`:
 
 1. **`super(...)` — Memanggil Constructor Induk:**
-   * Digunakan di dalam *constructor subclass* untuk meneruskan data ke *constructor superclass*.
-   * **Aturan Mutlak:** Pemanggilan `super(...)` **WAJIB** diletakkan di **baris pertama** di dalam *constructor subclass*.
+* Digunakan di dalam *constructor subclass* untuk meneruskan data ke *constructor superclass*.
+* **Aturan Mutlak:** Pemanggilan `super(...)` **WAJIB** diletakkan di **baris pertama** di dalam *constructor subclass*.
+
 
 2. **`super.method()` atau `super.atribut` — Mengakses Anggota Induk:**
-   * Digunakan untuk memanggil *method* atau *atribut* milik induk yang tertutup/berbenturan nama dengan anggota di kelas anak.
+* Digunakan untuk memanggil *method* atau *atribut* milik induk yang tertutup/berbenturan nama dengan anggota di kelas anak.
+
+
 
 ---
 
 ### 4. Pendalaman Kata Kunci `final`
+
 Kata kunci `final` digunakan untuk membatasi pewarisan dan modifikasi. `final` dapat diterapkan pada 3 tingkatan:
 
 | Penerapan `final` | Fungsi / Dampak |
-| :--- | :--- |
+| --- | --- |
 | **`final` Variable** | Nilainya menjadi konstanta (tidak dapat diubah setelah diinisialisasi). |
 | **`final` Method** | Method tersebut **tidak dapat di-override** (didefinisikan ulang) oleh kelas anak. |
 | **`final` Class** | Kelas tersebut **tidak dapat diwarisi** (`extends`) oleh kelas mana pun. |
 
 ```java
 // Contoh Final Class (Tidak bisa diturunkan lagi)
-public final class Universe {
+public final class PerpustakaanPusat {
     // ...
 }
 
 // Error kompilasi jika dicoba:
-// public class Galaksi extends Universe {} // ERROR!
+// public class CabangPerpustakaan extends PerpustakaanPusat {} // ERROR!
 
 ```
 
 ---
 
-## 💻 PART 2: Live Coding 
+## 💻 PART 2: Live Coding
 
-### Step 1: Membuat Superclass (`src/model/Koleksi.java`)
+### Step 1: Membuat Superclass (`src/model/Buku.java`)
 
 ```java
 package model;
 
-public class Koleksi {
+public class Buku {
     // Protected: dapat diakses langsung oleh kelas turunan (subclass)
-    protected String idKoleksi;
+    protected String idBuku;
     protected String judul;
+    protected String penulis;
     protected int tahunTerbit;
 
     // Constructor Superclass
-    public Koleksi(String idKoleksi, String judul, int tahunTerbit) {
-        this.idKoleksi = idKoleksi;
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit) {
+        this.idBuku = idBuku;
         this.judul = judul;
+        this.penulis = penulis;
         this.tahunTerbit = tahunTerbit;
     }
 
     // Method umum (dapat dipanggil subclass via super.tampilkanInfo())
     public void tampilkanInfo() {
-        System.out.printf("ID: %-6s | Judul: %-25s | Tahun: %-4d ", 
-                idKoleksi, judul, tahunTerbit);
+        System.out.printf("ID: %-6s | Judul: %-25s | Penulis: %-15s | Tahun: %-4d ", 
+                idBuku, judul, penulis, tahunTerbit);
     }
 
     // Example final method: method ini tidak boleh di-override oleh kelas anak mana pun
-    public final void cetakJenisKoleksi() {
-        System.out.println("Item ini merupakan aset resmi Perpustakaan.");
+    public final void cetakStatusAset() {
+        System.out.println("Item ini merupakan koleksi resmi Perpustakaan.");
     }
 
     // Getter & Setter
-    public String getIdKoleksi() { return idKoleksi; }
+    public String getIdBuku() { return idBuku; }
     public String getJudul() { return judul; }
+    public String getPenulis() { return penulis; }
     public int getTahunTerbit() { return tahunTerbit; }
 }
 
@@ -160,41 +171,32 @@ public class Koleksi {
 
 ---
 
-### Step 2: Membuat Subclass 1 (`src/model/Buku.java`)
+### Step 2: Membuat Subclass 1 (`src/model/BukuCetak.java`)
 
 ```java
 package model;
 
-// Buku IS-A Koleksi
-public class Buku extends Koleksi {
-    // Atribut spesifik khusus Buku
-    private String penulis;
-    private int stok;
+// BukuCetak IS-A Buku
+public class BukuCetak extends Buku {
+    // Atribut spesifik khusus Buku Cetak
+    private int jumlahHalaman;
+    private String lokasiRak;
 
     // Constructor Subclass
-    public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int stok) {
+    public BukuCetak(String idBuku, String judul, String penulis, int tahunTerbit, int jumlahHalaman, String lokasiRak) {
         // super(...) WAJIB di baris pertama untuk menginstansiasi induk
-        super(idKoleksi, judul, tahunTerbit); 
-        this.penulis = penulis;
-        setStok(stok); 
+        super(idBuku, judul, penulis, tahunTerbit); 
+        this.jumlahHalaman = jumlahHalaman;
+        this.lokasiRak = lokasiRak;
     }
 
-    public void setStok(int stok) {
-        if (stok >= 0) {
-            this.stok = stok;
-        } else {
-            System.out.println(">> ERROR: Stok tidak boleh negatif!");
-            this.stok = 0;
-        }
-    }
-
-    public String getPenulis() { return penulis; }
-    public int getStok() { return stok; }
+    public int getJumlahHalaman() { return jumlahHalaman; }
+    public String getLokasiRak() { return lokasiRak; }
 
     // Method spesifik memanfaatkan super.tampilkanInfo()
-    public void tampilkanInfoBuku() {
-        super.tampilkanInfo(); // Memanggil method milik Superclass
-        System.out.printf("| Penulis: %-15s | Stok: %-3d\n", penulis, stok);
+    public void tampilkanInfoBukuCetak() {
+        super.tampilkanInfo(); // Memanggil method milik Superclass (Buku)
+        System.out.printf("| Halaman: %-3d | Rak: %-6s\n", jumlahHalaman, lokasiRak);
     }
 }
 
@@ -202,25 +204,32 @@ public class Buku extends Koleksi {
 
 ---
 
-### Step 3: Membuat Subclass 2 (`src/model/Majalah.java`)
+### Step 3: Membuat Subclass 2 (`src/model/EBook.java`)
 
 ```java
 package model;
 
-// Majalah IS-A Koleksi
-public class Majalah extends Koleksi {
-    private int edisi;
+// EBook IS-A Buku
+public class EBook extends Buku {
+    // Atribut spesifik khusus EBook
+    private double ukuranFileMB;
+    private String formatFile;
 
-    public Majalah(String idKoleksi, String judul, int tahunTerbit, int edisi) {
-        super(idKoleksi, judul, tahunTerbit); // Mengirim data ke constructor Koleksi
-        this.edisi = edisi;
+    // Constructor Subclass
+    public EBook(String idBuku, String judul, String penulis, int tahunTerbit, double ukuranFileMB, String formatFile) {
+        // super(...) WAJIB di baris pertama untuk menginstansiasi induk
+        super(idBuku, judul, penulis, tahunTerbit); 
+        this.ukuranFileMB = ukuranFileMB;
+        this.formatFile = formatFile;
     }
 
-    public int getEdisi() { return edisi; }
+    public double getUkuranFileMB() { return ukuranFileMB; }
+    public String getFormatFile() { return formatFile; }
 
-    public void tampilkanInfoMajalah() {
-        super.tampilkanInfo(); // Memanggil method milik Superclass
-        System.out.printf("| Edisi: Vol. %-3d\n", edisi);
+    // Method spesifik memanfaatkan super.tampilkanInfo()
+    public void tampilkanInfoEBook() {
+        super.tampilkanInfo(); // Memanggil method milik Superclass (Buku)
+        System.out.printf("| Size: %-4.1f MB | Format: %-4s\n", ukuranFileMB, formatFile);
     }
 }
 
@@ -233,8 +242,8 @@ public class Majalah extends Koleksi {
 ```java
 package main;
 
-import model.Buku;
-import model.Majalah;
+import model.BukuCetak;
+import model.EBook;
 
 public class MainApp {
     public static void main(String[] args) {
@@ -242,24 +251,25 @@ public class MainApp {
         System.out.println("        PERTEMUAN 4: INHERITANCE (PEWARISAN)     ");
         System.out.println("=================================================\n");
 
-        // 1. Instansiasi Objek Buku (Subclass 1)
-        Buku buku1 = new Buku("B001", "Pemrograman Java", 2023, "James Gosling", 5);
+        // 1. Instansiasi Objek BukuCetak (Subclass 1)
+        BukuCetak buku1 = new BukuCetak("BC001", "Pemrograman Java", "James Gosling", 2023, 450, "Rak A1");
 
-        // 2. Instansiasi Objek Majalah (Subclass 2)
-        Majalah majalah1 = new Majalah("M001", "National Geographic", 2024, 142);
+        // 2. Instansiasi Objek EBook (Subclass 2)
+        EBook ebook1 = new EBook("EB001", "Struktur Data Java", "Robert Lafore", 2024, 12.5, "PDF");
 
-        System.out.println("--- DAFTAR KOLEKSI PERPUSTAKAAN ---");
+        System.out.println("--- DAFTAR BUKU PERPUSTAKAAN ---");
         
-        // Menampilkan Info Buku
-        buku1.tampilkanInfoBuku();
+        // Menampilkan Info Buku Cetak
+        buku1.tampilkanInfoBukuCetak();
 
-        // Menampilkan Info Majalah
-        majalah1.tampilkanInfoMajalah();
+        // Menampilkan Info EBook
+        ebook1.tampilkanInfoEBook();
 
         // Pembuktian Hubungan IS-A & Pemanggilan Final Method
         System.out.println("\n--- PEMBUKTIAN REUSABILITAS & FINAL METHOD ---");
-        System.out.println("Judul Buku (via getJudul Superclass) : " + buku1.getJudul());
-        buku1.cetakJenisKoleksi(); // Memanggil final method dari Superclass
+        System.out.println("Judul Buku Cetak (via getJudul Superclass) : " + buku1.getJudul());
+        System.out.println("Penulis EBook    (via getPenulis Superclass): " + ebook1.getPenulis());
+        buku1.cetakStatusAset(); // Memanggil final method dari Superclass
     }
 }
 
@@ -271,12 +281,13 @@ public class MainApp {
 
 ### 🎯 Eksperimen 1: Memindahkan Posisi `super()`
 
-**Tindakan:** Pada `Buku.java`, pindahkan baris `super(idKoleksi, judul, tahunTerbit);` ke bawah setelah `this.penulis = penulis;`.
+**Tindakan:** Pada `BukuCetak.java`, pindahkan baris `super(idBuku, judul, penulis, tahunTerbit);` ke bawah setelah `this.jumlahHalaman = jumlahHalaman;`.
 
 ```java
-public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int stok) {
-    this.penulis = penulis;
-    super(idKoleksi, judul, tahunTerbit); // Pindah ke baris kedua
+public BukuCetak(String idBuku, String judul, String penulis, int tahunTerbit, int jumlahHalaman, String lokasiRak) {
+    this.jumlahHalaman = jumlahHalaman;
+    super(idBuku, judul, penulis, tahunTerbit); // Pindah ke baris kedua
+    this.lokasiRak = lokasiRak;
 }
 
 ```
@@ -288,9 +299,9 @@ public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int
 
 ### 🎯 Eksperimen 2: Mencoba Meng-extends Final Class
 
-**Tindakan:** Buat `public final class CD` lalu buat `public class VCD extends CD`.
+**Tindakan:** Buat `public final class Ensiklopedia` lalu buat `public class Komik extends Ensiklopedia`.
 
-* **Hasil:** Error Kompilasi (`cannot inherit from final model.CD`).
+* **Hasil:** Error Kompilasi (`cannot inherit from final model.Ensiklopedia`).
 * **Pelajaran:** Class bertipe `final` bersifat absolut dan tidak bisa memiliki subclass.
 
 ---
@@ -335,27 +346,14 @@ public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int
 ## 🏆 CHALLENGE PRAKTIKAN
 
 1. Buat program sesuai instruksi berikut:
-
-   a) Buat class **`Kendaraan`** berisi method `jalan()` dan `berhenti()`.
-  
-   b) Buat subclass **`Mobil`** yang mewarisi `Kendaraan`, tambahkan method `bunyiKlakson()`.
-  
-   c) Buat objek **`Mobil`** pada `main()` dan jalankan semua method.
+a) Buat class **`Buku`** sebagai superclass yang menyimpan atribut `idBuku`, `judul`, `penulis`, dan `tahunTerbit`.
+b) Buat subclass **`BukuAudio`** yang mewarisi **`Buku`**, lalu tambahkan atribut spesifik `durasiMenit` dan `narator`.
+c) Buat objek **`BukuAudio`** pada `main()` dan tampilkan seluruh data bukunya.
 2. Buat program sesuai instruksi berikut:
-
-   a) Buat final class **`BangunDatar`** dengan method `hitungLuas()`.
-  
-   b) Coba buat subclass **`Persegi`** yang `extends BangunDatar`.
-  
-   c) Amati dan jelaskan mengapa class **`BangunDatar`** tidak bisa diwarisi.
+a) Buat final class **`JurnalIlmiah`** yang berisi method `tampilkanLisensi()`.
+b) Coba buat subclass **`JurnalInternal`** yang mencoba `extends JurnalIlmiah`.
+c) Amati dan jelaskan mengapa class **`JurnalIlmiah`** tidak bisa diwarisi.
 3. Buat program sesuai instruksi berikut:
-
-   a) Buat class **`Orang`** dengan constructor yang menerima `String nama`, serta method `perkenalan()` untuk menampilkan nama.
-   
-   b) Buat subclass **`Mahasiswa`** dengan constructor yang memanggil `super(nama)`, lalu tambahkan method `belajar()`.
-   
-   c) Buat objek **`Mahasiswa`** di `main()` dan jalankan semua method.
-
-![Footer](../assets/Footer.png)
-
-<p align="center"><a href="#top">Kembali ke atas</a></p>
+a) Buat class **`AnggotaPerpustakaan`** dengan constructor yang menerima `String nama`, serta method `sapaan()` untuk menampilkan nama anggota.
+b) Buat subclass **`Mahasiswa`** dengan constructor yang memanggil `super(nama)`, lalu tambahkan atribut `nim` dan method `pinjamBuku()`.
+c) Buat objek **`Mahasiswa`** di `main()` dan jalankan semua methodnya.

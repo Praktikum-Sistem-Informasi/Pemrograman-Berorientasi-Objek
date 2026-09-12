@@ -8,21 +8,20 @@
 
 Setelah mengikuti pertemuan ini, Anda diharapkan mampu:
 
-1. ✅ Memahami konsep dasar Polimorfisme (*"Satu Nama, Banyak Bentuk"*) dan perannya dalam PBO.
-2. ✅ Membedakan antara *Static Polymorphism* (*Method Overloading*) dan *Dynamic Polymorphism* (*Method Overriding*).
-3. ✅ Mengimplementasikan anotasi `@Override` untuk mendefinisikan ulang perilaku method induk.
-4. ✅ Memahami fungsi operator `instanceof` dan mekanisme *Downcasting* pada koleksi polimorfik.
-5. ✅ Membuat *Polymorphic Collection* (*Heterogeneous List*) untuk mengelola berbagai objek turunan dalam satu `ArrayList`.
+1. ✅ Memahami konsep Polimorfisme ("Satu Nama, Banyak Bentuk") dalam PBO.
+2. ✅ Membedakan *Compile-time Polymorphism* (*Method Overloading*) dan *Runtime Polymorphism* (*Method Overriding*).
+3. ✅ Mengimplementasikan anotasi `@Override` untuk mengubah perilaku *method* kelas induk pada kelas anak.
+4. ✅ Mengatur eksekusi *method* secara dinamis (*Dynamic Method Dispatch*) melalui variabel referensi kelas induk.
 
 ---
 
 ## 🔑 KATA KUNCI UTAMA (KEY WORDS)
 
-Pada materi ini, terdapat 3 kata kunci/anotasi utama yang wajib Anda pahami fungsi dan dampaknya:
+Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan dampaknya:
 
-* **`Overloading`** : *Static Polymorphism*. Pembuatan beberapa method dengan nama yang sama di dalam satu kelas, tetapi memiliki parameter yang berbeda (jumlah atau tipe data).
-* **`@Override`**   : *Dynamic Polymorphism*. Penandaan khusus untuk mendefinisikan ulang perilaku method milik *Superclass* di dalam *Subclass*.
-* **`instanceof`**  : Operator untuk mengecek wujud/tipe asli suatu objek sebelum melakukan *downcasting* pada koleksi polimorfik.
+* **`@Override`**          : Anotasi penanda bahwa *method* di kelas anak mendefinisikan ulang *method* dari kelas induk.
+* **Method Overloading** : Beberapa *method* dengan nama sama dalam **satu kelas**, namun memiliki **parameter yang berbeda** (*Compile-time Polymorphism*).
+* **Method Overriding**  : *Method* di kelas anak yang memiliki **nama, parameter, dan return type yang persis sama** dengan kelas induk (*Runtime Polymorphism*).
 
 ---
 
@@ -32,10 +31,10 @@ Pada materi ini, terdapat 3 kata kunci/anotasi utama yang wajib Anda pahami fung
 
 | File | Deskripsi |
 | :--- | :--- |
-| `Koleksi.java` | *Superclass* dengan contoh *Method Overloading* & method yang siap di-*override* |
-| `Buku.java` | *Subclass 1* yang meng-override method `tampilkanInfo()` |
-| `Majalah.java` | *Subclass 2* yang meng-override method `tampilkanInfo()` |
-| `MainApp.java` | Kelas utama untuk pengujian *Heterogeneous List* & eksekusi *Overloading/Overriding* |
+| `Buku.java` | *Superclass* dengan *method* `tampilkanInfo()` dan contoh *Overloading* `pinjamBuku()` |
+| `BukuCetak.java` | *Subclass 1* yang melakukan `@Override` pada *method* `tampilkanInfo()` |
+| `EBook.java` | *Subclass 2* yang melakukan `@Override` pada *method* `tampilkanInfo()` |
+| `MainApp.java` | Kelas utama interaktif menu CRUD yang membuktikan *Dynamic Polymorphism* |
 
 ---
 
@@ -43,231 +42,204 @@ Pada materi ini, terdapat 3 kata kunci/anotasi utama yang wajib Anda pahami fung
 
 - [ ] Apache NetBeans IDE / IDE pilihan sudah terbuka.
 - [ ] JDK terkonfigurasi dengan benar.
-- [ ] Memahami konsep *Inheritance* (Pewarisan) dari Pertemuan 4.
+- [ ] Memahami konsep *Inheritance* (`extends`, `super`, `protected`) dari Pertemuan 4.
 
 ---
 
 ## 🚀 PART 1: Pemahaman Konsep
 
+### 1. Perbedaan Overloading vs Overriding
 
-```
-                  ┌──────────────────────────────┐
-                  │   ArrayList<Koleksi> list    │
-                  └──────────────┬───────────────┘
-                                 │
-         ┌───────────────────────┴───────────────────────┐
-         │                                               │
-┌────────┴────────┐                             ┌────────┴────────┐
-│  Objek Buku     │                             │  Objek Majalah  │
-│(tampilkanInfo())│                             │(tampilkanInfo())│
-└─────────────────┘                             └─────────────────┘
-
-```
-
-> 📌 **ANALOGI DUNIA NYATA:**
-> - Tombol **"Play"** pada *Remote Control*. 
-> - Jika diarahkan ke DVD Player, ia memutar DVD. Jika diarahkan ke Spotify, ia memutar musik. Perintahnya sama-sama **"Play"**, namun >**perilaku eksekusinya menyesuaikan objek yang diraih**.
-
----
-
-### 1. Apa itu Polymorphism (Polimorfisme)?
-*Polymorphism* berasal dari bahasa Yunani yang berarti *"banyak bentuk"*. Dalam PBO, polimorfisme adalah kemampuan suatu objek atau method untuk memiliki banyak bentuk implementasi tergantung pada bagaimana method tersebut dipanggil atau jenis objek yang menjalankannya.
-
-* **Overloading vs Overriding:**
-
-| Karakteristik | Static Polymorphism (*Overloading*) | Dynamic Polymorphism (*Overriding*) |
+| Pembeda | Method Overloading | Method Overriding |
 | :--- | :--- | :--- |
-| **Lokasi** | Dalam **satu kelas** yang sama. | Pada kelas induk dan kelas anak (**beda kelas**). |
-| **Nama Method** | **Sama**. | **Sama**. |
-| **Parameter** | **Wajib Beda** (Jumlah / Tipe Data). | **Wajib Sama Persis**. |
-| **Waktu Eksekusi** | *Compile-time* (Ditentukan saat kompilasi). | *Runtime* (Ditentukan saat program berjalan). |
+| **Lokasi** | Dalam 1 kelas yang sama | Terjadi antar kelas induk dan kelas anak (*Inheritance*) |
+| **Parameter** | WAJIB Berbeda (jumlah / tipe data / urutan) | WAJIB Sama persis |
+| **Waktu Eksekusi** | *Compile-time* (*Static Binding*) | *Runtime* (*Dynamic Binding*) |
+| **Anotasi** | Tidak ada | Dianjurkan memakai `@Override` |
 
 ---
 
-### 2. Mengapa Polymorphism Penting?
+## 💻 PART 2: Live Coding 
 
-* **Fleksibilitas Kode Tinggi:** Memungkinkan kita memperlakukan berbagai kelas anak yang berbeda seolah-olah mereka adalah kelas induk yang sama.
-* **Pengelolaan Koleksi Efisien:** Menghilangkan kebutuhan membuat `ArrayList` terpisah untuk setiap kelas anak. Cukup satu `ArrayList<Induk>` (*Heterogeneous List*) untuk menampung seluruh objek turunannya.
-* **Penerapan *Clean Code*:** Mengurangi penggunaan percabangan `if-else` atau `switch-case` yang berlebihan saat menangani berbagai tipe objek.
-
----
-
-### 3. Pendalaman Dynamic Polymorphism (`@Override`)
-*Method Overriding* terjadi ketika kelas anak (*Subclass*) menyediakan implementasi khusus untuk method yang sudah didefinisikan di kelas induknya (*Superclass*).
-
-1. **Anotasi `@Override` — Penjaga Validasi Kompiler:**
-   * Anotasi ini memberi tahu kompiler bahwa method tersebut berniat menggantikan method milik induk. Jika ada kesalahan nama atau perbedaan parameter, kompilasi akan langsung gagal (garis merah).
-2. **Eksekusi Sesuai Wujud Asli di Memori:**
-   * Saat method dipanggil melalui tipe referensi induk, Java secara otomatis mengeksekusi method versi kelas anak sesuai tipe objek yang sebenarnya berada di memori saat *runtime*.
-
----
-
-### 4. Pendalaman Static Polymorphism (Overloading)
-*Method Overloading* terjadi ketika dua atau lebih method dalam satu kelas memiliki nama yang persis sama, tetapi menerima deretan parameter yang berbeda.
-
-* Kompiler membedakan method yang dipanggil berdasarkan **jumlah parameter**, **tipe data parameter**, atau **urutan tipe data parameter**.
-* Tipe kembalian (*return type*) saja **tidak cukup** untuk membedakan method yang di-overload.
-
----
-
-### 5. Pendalaman Operator `instanceof` dan Konsep Downcasting
-
-Saat mengelola *Polymorphic Collection* (`ArrayList<Koleksi>`), semua elemen tersimpan dengan tipe referensi kelas induk (`Koleksi`). Namun, terkadang kita perlu mengakses method khusus yang **hanya ada di kelas anak tertentu** (misal: method `getStok()` pada `Buku` atau `getEdisi()` pada `Majalah`).
-
-#### A. Upcasting vs Downcasting
-* **Upcasting (Aman & Otomatis):** Mengkonversi tipe objek anak ke tipe referensi induknya.
-```java
-  Koleksi k = new Buku("B001", "Java", 2023, "Gosling", 5); // Otomatis (Upcasting)
-
-```
-
-* **Downcasting (Berisiko & Manual):** Mengembalikan tipe referensi induk ke tipe wujud asli kelas anaknya untuk mengakses method/atribut spesifik.
-
-```java
-Buku b = (Buku) k; // Konversi manual (Downcasting)
-System.out.println(b.getStok()); // Sekarang bisa mengakses method khusus Buku!
-
-```
-
-#### B. Mengapa Butuh Operator `instanceof`?
-
-Jika kita melakukan *Downcasting* secara sembarangan tanpa mengecek wujud aslinya, Java akan melemparkan kesalahan *runtime* berupa **`ClassCastException`** (misal: mencoba mengkonversi objek `Majalah` secara paksa menjadi `Buku`).
-
-Operator **`instanceof`** digunakan sebagai **pemeriksa keamanan** untuk mengecek apakah objek referensi induk benar-benar merupakan instansiasi dari kelas anak tertentu sebelum dikonversi.
-
-#### C. Penggunaan `instanceof` dan Downcasting
-
-```java
-// Melakukan perulangan pada Heterogeneous List
-for (Koleksi k : daftarKoleksi) {
-    k.tampilkanInfo(); // Polimorfisme biasa
-
-    // Menggunakan instanceof sebelum Downcasting
-    if (k instanceof Buku) {
-        Buku b = (Buku) k; // Aman melakukan Downcasting
-        System.out.println("   -> Stok Buku ini: " + b.getStok());
-    } else if (k instanceof Majalah) {
-        Majalah m = (Majalah) k; // Aman melakukan Downcasting
-        System.out.println("   -> Edisi Majalah ini: Vol. " + m.getEdisi());
-    }
-}
-
-```
-
-> 💡 **Pola Modern (Java 16+ Pattern Matching for instanceof):**
-> Pada Java versi baru, *checking* dan *downcasting* bisa digabung dalam 1 baris singkat:
-> ```java
-> if (k instanceof Buku b) {
->     System.out.println("   -> Stok Buku ini: " + b.getStok());
-> }
-> 
-> ```
-> 
-> 
-
----
-
-## 💻 PART 2: Live Coding
-
-### Step 1: Modifikasi Superclass (`src/model/Koleksi.java`)
+### Step 1: Menambahkan Overriding & Overloading (`src/model/Buku.java`)
 
 ```java
 package model;
 
-public class Koleksi {
-    protected String idKoleksi;
+public class Buku {
+    protected String idBuku;
     protected String judul;
+    protected String penulis;
     protected int tahunTerbit;
 
-    public Koleksi(String idKoleksi, String judul, int tahunTerbit) {
-        this.idKoleksi = idKoleksi;
-        this.judul = judul;
-        this.tahunTerbit = tahunTerbit;
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit) {
+        this.idBuku = idBuku;
+        setJudul(judul);
+        setPenulis(penulis);
+        setTahunTerbit(tahunTerbit);
     }
 
-    // Method yang akan di-OVERRIDE oleh kelas anak
-    public void tampilkanInfo() {
-        System.out.printf("ID: %-5s | Judul: %-22s | Tahun: %-4d ", 
-                idKoleksi, judul, tahunTerbit);
+    public String getIdBuku() { return idBuku; }
+    public void setIdBuku(String idBuku) {
+        if (idBuku != null && !idBuku.trim().isEmpty()) {
+            this.idBuku = idBuku;
+        } else {
+            System.out.println(">> ERROR: ID buku tidak boleh kosong!");
+        }
     }
 
-    // =========================================================================
-    // CONTOH METHOD OVERLOADING (Nama sama, parameter berbeda dalam 1 kelas)
-    // =========================================================================
-    
-    // Overload 1: Cari berdasarkan kata kunci judul (String)
-    public boolean cocokData(String kataKunci) {
-        return this.judul.toLowerCase().contains(kataKunci.toLowerCase());
-    }
-
-    // Overload 2: Cari berdasarkan tahun terbit persis (int)
-    public boolean cocokData(int tahun) {
-        return this.tahunTerbit == tahun;
-    }
-
-    // Getter
-    public String getIdKoleksi() { return idKoleksi; }
     public String getJudul() { return judul; }
-    public int getTahunTerbit() { return tahunTerbit; }
-}
-
-```
-
----
-
-### Step 2: Implementasi Overriding di Subclass 1 (`src/model/Buku.java`)
-
-```java
-package model;
-
-public class Buku extends Koleksi {
-    private String penulis;
-    private int stok;
-
-    public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int stok) {
-        super(idKoleksi, judul, tahunTerbit);
-        this.penulis = penulis;
-        this.stok = stok;
-    }
-
-    // DYNAMIC POLYMORPHISM: METHOD OVERRIDING
-    // Mengubah perilaku method milik Superclass agar sesuai dengan Buku
-    @Override
-    public void tampilkanInfo() {
-        super.tampilkanInfo(); // Memanggil tampilan dasar Koleksi
-        System.out.printf("| Penulis: %-15s | Stok: %-3d [JENIS: BUKU]\n", penulis, stok);
+    public void setJudul(String judul) {
+        if (judul != null && !judul.trim().isEmpty()) {
+            this.judul = judul;
+        } else {
+            System.out.println(">> ERROR: Judul tidak boleh kosong!");
+        }
     }
 
     public String getPenulis() { return penulis; }
-    public int getStok() { return stok; }
+    public void setPenulis(String penulis) {
+        if (penulis != null && !penulis.trim().isEmpty()) {
+            this.penulis = penulis;
+        } else {
+            System.out.println(">> ERROR: Penulis tidak boleh kosong!");
+        }
+    }
+
+    public int getTahunTerbit() { return tahunTerbit; }
+    public void setTahunTerbit(int tahunTerbit) {
+        if (tahunTerbit >= 1900 && tahunTerbit <= 2026) {
+            this.tahunTerbit = tahunTerbit;
+        } else {
+            System.out.println(">> ERROR: Tahun terbit harus antara 1900 dan 2026!");
+        }
+    }
+
+    // Dynamic Polymorphism: Method ini akan di-override oleh Subclass
+    public void tampilkanInfo() {
+        System.out.println("ID Buku      : " + idBuku);
+        System.out.println("Judul        : " + judul);
+        System.out.println("Penulis      : " + penulis);
+        System.out.println("Tahun Terbit : " + tahunTerbit);
+    }
+
+    // Static Polymorphism (Overloading 1): Tanpa parameter
+    public void pinjamBuku() {
+        System.out.println(">> Buku '" + judul + "' berhasil dipinjam untuk 7 hari.");
+    }
+
+    // Static Polymorphism (Overloading 2): Dengan parameter jumlahHari
+    public void pinjamBuku(int jumlahHari) {
+        System.out.println(">> Buku '" + judul + "' berhasil dipinjam khusus selama " + jumlahHari + " hari.");
+    }
+
+    public final void cetakStatusAset() {
+        System.out.println("Status Aset  : Resmi Terdaftar di Perpustakaan");
+    }
 }
 
 ```
 
 ---
 
-### Step 3: Implementasi Overriding di Subclass 2 (`src/model/Majalah.java`)
+### Step 2: Implementasi Overriding di Subclass 1 (`src/model/BukuCetak.java`)
 
 ```java
 package model;
 
-public class Majalah extends Koleksi {
-    private int edisi;
+// BukuCetak IS-A Buku
+public class BukuCetak extends Buku {
+    private int jumlahHalaman;
+    private String lokasiRak;
 
-    public Majalah(String idKoleksi, String judul, int tahunTerbit, int edisi) {
-        super(idKoleksi, judul, tahunTerbit);
-        this.edisi = edisi;
+    public BukuCetak(String idBuku, String judul, String penulis, int tahunTerbit, int jumlahHalaman, String lokasiRak) {
+        super(idBuku, judul, penulis, tahunTerbit);
+        setJumlahHalaman(jumlahHalaman);
+        setLokasiRak(lokasiRak);
     }
 
-    // DYNAMIC POLYMORPHISM: METHOD OVERRIDING
-    // Mengubah perilaku method milik Superclass agar sesuai dengan Majalah
+    public int getJumlahHalaman() { return jumlahHalaman; }
+    public void setJumlahHalaman(int jumlahHalaman) {
+        if (jumlahHalaman > 0) {
+            this.jumlahHalaman = jumlahHalaman;
+        } else {
+            System.out.println(">> ERROR: Jumlah halaman harus lebih dari 0!");
+            this.jumlahHalaman = 1;
+        }
+    }
+
+    public String getLokasiRak() { return lokasiRak; }
+    public void setLokasiRak(String lokasiRak) {
+        if (lokasiRak != null && !lokasiRak.trim().isEmpty()) {
+            this.lokasiRak = lokasiRak;
+        } else {
+            System.out.println(">> ERROR: Lokasi rak tidak boleh kosong!");
+        }
+    }
+
+    // Dynamic Polymorphism (Method Overriding)
     @Override
     public void tampilkanInfo() {
-        super.tampilkanInfo(); // Memanggil tampilan dasar Koleksi
-        System.out.printf("| Edisi: Vol. %-11d [JENIS: MAJALAH]\n", edisi);
+        System.out.println("------------------------------------------");
+        System.out.println("[KATEGORI: BUKU CETAK]");
+        super.tampilkanInfo(); // Memanggil method dasar dari Superclass
+        System.out.println("Jml Halaman  : " + jumlahHalaman + " hlm");
+        System.out.println("Lokasi Rak   : " + lokasiRak);
+        cetakStatusAset();
+        System.out.println("------------------------------------------");
+    }
+}
+
+```
+
+---
+
+### Step 3: Implementasi Overriding di Subclass 2 (`src/model/EBook.java`)
+
+```java
+package model;
+
+// EBook IS-A Buku
+public class EBook extends Buku {
+    private double ukuranFileMB;
+    private String formatFile;
+
+    public EBook(String idBuku, String judul, String penulis, int tahunTerbit, double ukuranFileMB, String formatFile) {
+        super(idBuku, judul, penulis, tahunTerbit);
+        setUkuranFileMB(ukuranFileMB);
+        setFormatFile(formatFile);
     }
 
-    public int getEdisi() { return edisi; }
+    public double getUkuranFileMB() { return ukuranFileMB; }
+    public void setUkuranFileMB(double ukuranFileMB) {
+        if (ukuranFileMB > 0) {
+            this.ukuranFileMB = ukuranFileMB;
+        } else {
+            System.out.println(">> ERROR: Ukuran file harus lebih dari 0 MB!");
+            this.ukuranFileMB = 1.0;
+        }
+    }
+
+    public String getFormatFile() { return formatFile; }
+    public void setFormatFile(String formatFile) {
+        if (formatFile != null && !formatFile.trim().isEmpty()) {
+            this.formatFile = formatFile;
+        } else {
+            System.out.println(">> ERROR: Format file tidak boleh kosong!");
+        }
+    }
+
+    // Dynamic Polymorphism (Method Overriding)
+    @Override
+    public void tampilkanInfo() {
+        System.out.println("------------------------------------------");
+        System.out.println("[KATEGORI: E-BOOK]");
+        super.tampilkanInfo(); // Memanggil method dasar dari Superclass
+        System.out.println("Ukuran File  : " + ukuranFileMB + " MB");
+        System.out.println("Format File  : " + formatFile);
+        cetakStatusAset();
+        System.out.println("------------------------------------------");
+    }
 }
 
 ```
@@ -279,65 +251,212 @@ public class Majalah extends Koleksi {
 ```java
 package main;
 
-import model.Koleksi;
 import model.Buku;
-import model.Majalah;
+import model.BukuCetak;
+import model.EBook;
+
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class MainApp {
+
     public static void main(String[] args) {
-        System.out.println("=================================================");
-        System.out.println("        PERTEMUAN 5: POLYMORPHISM (PBO)          ");
-        System.out.println("=================================================\n");
 
-        // 1. POLYMORPHIC COLLECTION (Satu List menampung berbagai tipe turunan Koleksi)
-        ArrayList<Koleksi> daftarKoleksi = new ArrayList<>();
+        // Polymorphic Collection: Tipe referensi Superclass (Buku) menampung berbagai Subclass
+        ArrayList<Buku> daftarBuku = new ArrayList<>();
 
-        // Memasukkan objek Buku dan Majalah ke dalam tipe referensi Koleksi
-        daftarKoleksi.add(new Buku("B001", "Pemrograman Java", 2023, "James Gosling", 5));
-        daftarKoleksi.add(new Majalah("M001", "National Geographic", 2024, 142));
-        daftarKoleksi.add(new Buku("B002", "Struktur Data", 2022, "Ada Lovelace", 3));
-        daftarKoleksi.add(new Majalah("M002", "Info Komputer", 2023, 88));
+        // Seed Data Awal
+        daftarBuku.add(new BukuCetak("BC001", "Pemrograman Java", "James Gosling", 2023, 450, "Rak A1"));
+        daftarBuku.add(new EBook("EB001", "Struktur Data Java", "Ada Lovelace", 2024, 12.5, "PDF"));
 
-        // 2. DEMO DYNAMIC POLYMORPHISM (METHOD OVERRIDING)
-        System.out.println("--- DAFTAR SELURUH KOLEKSI PERPUSTAKAAN ---");
-        for (Koleksi k : daftarKoleksi) {
-            // Java secara otomatis memanggil tampilkanInfo() sesuai wujud ASLI objeknya
-            k.tampilkanInfo(); 
-        }
+        Scanner scanner = new Scanner(System.in);
+        boolean berjalan = true;
 
-        // 3. DEMO STATIC POLYMORPHISM (METHOD OVERLOADING)
-        System.out.println("\n--- DEMO METHOD OVERLOADING (PENCARIAN) ---");
-        
-        // Pencarian 1: Berdasarkan String (Judul)
-        String cariJudul = "Java";
-        System.out.println("-> Hasil Pencarian Judul '" + cariJudul + "':");
-        for (Koleksi k : daftarKoleksi) {
-            if (k.cocokData(cariJudul)) { // Memanggil Overload 1 (String)
-                k.tampilkanInfo();
+        while (berjalan) {
+
+            System.out.println("\n==========================================");
+            System.out.println("    SISTEM PERPUSTAKAAN (POLYMORPHISM)    ");
+            System.out.println("==========================================");
+            System.out.println("1. Tampilkan Semua Buku");
+            System.out.println("2. Tambah Buku Baru (Buku Cetak / E-Book)");
+            System.out.println("3. Cari Buku");
+            System.out.println("4. Simulasi Pinjam Buku (Overloading Demo)");
+            System.out.println("5. Hapus Buku");
+            System.out.println("6. Keluar");
+            System.out.println("==========================================");
+            System.out.print("Pilih menu (1-6): ");
+
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (pilihan) {
+
+                // ==========================================
+                // 1. TAMPILKAN SEMUA BUKU (DYNAMIC POLYMORPHISM)
+                // ==========================================
+                case 1:
+                    System.out.println("\n=== DAFTAR KOLEKSI BUKU ===");
+
+                    if (daftarBuku.isEmpty()) {
+                        System.out.println("Belum ada data buku.");
+                    } else {
+                        for (Buku b : daftarBuku) {
+                            // PEMBUKTIAN POLYMORPHISM: Pemanggilan method otomatis menyesuaikan bentuk objeknya!
+                            b.tampilkanInfo();
+                        }
+                    }
+                    break;
+
+                // ==========================================
+                // 2. TAMBAH BUKU
+                // ==========================================
+                case 2:
+                    System.out.println("\n=== TAMBAH BUKU BARU ===");
+                    System.out.println("1. Buku Cetak (Fisik)");
+                    System.out.println("2. E-Book (Digital)");
+                    System.out.print("Pilih jenis buku (1-2): ");
+                    int jenis = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.print("Masukkan ID Buku      : ");
+                    String id = scanner.nextLine();
+
+                    System.out.print("Masukkan Judul Buku   : ");
+                    String judul = scanner.nextLine();
+
+                    System.out.print("Masukkan Nama Penulis : ");
+                    String penulis = scanner.nextLine();
+
+                    System.out.print("Masukkan Tahun Terbit : ");
+                    int tahunTerbit = scanner.nextInt();
+
+                    if (jenis == 1) {
+                        System.out.print("Masukkan Jml Halaman  : ");
+                        int hal = scanner.nextInt();
+                        scanner.nextLine();
+
+                        System.out.print("Masukkan Lokasi Rak   : ");
+                        String rak = scanner.nextLine();
+
+                        daftarBuku.add(new BukuCetak(id, judul, penulis, tahunTerbit, hal, rak));
+                        System.out.println(">> Buku Cetak berhasil ditambahkan!");
+
+                    } else if (jenis == 2) {
+                        System.out.print("Masukkan Ukuran (MB)  : ");
+                        double size = scanner.nextDouble();
+                        scanner.nextLine();
+
+                        System.out.print("Masukkan Format File  : ");
+                        String format = scanner.nextLine();
+
+                        daftarBuku.add(new EBook(id, judul, penulis, tahunTerbit, size, format));
+                        System.out.println(">> E-Book berhasil ditambahkan!");
+
+                    } else {
+                        System.out.println(">> Jenis buku tidak valid!");
+                    }
+                    break;
+
+                // ==========================================
+                // 3. CARI BUKU (DYNAMIC POLYMORPHISM)
+                // ==========================================
+                case 3:
+                    System.out.println("\n=== CARI BUKU ===");
+                    System.out.print("Masukkan kata kunci judul: ");
+                    String kataKunci = scanner.nextLine();
+
+                    boolean ditemukan = false;
+
+                    for (Buku b : daftarBuku) {
+                        if (b.getJudul().toLowerCase().contains(kataKunci.toLowerCase())) {
+                            // Polimorfisme secara otomatis memanggil override method milik subclass
+                            b.tampilkanInfo();
+                            ditemukan = true;
+                        }
+                    }
+
+                    if (!ditemukan) {
+                        System.out.println("Buku tidak ditemukan.");
+                    }
+                    break;
+
+                // ==========================================
+                // 4. SIMULASI PINJAM BUKU (STATIC POLYMORPHISM / OVERLOADING)
+                // ==========================================
+                case 4:
+                    System.out.println("\n=== SIMULASI PINJAM BUKU (DEMO OVERLOADING) ===");
+                    System.out.print("Masukkan ID Buku: ");
+                    String idPinjam = scanner.nextLine();
+
+                    Buku bukuPinjam = null;
+                    for (Buku b : daftarBuku) {
+                        if (b.getIdBuku().equalsIgnoreCase(idPinjam)) {
+                            bukuPinjam = b;
+                            break;
+                        }
+                    }
+
+                    if (bukuPinjam != null) {
+                        System.out.println("1. Pinjam Standar (7 Hari)");
+                        System.out.println("2. Pinjam Kustom (Tentukan Hari)");
+                        System.out.print("Pilih Opsi (1-2): ");
+                        int opsiPinjam = scanner.nextInt();
+
+                        if (opsiPinjam == 1) {
+                            // Memanggil Overloading 1 (Tanpa Parameter)
+                            bukuPinjam.pinjamBuku();
+                        } else if (opsiPinjam == 2) {
+                            System.out.print("Masukkan Durasi Pinjam (Hari): ");
+                            int durasi = scanner.nextInt();
+                            // Memanggil Overloading 2 (Dengan Parameter int)
+                            bukuPinjam.pinjamBuku(durasi);
+                        } else {
+                            System.out.println("Opsi tidak valid.");
+                        }
+                    } else {
+                        System.out.println("ID Buku tidak ditemukan!");
+                    }
+                    break;
+
+                // ==========================================
+                // 5. HAPUS BUKU
+                // ==========================================
+                case 5:
+                    System.out.println("\n=== HAPUS BUKU ===");
+                    System.out.print("Masukkan ID Buku yang akan dihapus: ");
+                    String idHapus = scanner.nextLine();
+
+                    Buku bukuHapus = null;
+
+                    for (Buku b : daftarBuku) {
+                        if (b.getIdBuku().equalsIgnoreCase(idHapus)) {
+                            bukuHapus = b;
+                            break;
+                        }
+                    }
+
+                    if (bukuHapus != null) {
+                        daftarBuku.remove(bukuHapus);
+                        System.out.println("Buku '" + bukuHapus.getJudul() + "' berhasil dihapus!");
+                    } else {
+                        System.out.println("ID Buku tidak ditemukan!");
+                    }
+                    break;
+
+                // ==========================================
+                // 6. KELUAR
+                // ==========================================
+                case 6:
+                    berjalan = false;
+                    System.out.println("\nProgram selesai.");
+                    break;
+
+                default:
+                    System.out.println("Pilihan tidak valid!");
             }
         }
 
-        // Pencarian 2: Berdasarkan int (Tahun Terbit)
-        int cariTahun = 2024;
-        System.out.println("\n-> Hasil Pencarian Tahun Terbit persis '" + cariTahun + "':");
-        for (Koleksi k : daftarKoleksi) {
-            if (k.cocokData(cariTahun)) { // Memanggil Overload 2 (int)
-                k.tampilkanInfo();
-            }
-        }
-
-        // 4. DEMO INSTANCEOF & DOWNCASTING
-        System.out.println("\n--- DEMO INSTANCEOF & DOWNCASTING (PEMERIKSAAN FITUR SPESIFIK) ---");
-        for (Koleksi k : daftarKoleksi) {
-            if (k instanceof Buku) {
-                Buku b = (Buku) k; // Safe Downcasting
-                System.out.println("[BUKU] Judul: " + b.getJudul() + " | Sisa Stok: " + b.getStok());
-            } else if (k instanceof Majalah) {
-                Majalah m = (Majalah) k; // Safe Downcasting
-                System.out.println("[MAJALAH] Judul: " + m.getJudul() + " | Edisi: Vol. " + m.getEdisi());
-            }
-        }
+        scanner.close();
     }
 }
 
@@ -347,35 +466,20 @@ public class MainApp {
 
 ## ⚡ PART 3: EKSPERIMEN ERROR
 
-### 🎯 Eksperimen 1: Mismatched Parameter pada Overriding
+### 🎯 Eksperimen 1: Mengubah Signature Method pada `@Override`
 
-**Tindakan:** Ubah method `tampilkanInfo()` di `Buku.java` dengan menambahkan parameter baru: `public void tampilkanInfo(String c)`.
+**Tindakan:** Ubah nama method pada `BukuCetak.java` menjadi `public void tampilkanInfo(String judul)` sambil mempertahankan anotasi `@Override`.
 
 ```java
 @Override
-public void tampilkanInfo(String c) {
+public void tampilkanInfo(String judul) { // Ditambah parameter
     // ...
 }
 
 ```
 
 * **Hasil:** Error Kompilasi (`method does not override or implement a method from a supertype`).
-* **Pelajaran:** Anotasi `@Override` bertindak sebagai penjaga (*guard*). Jika nama/parameter tidak persis sama dengan induk, Java menganggapnya *Overloading*, bukan *Overriding*.
-
----
-
-### 🎯 Eksperimen 2: Downcasting Tanpa Pemeriksaan `instanceof`
-
-**Tindakan:** Pada `MainApp.java`, coba secara paksa mengkonversi objek `Koleksi` dari list langsung menjadi `Buku`.
-
-```java
-Koleksi k = daftarKoleksi.get(1); // Indeks 1 berisi objek Majalah
-Buku b = (Buku) k; // Memaksa downcasting tanpa cek instanceof
-
-```
-
-* **Hasil:** Runtime Error (`ClassCastException: model.Majalah cannot be cast to model.Buku`).
-* **Pelajaran:** Selalu gunakan operator `instanceof` untuk memastikan tipe objek asli sebelum melakukan *downcasting*.
+* **Pelajaran:** Method overriding mensyaratkan nama dan parameter yang **sama persis** dengan method di Superclass.
 
 ---
 
@@ -383,65 +487,31 @@ Buku b = (Buku) k; // Memaksa downcasting tanpa cek instanceof
 
 | Pesan Error | Penyebab | Solusi |
 | --- | --- | --- |
-| `method does not override or implement...` | Parameter/nama method bertanda `@Override` tidak cocok dengan method di kelas induk. | Disamakan nama method, tipe kembalian (*return type*), serta jumlah & tipe parameter dengan kelas induk. |
-| `ClassCastException: ... cannot be cast to ...` | Memaksa *downcasting* tipe objek ke kelas turunan yang tidak sesuai wujud aslinya. | Gunakan operator `instanceof` untuk mengecek tipe wujud asli objek sebelum melakukan *downcasting*. |
+| `method does not override...` | Parameter atau nama method bertanda `@Override` tidak cocok dengan method Superclass. | Pastikan tipe parameter, nama method, dan return type persis sama dengan kelas induk. |
 
 ---
 
 ## ❓ FREQUENTLY ASKED QUESTIONS (FAQ)
 
-**Q: Mengapa kita sangat disarankan memakai anotasi `@Override`? Bukankah tanpa anotasi program tetap bisa jalan?**
+**Q: Apakah anotasi `@Override` wajib ditulis?**
 
-> **A:** Anotasi `@Override` berfungsi sebagai alat pemicu peringatan untuk kompiler Java. Jika Anda salah ketik nama method atau beda tipe parameter sedikit saja dari method induk, kompiler akan langsung memberi garis merah error. Tanpa `@Override`, Java akan menganggap method salah ketik itu sebagai method baru biasa, sehingga fitur Polimorfisme gagal berjalan tanpa ada peringatan error.
+> **A:** Secara sintaks Java tidak wajib, namun **sangat disarankan**. Anotasi `@Override` berfungsi sebagai pengecek otomatis saat kompilasi untuk memastikan bahwa method tersebut benar-benar meng-override method milik kelas induk.
 
-**Q: Apa keuntungan utama menggunakan Heterogeneous List seperti `ArrayList<Koleksi>`?**
+**Q: Bisakah kita meng-override method bertipe `private` atau `final`?**
 
-> **A:** Efisiensi dan fleksibilitas kode. Tanpa Polimorfisme, Anda harus membuat `ArrayList<Buku>` dan `ArrayList<Majalah>` secara terpisah, serta membuat dua *looping* terpisah untuk mencetak datanya. Dengan Polimorfisme, cukup satu `ArrayList<Koleksi>` untuk menampung ratusan jenis turunan koleksi yang berbeda.
-
-**Q: Kapan saya harus memilih *Overloading* dibanding *Overriding*?**
-
-> **A:** Gunakan **Overloading** jika Anda ingin membuat satu method yang memiliki kegunaan sama dalam satu kelas tetapi bisa menerima input/parameter yang bervariasi (misal: method pencarian data berdasarkan nama `String` atau berdasarkan ID `int`). Gunakan **Overriding** jika Anda ingin kelas anak mengubah/memodifikasi total perilaku method yang diwariskan oleh kelas induknya.
+> **A:** Tidak bisa. Method `private` tertutup bagi subclass, sedangkan method `final` memang dirancang khusus agar perilakunya tidak boleh diubah oleh subclass mana pun.
 
 ---
 
-## 🔗 Daftar Referensi
+## Daftar Referensi
 
-[1] Dicoding Blog, "Pengertian Polimorfisme dalam Pemrograman Java". Tersedia di: [tautan](https://www.dicoding.com/blog/pengertian-polimorfisme-dalam-pemrograman-java/)
+[1] W3Schools, "Java Polymorphism". Tersedia di: [tautan](https://www.google.com/search?q=https://www.w3schools.com/java/java_polymorphism.asp)
 
-[2] CodePolitan, "Apa itu Polymorphism adalah Pengertian Metode Keunggulannya". Tersedia di: [tautan](https://www.codepolitan.com/blog/apa-itu-polymorphism-adalah-pengertian-metode-keunggulannya/)
-
-[3] W3Schools, "Java Polymorphism". Tersedia di: [tautan](https://www.w3schools.com/java/java_polymorphism.asp)
+[2] Petani Kode, "Belajar Java OOP: Memahami Konsep Polimorfisme". Tersedia di: [tautan](https://www.google.com/search?q=https://www.petanikode.com/java-oop-polimorfisme/)
 
 ---
 
 ## 🏆 CHALLENGE PRAKTIKAN
 
-1. Buat program sesuai instruksi berikut:
-
-   a) Buat class **`Hewan`** berisi method `bersuara()` yang mencetak suara umum hewan.
-
-   b) Buat class **`Kucing`** dan **`Anjing`** yang mewarisi class `Hewan`.
-
-   c) Lakukan **override** pada method `bersuara()` di masing-masing subclass dengan suara khasnya.
-
-   d) Buat objek **`Kucing`** dan **`Anjing`** pada `main()`, lalu jalankan method `bersuara()`.
-   
-2. Buat program sesuai instruksi berikut:
-
-   a) Buat class **`Kalkulator`** yang mendemonstrasikan **method overloading**.
-
-   b) Buat method `tambah(int a, int b)` dan `tambah(double a, double b)`.
-
-   c) Panggil kedua method tersebut pada `main()` dan tampilkan hasilnya.
-
-3. Buat program sesuai instruksi berikut:
-
-   a) Gunakan class **`Hewan`**, **`Kucing`**, dan **`Anjing`** dari soal nomor 1.
-
-   b) Buat `ArrayList<Hewan>` di `main()` dan tambahkan objek **`Kucing`** serta **`Anjing`** ke dalamnya.
-
-   c) Lakukan perulangan `for` untuk memanggil method `bersuara()` dari tiap elemen di dalam `ArrayList` tersebut.
-
-![Footer](../assets/Footer.png)
-
-<p align="center"><a href="#top">Kembali ke atas</a></p>
+1. Tambahkan *Method Overloading* ketiga pada class **`Buku`**, yaitu `pinjamBuku(int jumlahHari, String namaPeminjam)`.
+2. Buat class turunan ketiga dari **`Buku`**, misal **`BukuAudio`**, lalu *override* method `tampilkanInfo()` untuk menampilkan atribut khasnya (`durasiMenit` dan `narator`).

@@ -35,7 +35,7 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 | `Buku.java` | *Superclass* (Kelas Induk) penyedia atribut dan method umum |
 | `BukuCetak.java` | *Subclass 1* turunan dari `Buku` untuk media fisik |
 | `EBook.java` | *Subclass 2* turunan dari `Buku` untuk media digital |
-| `MainApp.java` | Kelas utama untuk pengujian hubungan *IS-A* |
+| `MainApp.java` | Kelas utama interaktif dengan menu CRUD berbasis *Inheritance* |
 
 ---
 
@@ -94,7 +94,7 @@ Kata kunci `super` adalah variabel referensi yang digunakan untuk merujuk langsu
 
 1. **`super(...)` — Memanggil Constructor Induk:**
 * Digunakan di dalam *constructor subclass* untuk meneruskan data ke *constructor superclass*.
-* **Aturan Mutlak:** Pemanggilan `super(...)` **WAJIB** diletakkan di **baris pertama** di dalam *constructor subclass*.
+* **Aturan Mutlak:** Pemanggilan `super(...)` WAJIB diletakkan di **baris pertama** di dalam *constructor subclass*.
 
 
 2. **`super.method()` atau `super.atribut` — Mengakses Anggota Induk:**
@@ -134,8 +134,9 @@ public final class PerpustakaanPusat {
 ```java
 package model;
 
+// Superclass mewariskan atribut & method umum ke subclass
 public class Buku {
-    // Protected: dapat diakses langsung oleh kelas turunan (subclass)
+    // Access Modifier ubah ke protected agar bisa diakses oleh subclass
     protected String idBuku;
     protected String judul;
     protected String penulis;
@@ -144,27 +145,60 @@ public class Buku {
     // Constructor Superclass
     public Buku(String idBuku, String judul, String penulis, int tahunTerbit) {
         this.idBuku = idBuku;
-        this.judul = judul;
-        this.penulis = penulis;
-        this.tahunTerbit = tahunTerbit;
+        setJudul(judul);
+        setPenulis(penulis);
+        setTahunTerbit(tahunTerbit);
     }
 
-    // Method umum (dapat dipanggil subclass via super.tampilkanInfo())
-    public void tampilkanInfo() {
-        System.out.printf("ID: %-6s | Judul: %-25s | Penulis: %-15s | Tahun: %-4d ", 
-                idBuku, judul, penulis, tahunTerbit);
-    }
-
-    // Example final method: method ini tidak boleh di-override oleh kelas anak mana pun
-    public final void cetakStatusAset() {
-        System.out.println("Item ini merupakan koleksi resmi Perpustakaan.");
-    }
-
-    // Getter & Setter
+    // Getter & Setter dengan validasi Enkapsulasi
     public String getIdBuku() { return idBuku; }
+    public void setIdBuku(String idBuku) {
+        if (idBuku != null && !idBuku.trim().isEmpty()) {
+            this.idBuku = idBuku;
+        } else {
+            System.out.println(">> ERROR: ID buku tidak boleh kosong!");
+        }
+    }
+
     public String getJudul() { return judul; }
+    public void setJudul(String judul) {
+        if (judul != null && !judul.trim().isEmpty()) {
+            this.judul = judul;
+        } else {
+            System.out.println(">> ERROR: Judul tidak boleh kosong!");
+        }
+    }
+
     public String getPenulis() { return penulis; }
+    public void setPenulis(String penulis) {
+        if (penulis != null && !penulis.trim().isEmpty()) {
+            this.penulis = penulis;
+        } else {
+            System.out.println(">> ERROR: Penulis tidak boleh kosong!");
+        }
+    }
+
     public int getTahunTerbit() { return tahunTerbit; }
+    public void setTahunTerbit(int tahunTerbit) {
+        if (tahunTerbit >= 1900 && tahunTerbit <= 2026) {
+            this.tahunTerbit = tahunTerbit;
+        } else {
+            System.out.println(">> ERROR: Tahun terbit harus antara 1900 dan 2026!");
+        }
+    }
+
+    // Method umum untuk menampilkan info dasar
+    public void tampilkanInfo() {
+        System.out.println("ID Buku      : " + idBuku);
+        System.out.println("Judul        : " + judul);
+        System.out.println("Penulis      : " + penulis);
+        System.out.println("Tahun Terbit : " + tahunTerbit);
+    }
+
+    // Final method (pembuktian kata kunci final)
+    public final void cetakStatusAset() {
+        System.out.println("Status Aset  : Resmi Terdaftar di Perpustakaan");
+    }
 }
 
 ```
@@ -178,25 +212,45 @@ package model;
 
 // BukuCetak IS-A Buku
 public class BukuCetak extends Buku {
-    // Atribut spesifik khusus Buku Cetak
     private int jumlahHalaman;
     private String lokasiRak;
 
     // Constructor Subclass
     public BukuCetak(String idBuku, String judul, String penulis, int tahunTerbit, int jumlahHalaman, String lokasiRak) {
-        // super(...) WAJIB di baris pertama untuk menginstansiasi induk
-        super(idBuku, judul, penulis, tahunTerbit); 
-        this.jumlahHalaman = jumlahHalaman;
-        this.lokasiRak = lokasiRak;
+        // Pemanggilan super(...) WAJIB di baris pertama
+        super(idBuku, judul, penulis, tahunTerbit);
+        setJumlahHalaman(jumlahHalaman);
+        setLokasiRak(lokasiRak);
     }
 
     public int getJumlahHalaman() { return jumlahHalaman; }
+    public void setJumlahHalaman(int jumlahHalaman) {
+        if (jumlahHalaman > 0) {
+            this.jumlahHalaman = jumlahHalaman;
+        } else {
+            System.out.println(">> ERROR: Jumlah halaman harus lebih dari 0!");
+            this.jumlahHalaman = 1;
+        }
+    }
+
     public String getLokasiRak() { return lokasiRak; }
+    public void setLokasiRak(String lokasiRak) {
+        if (lokasiRak != null && !lokasiRak.trim().isEmpty()) {
+            this.lokasiRak = lokasiRak;
+        } else {
+            System.out.println(">> ERROR: Lokasi rak tidak boleh kosong!");
+        }
+    }
 
     // Method spesifik memanfaatkan super.tampilkanInfo()
     public void tampilkanInfoBukuCetak() {
-        super.tampilkanInfo(); // Memanggil method milik Superclass (Buku)
-        System.out.printf("| Halaman: %-3d | Rak: %-6s\n", jumlahHalaman, lokasiRak);
+        System.out.println("------------------------------------------");
+        System.out.println("[KATEGORI: BUKU CETAK]");
+        super.tampilkanInfo(); // Memanggil info umum dari Superclass
+        System.out.println("Jml Halaman  : " + jumlahHalaman + " hlm");
+        System.out.println("Lokasi Rak   : " + lokasiRak);
+        cetakStatusAset();     // Memanggil final method dari Superclass
+        System.out.println("------------------------------------------");
     }
 }
 
@@ -211,25 +265,45 @@ package model;
 
 // EBook IS-A Buku
 public class EBook extends Buku {
-    // Atribut spesifik khusus EBook
     private double ukuranFileMB;
     private String formatFile;
 
     // Constructor Subclass
     public EBook(String idBuku, String judul, String penulis, int tahunTerbit, double ukuranFileMB, String formatFile) {
-        // super(...) WAJIB di baris pertama untuk menginstansiasi induk
-        super(idBuku, judul, penulis, tahunTerbit); 
-        this.ukuranFileMB = ukuranFileMB;
-        this.formatFile = formatFile;
+        // Pemanggilan super(...) WAJIB di baris pertama
+        super(idBuku, judul, penulis, tahunTerbit);
+        setUkuranFileMB(ukuranFileMB);
+        setFormatFile(formatFile);
     }
 
     public double getUkuranFileMB() { return ukuranFileMB; }
+    public void setUkuranFileMB(double ukuranFileMB) {
+        if (ukuranFileMB > 0) {
+            this.ukuranFileMB = ukuranFileMB;
+        } else {
+            System.out.println(">> ERROR: Ukuran file harus lebih dari 0 MB!");
+            this.ukuranFileMB = 1.0;
+        }
+    }
+
     public String getFormatFile() { return formatFile; }
+    public void setFormatFile(String formatFile) {
+        if (formatFile != null && !formatFile.trim().isEmpty()) {
+            this.formatFile = formatFile;
+        } else {
+            System.out.println(">> ERROR: Format file tidak boleh kosong!");
+        }
+    }
 
     // Method spesifik memanfaatkan super.tampilkanInfo()
     public void tampilkanInfoEBook() {
-        super.tampilkanInfo(); // Memanggil method milik Superclass (Buku)
-        System.out.printf("| Size: %-4.1f MB | Format: %-4s\n", ukuranFileMB, formatFile);
+        System.out.println("------------------------------------------");
+        System.out.println("[KATEGORI: E-BOOK]");
+        super.tampilkanInfo(); // Memanggil info umum dari Superclass
+        System.out.println("Ukuran File  : " + ukuranFileMB + " MB");
+        System.out.println("Format File  : " + formatFile);
+        cetakStatusAset();     // Memanggil final method dari Superclass
+        System.out.println("------------------------------------------");
     }
 }
 
@@ -242,34 +316,181 @@ public class EBook extends Buku {
 ```java
 package main;
 
+import model.Buku;
 import model.BukuCetak;
 import model.EBook;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class MainApp {
+
     public static void main(String[] args) {
-        System.out.println("=================================================");
-        System.out.println("        PERTEMUAN 4: INHERITANCE (PEWARISAN)     ");
-        System.out.println("=================================================\n");
 
-        // 1. Instansiasi Objek BukuCetak (Subclass 1)
-        BukuCetak buku1 = new BukuCetak("BC001", "Pemrograman Java", "James Gosling", 2023, 450, "Rak A1");
+        // Polimorfisme awal: List menyimpan objek tipe superclass Buku
+        ArrayList<Buku> daftarBuku = new ArrayList<>();
 
-        // 2. Instansiasi Objek EBook (Subclass 2)
-        EBook ebook1 = new EBook("EB001", "Struktur Data Java", "Robert Lafore", 2024, 12.5, "PDF");
+        // Seed Data Awal (Instansiasi Subclass 1 dan Subclass 2)
+        daftarBuku.add(new BukuCetak("BC001", "Pemrograman Java", "James Gosling", 2023, 450, "Rak A1"));
+        daftarBuku.add(new EBook("EB001", "Struktur Data Java", "Ada Lovelace", 2024, 12.5, "PDF"));
 
-        System.out.println("--- DAFTAR BUKU PERPUSTAKAAN ---");
-        
-        // Menampilkan Info Buku Cetak
-        buku1.tampilkanInfoBukuCetak();
+        Scanner scanner = new Scanner(System.in);
+        boolean berjalan = true;
 
-        // Menampilkan Info EBook
-        ebook1.tampilkanInfoEBook();
+        while (berjalan) {
 
-        // Pembuktian Hubungan IS-A & Pemanggilan Final Method
-        System.out.println("\n--- PEMBUKTIAN REUSABILITAS & FINAL METHOD ---");
-        System.out.println("Judul Buku Cetak (via getJudul Superclass) : " + buku1.getJudul());
-        System.out.println("Penulis EBook    (via getPenulis Superclass): " + ebook1.getPenulis());
-        buku1.cetakStatusAset(); // Memanggil final method dari Superclass
+            System.out.println("\n==========================================");
+            System.out.println("     SISTEM PERPUSTAKAAN (INHERITANCE)    ");
+            System.out.println("==========================================");
+            System.out.println("1. Tampilkan Semua Buku");
+            System.out.println("2. Tambah Buku Baru (Buku Cetak / E-Book)");
+            System.out.println("3. Cari Buku");
+            System.out.println("4. Hapus Buku");
+            System.out.println("5. Keluar");
+            System.out.println("==========================================");
+            System.out.print("Pilih menu (1-5): ");
+
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (pilihan) {
+
+                // ==========================================
+                // 1. TAMPILKAN SEMUA BUKU
+                // ==========================================
+                case 1:
+                    System.out.println("\n=== DAFTAR KOLEKSI BUKU ===");
+
+                    if (daftarBuku.isEmpty()) {
+                        System.out.println("Belum ada data buku.");
+                    } else {
+                        for (Buku b : daftarBuku) {
+                            // Mengecek tipe spesifik objek menggunakan instanceof
+                            if (b instanceof BukuCetak) {
+                                ((BukuCetak) b).tampilkanInfoBukuCetak();
+                            } else if (b instanceof EBook) {
+                                ((EBook) b).tampilkanInfoEBook();
+                            }
+                        }
+                    }
+                    break;
+
+                // ==========================================
+                // 2. TAMBAH BUKU (BERDASARKAN SUBCLASS)
+                // ==========================================
+                case 2:
+                    System.out.println("\n=== TAMBAH BUKU BARU ===");
+                    System.out.println("1. Buku Cetak (Fisik)");
+                    System.out.println("2. E-Book (Digital)");
+                    System.out.print("Pilih jenis buku (1-2): ");
+                    int jenis = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.print("Masukkan ID Buku      : ");
+                    String id = scanner.nextLine();
+
+                    System.out.print("Masukkan Judul Buku   : ");
+                    String judul = scanner.nextLine();
+
+                    System.out.print("Masukkan Nama Penulis : ");
+                    String penulis = scanner.nextLine();
+
+                    System.out.print("Masukkan Tahun Terbit : ");
+                    int tahunTerbit = scanner.nextInt();
+
+                    if (jenis == 1) {
+                        System.out.print("Masukkan Jml Halaman  : ");
+                        int hal = scanner.nextInt();
+                        scanner.nextLine();
+
+                        System.out.print("Masukkan Lokasi Rak   : ");
+                        String rak = scanner.nextLine();
+
+                        daftarBuku.add(new BukuCetak(id, judul, penulis, tahunTerbit, hal, rak));
+                        System.out.println(">> Buku Cetak berhasil ditambahkan!");
+
+                    } else if (jenis == 2) {
+                        System.out.print("Masukkan Ukuran (MB)  : ");
+                        double size = scanner.nextDouble();
+                        scanner.nextLine();
+
+                        System.out.print("Masukkan Format File  : ");
+                        String format = scanner.nextLine();
+
+                        daftarBuku.add(new EBook(id, judul, penulis, tahunTerbit, size, format));
+                        System.out.println(">> E-Book berhasil ditambahkan!");
+
+                    } else {
+                        System.out.println(">> Jenis buku tidak valid!");
+                    }
+                    break;
+
+                // ==========================================
+                // 3. CARI BUKU
+                // ==========================================
+                case 3:
+                    System.out.println("\n=== CARI BUKU ===");
+                    System.out.print("Masukkan kata kunci judul: ");
+                    String kataKunci = scanner.nextLine();
+
+                    boolean ditemukan = false;
+
+                    for (Buku b : daftarBuku) {
+                        // Memanfaatkan getJudul() yang diwarisi dari Superclass Buku
+                        if (b.getJudul().toLowerCase().contains(kataKunci.toLowerCase())) {
+                            if (b instanceof BukuCetak) {
+                                ((BukuCetak) b).tampilkanInfoBukuCetak();
+                            } else if (b instanceof EBook) {
+                                ((EBook) b).tampilkanInfoEBook();
+                            }
+                            ditemukan = true;
+                        }
+                    }
+
+                    if (!ditemukan) {
+                        System.out.println("Buku dengan kata kunci tersebut tidak ditemukan.");
+                    }
+                    break;
+
+                // ==========================================
+                // 4. HAPUS BUKU
+                // ==========================================
+                case 4:
+                    System.out.println("\n=== HAPUS BUKU ===");
+                    System.out.print("Masukkan ID Buku yang akan dihapus: ");
+                    String idHapus = scanner.nextLine();
+
+                    Buku bukuHapus = null;
+
+                    for (Buku b : daftarBuku) {
+                        if (b.getIdBuku().equalsIgnoreCase(idHapus)) {
+                            bukuHapus = b;
+                            break;
+                        }
+                    }
+
+                    if (bukuHapus != null) {
+                        daftarBuku.remove(bukuHapus);
+                        System.out.println("Buku '" + bukuHapus.getJudul() + "' berhasil dihapus!");
+                    } else {
+                        System.out.println("ID Buku tidak ditemukan!");
+                    }
+                    break;
+
+                // ==========================================
+                // 5. KELUAR
+                // ==========================================
+                case 5:
+                    berjalan = false;
+                    System.out.println("\nProgram selesai.");
+                    break;
+
+                default:
+                    System.out.println("Pilihan tidak valid!");
+            }
+        }
+
+        scanner.close();
     }
 }
 

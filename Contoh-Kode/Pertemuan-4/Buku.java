@@ -1,39 +1,90 @@
 // ===========================================================
-// Topik: Inheritance
+// Topik: Inheritance (Pewarisan)
 // Letakkan file ini pada src/model/Buku.java
 // ===========================================================
 
 package model;
 
-// Buku IS-A Koleksi
-public class Buku extends Koleksi {
-    // Atribut spesifik khusus Buku
-    private String penulis;
-    private int stok;
+// Buku adalah SUPERCLASS (kelas induk) bagi BukuCetak dan EBook
+public class Buku {
 
-    // Constructor Subclass
-    public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int stok) {
-        // Pemanggilan constructor induk (Koleksi) wajib baris pertama
-        super(idKoleksi, judul, tahunTerbit); 
-        this.penulis = penulis;
-        setStok(stok); // Validasi enkapsulasi dari P3
+    // idBuku ditandai 'final' karena nilainya tidak boleh berubah
+    // setelah objek dibuat. Karena final, atribut ini WAJIB diisi
+    // lewat constructor dan tidak disediakan setter untuknya.
+    private final String idBuku;
+
+    // protected: hanya bisa diakses langsung oleh kelas ini
+    // dan kelas turunannya (BukuCetak, EBook), tidak oleh kelas luar.
+    protected String judul;
+    protected String penulis;
+    protected int tahunTerbit;
+
+    // Constructor Superclass
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit) {
+        this.idBuku = idBuku;
+        setJudul(judul);
+        setPenulis(penulis);
+        setTahunTerbit(tahunTerbit);
     }
 
-    public void setStok(int stok) {
-        if (stok >= 0) {
-            this.stok = stok;
+    // ----- Getter & Setter (Encapsulation) -----
+
+    // Tidak ada setIdBuku() karena idBuku bersifat final
+    public String getIdBuku() {
+        return idBuku;
+    }
+
+    public String getJudul() {
+        return judul;
+    }
+
+    public void setJudul(String judul) {
+        if (judul != null && !judul.trim().isEmpty()) {
+            this.judul = judul;
         } else {
-            System.out.println(">> ERROR: Stok tidak boleh negatif!");
-            this.stok = 0;
+            System.out.println(">> ERROR: Judul tidak boleh kosong!");
         }
     }
 
-    public String getPenulis() { return penulis; }
-    public int getStok() { return stok; }
+    public String getPenulis() {
+        return penulis;
+    }
 
-    // Method spesifik menambahkan info khas Buku
-    public void tampilkanInfoBuku() {
-        super.tampilkanInfo(); // Memanggil method milik Superclass
-        System.out.printf("| Penulis: %-15s | Stok: %-3d\n", penulis, stok);
+    public void setPenulis(String penulis) {
+        if (penulis != null && !penulis.trim().isEmpty()) {
+            this.penulis = penulis;
+        } else {
+            System.out.println(">> ERROR: Penulis tidak boleh kosong!");
+        }
+    }
+
+    public int getTahunTerbit() {
+        return tahunTerbit;
+    }
+
+    public void setTahunTerbit(int tahunTerbit) {
+        if (tahunTerbit >= 1900 && tahunTerbit <= 2026) {
+            this.tahunTerbit = tahunTerbit;
+        } else {
+            System.out.println(">> ERROR: Tahun terbit harus antara 1900-2026!");
+        }
+    }
+
+    // ----- Method umum milik Superclass -----
+
+    // Method biasa: nanti dipanggil oleh subclass lewat super.tampilkanInfo()
+    public void tampilkanInfo() {
+        System.out.println("ID Buku      : " + idBuku);
+        System.out.println("Judul        : " + judul);
+        System.out.println("Penulis      : " + penulis);
+        System.out.println("Tahun Terbit : " + tahunTerbit);
+    }
+
+    // 'final' pada method berarti method ini TIDAK BOLEH diubah
+    // perilakunya oleh kelas turunan mana pun (BukuCetak, EBook, dst).
+    // Cocok untuk aturan/label baku yang sifatnya mutlak sama
+    // untuk seluruh jenis buku.
+    public final void cetakStatusAset() {
+        System.out.println(">> Status Aset: Terdaftar sebagai koleksi perpustakaan");
     }
 }

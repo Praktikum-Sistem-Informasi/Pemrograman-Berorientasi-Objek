@@ -1,36 +1,41 @@
 // ===========================================================
-// Topik: Inheritance
+// Topik: Inheritance (Pewarisan)
 // Letakkan file ini pada src/main/MainApp.java
 // ===========================================================
 
 package main;
 
-import model.Buku;
-import model.Majalah;
+import model.BukuCetak;
+import model.EBook;
 
 public class MainApp {
     public static void main(String[] args) {
-        System.out.println("=================================================");
-        System.out.println("        PERTEMUAN 4: INHERITANCE (PEWARISAN)     ");
-        System.out.println("=================================================\n");
+        // 1. Instansiasi Objek BukuCetak (Subclass 1 dari Buku)
+        BukuCetak bukuCetak1 = new BukuCetak(
+                "BC001", "Pemrograman Java", "James Gosling", 2023, 350, "Rak A-1");
 
-        // 1. Instansiasi Objek Buku (Subclass 1)
-        Buku buku1 = new Buku("B001", "Pemrograman Java", 2023, "James Gosling", 5);
+        // 2. Instansiasi Objek EBook (Subclass 2 dari Buku)
+        EBook ebook1 = new EBook(
+                "EB001", "Belajar Python Otodidak", "Guido van Rossum", 2024, 12.5, "PDF");
 
-        // 2. Instansiasi Objek Majalah (Subclass 2)
-        Majalah majalah1 = new Majalah("M001", "National Geographic", 2024, 142);
+        System.out.println("--- DAFTAR KOLEKSI BUKU PERPUSTAKAAN ---");
 
-        System.out.println("--- DAFTAR KOLEKSI PERPUSTAKAAN ---");
-        
-        // Menampilkan Info Buku
-        buku1.tampilkanInfoBuku();
+        // Menampilkan Info BukuCetak (method khusus, bukan overriding)
+        bukuCetak1.tampilkanInfoBukuCetak();
 
-        // Menampilkan Info Majalah
-        majalah1.tampilkanInfoMajalah();
+        // Menampilkan Info EBook (method khusus, bukan overriding)
+        ebook1.tampilkanInfoEBook();
 
-        // Pembuktian Hubungan IS-A (Mencoba method getter bawaan dari Superclass)
+        // 3. Pembuktian Hubungan IS-A: method & getter milik Buku
+        // (Superclass) bisa langsung dipakai oleh objek BukuCetak & EBook
+        // tanpa perlu ditulis ulang -> inti manfaat 'extends'.
         System.out.println("\n--- PEMBUKTIAN REUSABILITAS KODE (SUPERCLASS) ---");
-        System.out.println("Judul Buku (via getJudul Superclass)    : " + buku1.getJudul());
-        System.out.println("Judul Majalah (via getJudul Superclass) : " + majalah1.getJudul());
+        System.out.println("Judul BukuCetak (via getJudul Superclass) : " + bukuCetak1.getJudul());
+        System.out.println("Judul EBook (via getJudul Superclass)     : " + ebook1.getJudul());
+
+        // 4. Pembuktian atribut 'final': idBuku hanya bisa dibaca,
+        // tidak ada setter yang mengizinkan perubahan setelah objek dibuat.
+        System.out.println("ID BukuCetak (final, tidak bisa diubah)   : " + bukuCetak1.getIdBuku());
+        System.out.println("ID EBook (final, tidak bisa diubah)       : " + ebook1.getIdBuku());
     }
 }

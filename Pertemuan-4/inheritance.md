@@ -56,9 +56,9 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
                        │
          ┌─────────────┴─────────────┐
          │ (extends)                 │ (extends)
-┌────────┴────────┐         ┌────────┴────────┐
-│BukuCetak(Subclass)│         │ EBook(Subclass) │  ← Anak (Atribut Spesifik)
-└─────────────────┘         └─────────────────┘
+┌────────┴──────────┐       ┌────────┴────────┐
+│BukuCetak(Subclass)│       │ EBook(Subclass) │  ← Anak (Atribut Spesifik)
+└───────────────────┘       └─────────────────┘
 
 ```
 

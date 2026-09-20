@@ -42,19 +42,50 @@ Pada materi ini, terdapat 3 kata kunci utama yang wajib Anda pahami fungsi dan d
 
 - [ ] Apache NetBeans IDE / IDE pilihan sudah terbuka.
 - [ ] JDK terkonfigurasi dengan benar.
-- [ ] Memahami konsep *Inheritance* (`extends`, `super`, `protected`) dari Pertemuan 4.
+- [ ] Memahami konsep *Inheritance* (`extends`, `super`, `final`) dari Pertemuan 4.
 
 ---
 
 ## 🚀 PART 1: Pemahaman Konsep
 
-### 1. Perbedaan Overloading vs Overriding
+### 1. Struktur Polymorphism
+```
+
+                  ┌─────────────────┐
+                  │   Class Buku    |
+                  │(tampilkanInfo())│
+                  └─────────────────┘
+                           │
+         ┌─────────────────┴──────────────────┐
+         │                                    │
+┌────────┴────────┐                  ┌────────┴────────┐
+│ Class BukuCetak │                  │  Class EBook    │
+│(tampilkanInfo())│                  │(tampilkanInfo())│
+└─────────────────┘                  └─────────────────┘
+
+```
+
+> 📌 **ANALOGI DUNIA NYATA:**
+> - Tombol **"Play"** pada *Remote Control*. 
+> - Jika diarahkan ke DVD Player, ia memutar DVD. Jika diarahkan ke Spotify, ia memutar musik. Perintahnya sama-sama **"Play"**, namun >**perilaku eksekusinya menyesuaikan objek yang diraih**.
+
+
+### 2. Apa itu Polymorphism?
+*Polymorphism* berasal dari bahasa Yunani yang berarti *"banyak bentuk"*. Dalam PBO, polimorfisme adalah kemampuan suatu objek atau method untuk memiliki banyak bentuk implementasi tergantung pada bagaimana method tersebut dipanggil atau jenis objek yang menjalankannya.
+
+### 3. Pendalaman Overridring
+1.  **Apa itu Method Overriding**
+*Method Overriding* terjadi ketika kelas anak (*Subclass*) menyediakan implementasi khusus untuk method yang sudah didefinisikan di kelas induknya (*Superclass*).
+
+2. **Anotasi `@Override`**
+Anotasi ini memberi tahu kompiler bahwa method tersebut berniat menggantikan method milik induk. Jika ada kesalahan nama atau perbedaan parameter, kompilasi akan langsung gagal (garis merah).
+
+### 4. Perbedaan Overloading vs Overriding
 
 | Pembeda | Method Overloading | Method Overriding |
 | :--- | :--- | :--- |
 | **Lokasi** | Dalam 1 kelas yang sama | Terjadi antar kelas induk dan kelas anak (*Inheritance*) |
 | **Parameter** | WAJIB Berbeda (jumlah / tipe data / urutan) | WAJIB Sama persis |
-| **Waktu Eksekusi** | *Compile-time* (*Static Binding*) | *Runtime* (*Dynamic Binding*) |
 | **Anotasi** | Tidak ada | Dianjurkan memakai `@Override` |
 
 ---
@@ -501,6 +532,10 @@ public void tampilkanInfo(String judul) { // Ditambah parameter
 
 > **A:** Tidak bisa. Method `private` tertutup bagi subclass, sedangkan method `final` memang dirancang khusus agar perilakunya tidak boleh diubah oleh subclass mana pun.
 
+**Q: Kapan saya harus memilih *Overloading* dibanding *Overriding*?**
+
+> **A:** Gunakan **Overloading** jika Anda ingin membuat satu method yang memiliki kegunaan sama dalam satu kelas tetapi bisa menerima input/parameter yang bervariasi (misal: method pencarian data berdasarkan nama `String` atau berdasarkan ID `int`). Gunakan **Overriding** jika Anda ingin kelas anak mengubah/memodifikasi total perilaku method yang diwariskan oleh kelas induknya.
+
 ---
 
 ## Daftar Referensi
@@ -515,3 +550,7 @@ public void tampilkanInfo(String judul) { // Ditambah parameter
 
 1. Tambahkan *Method Overloading* ketiga pada class **`Buku`**, yaitu `pinjamBuku(int jumlahHari, String namaPeminjam)`.
 2. Buat class turunan ketiga dari **`Buku`**, misal **`BukuAudio`**, lalu *override* method `tampilkanInfo()` untuk menampilkan atribut khasnya (`durasiMenit` dan `narator`).
+
+![Footer](../assets/Footer.png)
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

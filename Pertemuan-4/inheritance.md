@@ -578,3 +578,7 @@ c) Amati dan jelaskan mengapa class **`JurnalIlmiah`** tidak bisa diwarisi.
 a) Buat class **`AnggotaPerpustakaan`** dengan constructor yang menerima `String nama`, serta method `sapaan()` untuk menampilkan nama anggota.
 b) Buat subclass **`Mahasiswa`** dengan constructor yang memanggil `super(nama)`, lalu tambahkan atribut `nim` dan method `pinjamBuku()`.
 c) Buat objek **`Mahasiswa`** di `main()` dan jalankan semua methodnya.
+
+![Footer](../assets/Footer.png)
+
+<p align="center"><a href="#top">Kembali ke atas</a></p>

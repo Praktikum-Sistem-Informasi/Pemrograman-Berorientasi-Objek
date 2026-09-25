@@ -33,11 +33,12 @@ Setelah mengikuti pertemuan ini, Anda diharapkan mampu:
 | **File** | **Deskripsi** |
 |---|---|
 | `Pinjamable.java` | Interface (Kontrak kemampuan peminjaman) |
-| `Koleksi.java` | Abstract Class (Kerangka identitas dasar bacaan) |
-| `Buku.java` | Subclass dari `Koleksi`, mengimplementasikan `Pinjamable` |
-| `Majalah.java` | Subclass dari `Koleksi` (Tanpa kemampuan peminjaman) |
-| `KoleksiController.java` | Logika pengelolaan data dan demonstrasi polimorfisme/interface |
-| `KoleksiView.java` | Antarmuka pengguna (I/O CLI) |
+| `Unduhable.java` | Interface (Kontrak kemampuan pengunduhan) |
+| `Buku.java` | Abstract Class (Kerangka identitas dasar buku) |
+| `BukuCetak.java` | Subclass dari `Buku`, mengimplementasikan `Pinjamable` |
+| `EBook.java` | Subclass dari `Buku`, mengimplementasikan `Unduhable` |
+| `BukuController.java` | Logika pengelolaan data dan demonstrasi polimorfisme/interface |
+| `BukuView.java` | Antarmuka pengguna (I/O CLI) |
 | `MainApp.java` | Entry point program (Penghubung MVC) |
 
 ---
@@ -48,8 +49,8 @@ Sebelum memulai materi ini, pastikan Anda sudah memahami dasar-dasar pemrograman
 
 - [ ] Apache NetBeans IDE / IDE pilihan sudah terbuka dan JDK terkonfigurasi dengan benar.
 - [ ] Memahami konsep *Class*, *Object*, dan *Access Modifier*.
-- [ ] Memahami konsep *Inheritance* (Pewarisan) menggunakan kata kunci *extends*.
-- [ ] Memahami *Method Overriding*.
+- [ ] Memahami konsep *Inheritance* (Pewarisan) menggunakan kata kunci *extends*, `super`, dan `final`, seperti pada `Buku`, `BukuCetak`, dan `EBook` di Pertemuan 5.
+- [ ] Memahami *Method Overriding* dan *Method Overloading*.
 - [ ] Memahami dasar *Polymorphism*.
 - [ ] Memahami aturan *Package* dan *Import*, karena proyek ini menggunakan struktur multi-folder (MVC).
 
@@ -59,25 +60,25 @@ Sebelum memulai materi ini, pastikan Anda sudah memahami dasar-dasar pemrograman
 
 ```
                   ┌──────────────────────────────┐
-                  │   Koleksi (Abstract Class)   │
+                  │    Buku (Abstract Class)     │
                   └──────────────┬───────────────┘
                                  │ (extends)
          ┌───────────────────────┴───────────────────────┐
          │                                               │
 ┌────────┴────────┐                             ┌────────┴────────┐
-│    Objek Buku   │                             │  Objek Majalah  │
-└────────┬────────┘                             └─────────────────┘
-         │ (implements)
-┌────────┴────────┐
-│    Pinjamable   │
-│   (Interface)   │
-└─────────────────┘
+│  Objek BukuCetak │                             │   Objek EBook   │
+└────────┬────────┘                             └────────┬────────┘
+         │ (implements)                                  │ (implements)
+┌────────┴────────┐                             ┌────────┴────────┐
+│    Pinjamable   │                             │    Unduhable    │
+│   (Interface)   │                             │   (Interface)   │
+└─────────────────┘                             └─────────────────┘
 
 ```
 
 > 📌 **ANALOGI DUNIA NYATA:**
-> * **Abstract Class** ibarat Identitas Absolut (*"Adalah sebuah..."*). `Buku` *adalah sebuah* Koleksi. `Majalah` *adalah sebuah* Koleksi. Keduanya mewarisi DNA dan atribut dasar yang sama (punya Judul, Tahun Terbit).
-> * **Interface** ibarat Kontrak Kemampuan (*"Bisa melakukan..."*). `Buku` *bisa dipinjam*. Di masa depan, perpustakaan bisa saja meminjamkan `Payung`. `Payung` bukan bacaan (beda DNA), tapi sama-sama memiliki kemampuan untuk dipinjam.
+> * **Abstract Class** ibarat Identitas Absolut (*"Adalah sebuah..."*). `BukuCetak` *adalah sebuah* Buku. `EBook` *adalah sebuah* Buku. Keduanya mewarisi DNA dan atribut dasar yang sama (punya Judul, Penulis, Tahun Terbit).
+> * **Interface** ibarat Kontrak Kemampuan (*"Bisa melakukan..."*). `BukuCetak` *bisa dipinjam* (`Pinjamable`), sedangkan `EBook` *bisa diunduh* (`Unduhable`) — dua kemampuan yang sama sekali berbeda, meski keduanya sama-sama "Buku". Di masa depan, perpustakaan bisa saja meminjamkan `Payung`. `Payung` bukan bacaan (beda DNA), tapi bisa saja diberi kemampuan `Pinjamable` yang sama.
 > 
 > 
 
@@ -101,7 +102,7 @@ Abstraksi adalah teknik dalam Pemrograman Berorientasi Objek untuk menyembunyika
 ### 2. Mengapa Abstraction Penting?
 
 * **Standardisasi Kode:** Memaksa programmer (khususnya jika bekerja dalam tim) untuk mengikuti rancangan metode yang sudah ditetapkan oleh arsitek perangkat lunak.
-* **Mencegah Instansiasi yang Tidak Masuk Akal:** Mencegah pembuatan objek dari kelas yang sifatnya masih terlalu umum (misal: Anda tidak bisa membuat wujud fisik dari sekadar "Koleksi", harus spesifik "Buku" atau "Majalah").
+* **Mencegah Instansiasi yang Tidak Masuk Akal:** Mencegah pembuatan objek dari kelas yang sifatnya masih terlalu umum (misal: Anda tidak bisa membuat wujud fisik dari sekadar "Buku" yang abstrak, harus spesifik "BukuCetak" atau "EBook").
 * **Polimorfisme Tingkat Lanjut:** Memungkinkan sistem memproses berbagai objek yang sama sekali tidak memiliki hubungan darah/genetik, asalkan mereka menandatangani kontrak *Interface* yang sama.
 
 ---
@@ -112,11 +113,17 @@ Abstraksi adalah teknik dalam Pemrograman Berorientasi Objek untuk menyembunyika
 
 1. **Aturan Instansiasi:** Kelas abstrak **tidak bisa** dibuat menjadi objek menggunakan keyword `new`.
 2. **Kewajiban Subclass:** Jika sebuah `abstract class` memiliki `abstract method` (method tanpa `{ }`), maka kelas anaknya **wajib** mendefinisikan ulang (meng-*override*) method tersebut. Jika menolak, kelas anak harus ikut dijadikan *abstract*.
+3. **Boleh Tetap Punya Method Konkrit:** Selain *abstract method*, sebuah `abstract class` boleh tetap memiliki method biasa yang sudah lengkap isinya — berguna untuk logika yang memang sama di semua kelas anak (contoh: `cetakDataDasar()` di `Buku.java`).
 
 ```java
 // Contoh deklarasi
-public abstract class Koleksi {
-    // Abstract method: memaksa anak membuat isinya
+public abstract class Buku {
+    // Method konkrit: logika sudah lengkap, dipakai bersama semua anak
+    protected void cetakDataDasar() {
+        System.out.println("Judul: " + judul);
+    }
+
+    // Abstract method: memaksa anak membuat isinya sendiri
     public abstract void tampilkanInfo(); 
 }
 
@@ -130,12 +137,17 @@ public abstract class Koleksi {
 
 1. **Semua Bebas, Semua Wajib:** Kelas yang menandatangani kontrak (`implements`) diwajibkan menyediakan implementasi untuk **seluruh** method yang tercantum pada *Interface* tersebut.
 2. **Variabel sebagai Konstanta Mutlak:** Jika Anda mendeklarasikan variabel di dalam *Interface*, Java secara implisit menganggapnya sebagai `public static final`. Nilainya tidak bisa diubah (*immutable*).
+3. **Satu Kelas, Banyak Interface Berbeda:** `BukuCetak` menandatangani kontrak `Pinjamable`, sedangkan `EBook` menandatangani kontrak `Unduhable` yang sama sekali berbeda — inilah kelenturan *interface* yang tidak dimiliki *abstract class* (yang cuma boleh satu induk).
 
 ```java
 // Contoh deklarasi kontrak
 public interface Pinjamable {
     void pinjam();
     void kembalikan();
+}
+
+public interface Unduhable {
+    void unduh();
 }
 
 ```
@@ -146,32 +158,13 @@ public interface Pinjamable {
 
 Dalam Java, satu kelas **hanya boleh** memiliki satu *Superclass* (Single Inheritance), namun **boleh** menandatangani banyak kontrak *Interface* sekaligus.
 
-#### A. Sintaks Penggabungan
-
 Kata kunci `extends` selalu ditulis mendahului `implements`.
 
 ```java
-public class Buku extends Koleksi implements Pinjamable {
-    // Mewarisi atribut dari Koleksi
-    // Wajib meng-override tampilkanInfo() dari Koleksi
+public class BukuCetak extends Buku implements Pinjamable {
+    // Mewarisi atribut dari Buku
+    // Wajib meng-override tampilkanInfo() dari Buku
     // Wajib meng-override pinjam() dan kembalikan() dari Pinjamable
-}
-
-```
-
-#### B. Mengapa Butuh Operator `instanceof` pada Abstraksi?
-
-Saat program berjalan, Controller seringkali hanya melihat koleksi objek secara umum (misal di dalam `ArrayList<Koleksi>`). Jika kita ingin memanggil fitur `pinjam()` yang berasal dari *Interface* `Pinjamable`, kita wajib memastikan bahwa objek tersebut memang menandatangani kontraknya sebelum memaksakan perintah (*casting*).
-
-```java
-Koleksi k = daftarKoleksi.get(0);
-
-// Cek apakah objek ini punya kontrak "Pinjamable"?
-if (k instanceof Pinjamable) {
-    // Jika ya, ubah sudut pandang ke Pinjamable lalu pinjam
-    ((Pinjamable) k).pinjam(); 
-} else {
-    System.out.println("Benda ini tidak bisa dipinjam!");
 }
 
 ```
@@ -182,15 +175,40 @@ if (k instanceof Pinjamable) {
 
 ### Step 1: Membuat Kontrak Kemampuan (Interface)
 
-Buat file **`src/model/Pinjamable.java`**. Interface ini akan bertindak sebagai standar fungsionalitas untuk benda apa pun yang bisa dipinjam.
+Buat file **`src/model/Pinjamable.java`** dan **`src/model/Unduhable.java`**. Dua interface ini bertindak sebagai standar fungsionalitas: satu untuk benda yang bisa dipinjam, satu untuk yang bisa diunduh.
 
 ```java
+// ===========================================================
+// Topik: Abstraction (Interface)
+// Letakkan file ini pada src/model/Pinjamable.java
+// ===========================================================
+
 package model;
 
+// Interface = KONTRAK. Kelas apa pun yang 'implements' Pinjamable
+// WAJIB menyediakan isi (implementasi) untuk semua method di bawah ini.
+// Cocok untuk kemampuan (behaviour) yang HANYA dimiliki sebagian
+// entitas (di sini: hanya buku fisik yang bisa dipinjam).
 public interface Pinjamable {
-    // Kontrak fungsi murni (WHAT TO DO) yang wajib diimplementasikan oleh kelas turunan
     void pinjam();
     void kembalikan();
+}
+
+```
+
+```java
+// ===========================================================
+// Topik: Abstraction (Interface)
+// Letakkan file ini pada src/model/Unduhable.java
+// ===========================================================
+
+package model;
+
+// Interface kedua, kontrak yang berbeda dari Pinjamable.
+// Menunjukkan bahwa tiap subclass boleh punya "kemampuan" (interface)
+// yang berbeda-beda sesuai kebutuhannya masing-masing.
+public interface Unduhable {
+    void unduh();
 }
 
 ```
@@ -199,30 +217,107 @@ public interface Pinjamable {
 
 ### Step 2: Membuat Kerangka Dasar (Abstract Class)
 
-Buat file **`src/model/Koleksi.java`**. Kelas ini bertindak sebagai DNA/Identitas dasar untuk semua jenis bacaan di perpustakaan.
+Buat file **`src/model/Buku.java`**. Kelas ini bertindak sebagai DNA/Identitas dasar untuk semua jenis buku di perpustakaan — melanjutkan langsung `Buku` dari Pertemuan 5 (lengkap dengan `final`, *encapsulation*, dan *method overloading*-nya), sekarang dijadikan `abstract`.
 
 ```java
+// ===========================================================
+// Topik: Abstraction
+// Letakkan file ini pada src/model/Buku.java
+// ===========================================================
+
 package model;
 
-// Abstract Class: tidak bisa di-instansiasi langsung menggunakan 'new'
-public abstract class Koleksi {
-    protected String idKoleksi;
+// 'abstract' pada class berarti Buku TIDAK BISA di-instansiasi langsung
+// (tidak boleh ada "new Buku(...)"). Buku hanya boleh dipakai lewat
+// turunannya (BukuCetak, EBook) yang sudah "lengkap".
+public abstract class Buku {
+
+    private final String idBuku;
+
     protected String judul;
+    protected String penulis;
     protected int tahunTerbit;
 
-    public Koleksi(String idKoleksi, String judul, int tahunTerbit) {
-        this.idKoleksi = idKoleksi;
-        this.judul = judul;
-        this.tahunTerbit = tahunTerbit;
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit) {
+        this.idBuku = idBuku;
+        setJudul(judul);
+        setPenulis(penulis);
+        setTahunTerbit(tahunTerbit);
     }
 
-    // Abstract Method: memaksa semua kelas anak membuat cara tampilkanInfo-nya sendiri
+    // ----- Getter & Setter (Encapsulation) -----
+
+    public String getIdBuku() {
+        return idBuku;
+    }
+
+    public String getJudul() {
+        return judul;
+    }
+
+    public void setJudul(String judul) {
+        if (judul != null && !judul.trim().isEmpty()) {
+            this.judul = judul;
+        } else {
+            System.out.println(">> ERROR: Judul tidak boleh kosong!");
+        }
+    }
+
+    public String getPenulis() {
+        return penulis;
+    }
+
+    public void setPenulis(String penulis) {
+        if (penulis != null && !penulis.trim().isEmpty()) {
+            this.penulis = penulis;
+        } else {
+            System.out.println(">> ERROR: Penulis tidak boleh kosong!");
+        }
+    }
+
+    public int getTahunTerbit() {
+        return tahunTerbit;
+    }
+
+    public void setTahunTerbit(int tahunTerbit) {
+        if (tahunTerbit >= 1900 && tahunTerbit <= 2026) {
+            this.tahunTerbit = tahunTerbit;
+        } else {
+            System.out.println(">> ERROR: Tahun terbit harus antara 1900-2026!");
+        }
+    }
+
+    // Method KONKRIT biasa (ada isinya): tetap dipakai bersama oleh semua
+    // subclass supaya tidak perlu menulis ulang cetak data dasar.
+    protected void cetakDataDasar() {
+        System.out.println("ID Buku      : " + idBuku);
+        System.out.println("Judul        : " + judul);
+        System.out.println("Penulis      : " + penulis);
+        System.out.println("Tahun Terbit : " + tahunTerbit);
+    }
+
+    // ----- ABSTRACT METHOD -----
+    // Tidak punya isi/body (diakhiri titik koma). Setiap subclass
+    // (BukuCetak, EBook) DIPAKSA membuat implementasinya sendiri,
+    // karena tiap jenis buku punya cara tampil yang berbeda.
     public abstract void tampilkanInfo();
 
-    // Method konkrit bawaan induk (bisa langsung dipakai oleh kelas anak)
-    public String getIdKoleksi() { return idKoleksi; }
-    public String getJudul() { return judul; }
-    public int getTahunTerbit() { return tahunTerbit; }
+    // Overload tetap boleh ada meski versi tanpa parameternya abstract.
+    // Saat tampilkanInfo() dipanggil di baris di bawah, Java otomatis
+    // menjalankan versi milik objek aslinya (BukuCetak/EBook) -> polymorphism.
+    public void tampilkanInfo(boolean ringkas) {
+        if (ringkas) {
+            System.out.println(judul + " (" + idBuku + ")");
+        } else {
+            tampilkanInfo();
+        }
+    }
+
+    // 'final' pada method berarti method ini TIDAK BOLEH diubah
+    // perilakunya oleh kelas turunan mana pun.
+    public final void cetakStatusAset() {
+        System.out.println(">> Status Aset: Terdaftar sebagai koleksi perpustakaan");
+    }
 }
 
 ```
@@ -231,128 +326,239 @@ public abstract class Koleksi {
 
 ### Step 3: Implementasi ("How to Do") pada Kelas Anak
 
-Buat dua subclass di dalam **`src/model/`**, yaitu `Buku.java` dan `Majalah.java`.
+Buat dua subclass di dalam **`src/model/`**, yaitu `BukuCetak.java` dan `EBook.java`.
 
-**A. Subclass Buku (Mewarisi Identitas & Menjalankan Kontrak)**
+**A. Subclass BukuCetak (Mewarisi Identitas & Menjalankan Kontrak Pinjamable)**
 
 ```java
+// ===========================================================
+// Topik: Abstraction
+// Letakkan file ini pada src/model/BukuCetak.java
+// ===========================================================
+
 package model;
 
-public class Buku extends Koleksi implements Pinjamable {
-    private String penulis;
-    private int stok;
+// 'extends Buku' -> tetap mewarisi (Inheritance, materi sebelumnya).
+// 'implements Pinjamable' -> BukuCetak berjanji memenuhi KONTRAK
+// interface Pinjamable, karena buku fisik memang bisa dipinjam.
+public class BukuCetak extends Buku implements Pinjamable {
 
-    public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int stok) {
-        super(idKoleksi, judul, tahunTerbit);
-        this.penulis = penulis;
-        this.stok = stok;
+    private int jumlahHalaman;
+    private String lokasiRak;
+
+    // Status peminjaman: dibutuhkan supaya pinjam()/kembalikan() punya
+    // sesuatu untuk diubah.
+    private boolean sedangDipinjam = false;
+
+    public BukuCetak(String idBuku, String judul, String penulis, int tahunTerbit,
+                      int jumlahHalaman, String lokasiRak) {
+        super(idBuku, judul, penulis, tahunTerbit);
+        setJumlahHalaman(jumlahHalaman);
+        setLokasiRak(lokasiRak);
     }
 
-    // WAJIB: Mengisi abstract method dari kelas Koleksi
+    // ----- Getter & Setter -----
+
+    public int getJumlahHalaman() {
+        return jumlahHalaman;
+    }
+
+    public void setJumlahHalaman(int jumlahHalaman) {
+        if (jumlahHalaman > 0) {
+            this.jumlahHalaman = jumlahHalaman;
+        } else {
+            System.out.println(">> ERROR: Jumlah halaman harus lebih dari 0!");
+            this.jumlahHalaman = 1;
+        }
+    }
+
+    public String getLokasiRak() {
+        return lokasiRak;
+    }
+
+    public void setLokasiRak(String lokasiRak) {
+        if (lokasiRak != null && !lokasiRak.trim().isEmpty()) {
+            this.lokasiRak = lokasiRak;
+        } else {
+            System.out.println(">> ERROR: Lokasi rak tidak boleh kosong!");
+        }
+    }
+
+    // ----- WAJIB: implementasi abstract method milik Buku -----
     @Override
     public void tampilkanInfo() {
-        System.out.printf("ID: %-5s | Judul: %-20s | Tahun: %-4d | Penulis: %-15s | Stok: %-3d [BUKU]\n", 
-                idKoleksi, judul, tahunTerbit, penulis, stok);
+        System.out.println("------------------------------------------");
+        System.out.println("[KATEGORI: BUKU CETAK]");
+        cetakDataDasar(); // method konkrit yang dipinjam dari Buku
+        System.out.println("Jml Halaman  : " + jumlahHalaman + " hlm");
+        System.out.println("Lokasi Rak   : " + lokasiRak);
+        cetakStatusAset();
+        System.out.println("------------------------------------------");
     }
 
-    // WAJIB: Menjalankan kontrak dari interface Pinjamable
+    // ----- WAJIB: implementasi interface Pinjamable -----
     @Override
     public void pinjam() {
-        if (stok > 0) {
-            stok--;
-            System.out.println(">> SUCCESS: Buku '" + judul + "' berhasil dipinjam. Sisa stok: " + stok);
+        if (!sedangDipinjam) {
+            sedangDipinjam = true;
+            System.out.println(">> SUCCESS: Buku '" + judul + "' berhasil dipinjam.");
         } else {
-            System.out.println(">> ERROR: Stok buku '" + judul + "' sedang habis!");
+            System.out.println(">> ERROR: Buku '" + judul + "' sedang dipinjam orang lain!");
         }
     }
 
     @Override
     public void kembalikan() {
-        stok++;
-        System.out.println(">> SUCCESS: Buku '" + judul + "' dikembalikan. Stok sekarang: " + stok);
+        if (sedangDipinjam) {
+            sedangDipinjam = false;
+            System.out.println(">> SUCCESS: Buku '" + judul + "' telah dikembalikan.");
+        } else {
+            System.out.println(">> INFO: Buku '" + judul + "' memang belum dipinjam.");
+        }
     }
-
-    public String getPenulis() { return penulis; }
-    public int getStok() { return stok; }
 }
 
 ```
 
-**B. Subclass Majalah (Hanya Mewarisi Identitas)**
+**B. Subclass EBook (Mewarisi Identitas & Menjalankan Kontrak Unduhable)**
 
 ```java
+// ===========================================================
+// Topik: Abstraction
+// Letakkan file ini pada src/model/EBook.java
+// ===========================================================
+
 package model;
 
-public class Majalah extends Koleksi {
-    private int edisi;
+// 'extends Buku' -> tetap mewarisi.
+// 'implements Unduhable' -> EBook berjanji memenuhi kontrak Unduhable,
+// karena format digital memang bisa diunduh (beda dengan BukuCetak yang
+// bisa DIPINJAM, bukan diunduh).
+public class EBook extends Buku implements Unduhable {
 
-    public Majalah(String idKoleksi, String judul, int tahunTerbit, int edisi) {
-        super(idKoleksi, judul, tahunTerbit);
-        this.edisi = edisi;
+    private double ukuranFileMB;
+    private String formatFile;
+
+    public EBook(String idBuku, String judul, String penulis, int tahunTerbit,
+                 double ukuranFileMB, String formatFile) {
+        super(idBuku, judul, penulis, tahunTerbit);
+        setUkuranFileMB(ukuranFileMB);
+        setFormatFile(formatFile);
     }
 
-    // WAJIB: Mengisi abstract method dari kelas Koleksi
+    // ----- Getter & Setter -----
+
+    public double getUkuranFileMB() {
+        return ukuranFileMB;
+    }
+
+    public void setUkuranFileMB(double ukuranFileMB) {
+        if (ukuranFileMB > 0) {
+            this.ukuranFileMB = ukuranFileMB;
+        } else {
+            System.out.println(">> ERROR: Ukuran file harus lebih dari 0!");
+            this.ukuranFileMB = 0.1;
+        }
+    }
+
+    public String getFormatFile() {
+        return formatFile;
+    }
+
+    public void setFormatFile(String formatFile) {
+        if (formatFile != null && !formatFile.trim().isEmpty()) {
+            this.formatFile = formatFile;
+        } else {
+            System.out.println(">> ERROR: Format file tidak boleh kosong!");
+        }
+    }
+
+    // ----- WAJIB: implementasi abstract method milik Buku -----
     @Override
     public void tampilkanInfo() {
-        System.out.printf("ID: %-5s | Judul: %-20s | Tahun: %-4d | Edisi: Vol. %-9d [MAJALAH]\n", 
-                idKoleksi, judul, tahunTerbit, edisi);
+        System.out.println("------------------------------------------");
+        System.out.println("[KATEGORI: E-BOOK]");
+        cetakDataDasar(); // method konkrit yang dipinjam dari Buku
+        System.out.println("Ukuran File  : " + ukuranFileMB + " MB");
+        System.out.println("Format File  : " + formatFile);
+        cetakStatusAset();
+        System.out.println("------------------------------------------");
     }
 
-    public int getEdisi() { return edisi; }
+    // ----- WAJIB: implementasi interface Unduhable -----
+    @Override
+    public void unduh() {
+        System.out.println(">> SUCCESS: EBook '" + judul + "' (" + formatFile
+                + ", " + ukuranFileMB + " MB) berhasil diunduh.");
+    }
 }
 
 ```
+
+> 📌 **Catatan:** `BukuCetak` cuma implement `Pinjamable`, dan `EBook` cuma implement `Unduhable` — masing-masing punya kontrak yang berbeda, meski sama-sama turunan `Buku`.
 
 ---
 
 ### Step 4: Menangani Logika Polimorfik (Controller)
 
-Buat file **`src/controller/KoleksiController.java`**. Perhatikan metode `prosesPinjamBuku()` yang mendemonstrasikan kekuatan *Interface* dan `instanceof`.
+Buat file **`src/controller/BukuController.java`**. Perhatikan metode `prosesPinjamBuku()` dan `prosesUnduhBuku()` yang mendemonstrasikan kekuatan *Interface* untuk masing-masing kontrak.
 
 ```java
 package controller;
 
-import model.Koleksi;
 import model.Buku;
-import model.Majalah;
+import model.BukuCetak;
+import model.EBook;
 import model.Pinjamable;
+import model.Unduhable;
 import java.util.ArrayList;
 
-public class KoleksiController {
-    private ArrayList<Koleksi> listKoleksi = new ArrayList<>();
+public class BukuController {
+    private ArrayList<Buku> listBuku = new ArrayList<>();
 
-    public KoleksiController() {
-        // Dummy Data Awal
-        listKoleksi.add(new Buku("B001", "Pemrograman Java", 2023, "James Gosling", 3));
-        listKoleksi.add(new Majalah("M001", "Info Komputer", 2024, 12));
+    public BukuController() {
+        // Dummy Data Awal (constructor sama persis dengan Buku/BukuCetak/EBook)
+        listBuku.add(new BukuCetak("BC001", "Pemrograman Java", "James Gosling", 2023, 350, "Rak A-1"));
+        listBuku.add(new EBook("EB001", "Belajar Python Otodidak", "Guido van Rossum", 2024, 12.5, "PDF"));
     }
 
-    public ArrayList<Koleksi> getAllKoleksi() {
-        return listKoleksi;
+    public ArrayList<Buku> getAllBuku() {
+        return listBuku;
     }
 
-    public void tambahKoleksi(Koleksi k) {
-        listKoleksi.add(k);
+    public void tambahBuku(Buku b) {
+        listBuku.add(b);
     }
 
-    public Koleksi cariById(String id) {
-        for (Koleksi k : listKoleksi) {
-            if (k.getIdKoleksi().equalsIgnoreCase(id)) {
-                return k;
+    public Buku cariById(String id) {
+        for (Buku b : listBuku) {
+            if (b.getIdBuku().equalsIgnoreCase(id)) {
+                return b;
             }
         }
         return null;
     }
 
     public void prosesPinjamBuku(String id) {
-        Koleksi k = cariById(id);
-        if (k == null) {
-            System.out.println(">> ERROR: ID Koleksi tidak ditemukan!");
-        } else if (k instanceof Pinjamable) {
+        Buku b = cariById(id);
+        if (b == null) {
+            System.out.println(">> ERROR: ID Buku tidak ditemukan!");
+        } else if (b instanceof Pinjamable) {
             // Downcasting aman untuk mengakses kemampuan dari Interface
-            ((Pinjamable) k).pinjam();
+            ((Pinjamable) b).pinjam();
         } else {
-            System.out.println(">> ERROR: Koleksi jenis ini (" + k.getClass().getSimpleName() + ") TIDAK BISA dipinjam!");
+            System.out.println(">> ERROR: Buku jenis ini (" + b.getClass().getSimpleName() + ") TIDAK BISA dipinjam!");
+        }
+    }
+
+    public void prosesUnduhBuku(String id) {
+        Buku b = cariById(id);
+        if (b == null) {
+            System.out.println(">> ERROR: ID Buku tidak ditemukan!");
+        } else if (b instanceof Unduhable) {
+            ((Unduhable) b).unduh();
+        } else {
+            System.out.println(">> ERROR: Buku jenis ini (" + b.getClass().getSimpleName() + ") TIDAK BISA diunduh!");
         }
     }
 }
@@ -365,21 +571,22 @@ public class KoleksiController {
 
 Buat antarmuka dan *entry point* program di *package* masing-masing.
 
-**A. Antarmuka (View) - `src/view/KoleksiView.java**`
+**A. Antarmuka (View) - `src/view/BukuView.java`**
 
 ```java
 package view;
 
-import controller.KoleksiController;
-import model.Koleksi;
+import controller.BukuController;
 import model.Buku;
+import model.BukuCetak;
+import model.EBook;
 import java.util.Scanner;
 
-public class KoleksiView {
-    private KoleksiController controller;
+public class BukuView {
+    private BukuController controller;
     private Scanner scanner;
 
-    public KoleksiView(KoleksiController controller) {
+    public BukuView(BukuController controller) {
         this.controller = controller;
         this.scanner = new Scanner(System.in);
     }
@@ -390,39 +597,61 @@ public class KoleksiView {
             System.out.println("\n==========================================");
             System.out.println("   SISTEM PERPUSTAKAAN (P6: MVC & ABSTRAKSI)");
             System.out.println("==========================================");
-            System.out.println("1. Tampilkan Semua Koleksi");
-            System.out.println("2. Tambah Buku Baru");
-            System.out.println("3. Pinjam Buku (Interface Demo)");
-            System.out.println("4. Keluar");
-            System.out.print("Pilih menu (1-4): ");
+            System.out.println("1. Tampilkan Semua Buku");
+            System.out.println("2. Tambah Buku Cetak Baru");
+            System.out.println("3. Tambah EBook Baru");
+            System.out.println("4. Pinjam Buku (Interface Pinjamable Demo)");
+            System.out.println("5. Unduh EBook (Interface Unduhable Demo)");
+            System.out.println("6. Keluar");
+            System.out.print("Pilih menu (1-6): ");
 
             int pilihan = scanner.nextInt();
             scanner.nextLine();
 
             switch (pilihan) {
                 case 1:
-                    System.out.println("\n--- DAFTAR KOLEKSI ---");
-                    for (Koleksi k : controller.getAllKoleksi()) {
-                        k.tampilkanInfo();
+                    System.out.println("\n--- DAFTAR BUKU PERPUSTAKAAN ---");
+                    for (Buku b : controller.getAllBuku()) {
+                        b.tampilkanInfo();
                     }
                     break;
                 case 2:
-                    System.out.println("\n--- TAMBAH BUKU ---");
+                    System.out.println("\n--- TAMBAH BUKU CETAK BARU ---");
                     System.out.print("ID Buku      : "); String id = scanner.nextLine();
                     System.out.print("Judul Buku   : "); String judul = scanner.nextLine();
-                    System.out.print("Tahun Terbit : "); int tahun = scanner.nextInt(); scanner.nextLine();
                     System.out.print("Penulis      : "); String penulis = scanner.nextLine();
-                    System.out.print("Stok         : "); int stok = scanner.nextInt();
-                    controller.tambahKoleksi(new Buku(id, judul, tahun, penulis, stok));
-                    System.out.println(">> SUCCESS: Buku berhasil ditambahkan!");
+                    System.out.print("Tahun Terbit : "); int tahun = scanner.nextInt(); scanner.nextLine();
+                    System.out.print("Jml Halaman  : "); int halaman = scanner.nextInt(); scanner.nextLine();
+                    System.out.print("Lokasi Rak   : "); String rak = scanner.nextLine();
+
+                    controller.tambahBuku(new BukuCetak(id, judul, penulis, tahun, halaman, rak));
+                    System.out.println(">> SUCCESS: Buku cetak berhasil ditambahkan!");
                     break;
                 case 3:
-                    System.out.println("\n--- PINJAM KOLEKSI ---");
-                    System.out.print("Masukkan ID Koleksi: ");
+                    System.out.println("\n--- TAMBAH EBOOK BARU ---");
+                    System.out.print("ID Buku      : "); String idE = scanner.nextLine();
+                    System.out.print("Judul Buku   : "); String judulE = scanner.nextLine();
+                    System.out.print("Penulis      : "); String penulisE = scanner.nextLine();
+                    System.out.print("Tahun Terbit : "); int tahunE = scanner.nextInt(); scanner.nextLine();
+                    System.out.print("Ukuran (MB)  : "); double ukuran = scanner.nextDouble(); scanner.nextLine();
+                    System.out.print("Format File  : "); String format = scanner.nextLine();
+
+                    controller.tambahBuku(new EBook(idE, judulE, penulisE, tahunE, ukuran, format));
+                    System.out.println(">> SUCCESS: EBook berhasil ditambahkan!");
+                    break;
+                case 4:
+                    System.out.println("\n--- PINJAM BUKU ---");
+                    System.out.print("Masukkan ID Buku: ");
                     String idPinjam = scanner.nextLine();
                     controller.prosesPinjamBuku(idPinjam);
                     break;
-                case 4:
+                case 5:
+                    System.out.println("\n--- UNDUH EBOOK ---");
+                    System.out.print("Masukkan ID Buku: ");
+                    String idUnduh = scanner.nextLine();
+                    controller.prosesUnduhBuku(idUnduh);
+                    break;
+                case 6:
                     berjalan = false;
                     System.out.println("\nSesi Selesai.");
                     break;
@@ -435,18 +664,18 @@ public class KoleksiView {
 
 ```
 
-**B. Entry Point - `src/main/MainApp.java**`
+**B. Entry Point - `src/main/MainApp.java`**
 
 ```java
 package main;
 
-import controller.KoleksiController;
-import view.KoleksiView;
+import controller.BukuController;
+import view.BukuView;
 
 public class MainApp {
     public static void main(String[] args) {
-        KoleksiController controller = new KoleksiController();
-        KoleksiView view = new KoleksiView(controller);
+        BukuController controller = new BukuController();
+        BukuView view = new BukuView(controller);
         view.renderMenu();
     }
 }
@@ -461,23 +690,23 @@ Lakukan pengujian ini secara sengaja untuk melatih kemampuan *debugging* abstrak
 
 ### 🎯 Eksperimen 1: Instansiasi Paksa Abstract Class
 
-**Tindakan:** Buka `KoleksiController.java`, pada bagian *constructor*, tambahkan data dengan memaksa pembuatan objek `Koleksi`.
+**Tindakan:** Buka `BukuController.java`, pada bagian *constructor*, tambahkan data dengan memaksa pembuatan objek `Buku`.
 
 ```java
-listKoleksi.add(new Koleksi("K00", "Buku Polos", 2026));
+listBuku.add(new Buku("B00", "Buku Polos", "Anonim", 2026));
 
 ```
 
-* **Hasil:** Error kompilasi: `Koleksi is abstract; cannot be instantiated`.
+* **Hasil:** Error kompilasi: `Buku is abstract; cannot be instantiated`.
 * **Pelajaran:** Kelas abstrak (kerangka dasar) tidak bisa menjadi benda nyata di memori. Harus diwujudkan lewat turunan (*concrete class*).
 
 ---
 
 ### 🎯 Eksperimen 2: Menolak Janji Abstract Method
 
-**Tindakan:** Buka file `Majalah.java`, berikan komentar `//` pada seluruh baris method `@Override public void tampilkanInfo() { ... }`.
+**Tindakan:** Buka file `EBook.java`, berikan komentar `//` pada seluruh baris method `@Override public void tampilkanInfo() { ... }`.
 
-* **Hasil:** Error kompilasi di baris nama kelas: `Majalah is not abstract and does not override abstract method...`
+* **Hasil:** Error kompilasi di baris nama kelas: `EBook is not abstract and does not override abstract method tampilkanInfo() in Buku`.
 * **Pelajaran:** Turunan dari kelas abstrak terikat hukum wajib militer. Mereka **harus** mengimplementasikan semua *abstract method* yang diturunkan.
 
 ---
@@ -487,7 +716,7 @@ listKoleksi.add(new Koleksi("K00", "Buku Polos", 2026));
 **Tindakan:**
 
 1. Buka `Pinjamable.java`, tambahkan atribut baru: `int MAKS_HARI = 7;`
-2. Buka `Buku.java`, di dalam method `pinjam()`, coba ubah nilainya: `MAKS_HARI = 10;`
+2. Buka `BukuCetak.java`, di dalam method `pinjam()`, coba ubah nilainya: `MAKS_HARI = 10;`
 
 * **Hasil:** Error kompilasi: `cannot assign a value to final variable MAKS_HARI`.
 * **Pelajaran:** Berbeda dengan kelas abstrak, semua variabel yang dideklarasikan di dalam sebuah *Interface* selalu dimutlakkan sebagai `public static final` (Konstanta) oleh Java.
@@ -498,7 +727,7 @@ listKoleksi.add(new Koleksi("K00", "Buku Polos", 2026));
 
 | Pesan Error | Penyebab | Solusi |
 | --- | --- | --- |
-| `cannot be instantiated` | Menggunakan keyword `new` pada *Abstract Class* atau *Interface*. | Pastikan instansiasi hanya dilakukan pada *Concrete Class* (`Buku` / `Majalah`). |
+| `cannot be instantiated` | Menggunakan keyword `new` pada *Abstract Class* atau *Interface*. | Pastikan instansiasi hanya dilakukan pada *Concrete Class* (`BukuCetak` / `EBook`). |
 | `class is not abstract and does not override...` | Kelas turunan lupa / belum mengimplementasikan method abstrak yang dijanjikan. | Tulis ulang method tersebut berserta blok kodenya `{ }` di kelas anak, dan gunakan `@Override`. |
 | `method does not override or implement a method...` | Terjadi kesalahan penulisan (*typo*), perbedaan tipe parameter, atau kembalian dari method *Superclass*/*Interface*. | Samakan nama, jumlah, dan tipe data parameter persis seperti yang tertulis di rancangan induk. |
 | `cannot assign a value to final variable` | Mencoba memodifikasi/menugaskan nilai baru pada variabel yang berasal dari *Interface*. | Pindahkan atribut tersebut ke *Abstract Class* jika nilainya dirancang untuk bisa berubah (*mutable*). |
@@ -513,7 +742,7 @@ listKoleksi.add(new Koleksi("K00", "Buku Polos", 2026));
 
 **Q: Bolehkah sebuah kelas anak melakukan `implements` lebih dari satu Interface?**
 
-> **A:** Sangat diperbolehkan, dan ini adalah salah satu keunggulan utama Java. Meskipun satu kelas hanya boleh menginduk (`extends`) pada SATU *abstract class*, ia boleh menandatangani BANYAK kontrak antarmuka (`implements Pinjamable, DapatDidenda, DapatDifotokopi, dll`).
+> **A:** Sangat diperbolehkan, dan ini adalah salah satu keunggulan utama Java. Meskipun satu kelas hanya boleh menginduk (`extends`) pada SATU *abstract class*, ia boleh menandatangani BANYAK kontrak antarmuka (`implements Pinjamable, Unduhable, DapatDidenda, dll`).
 
 **Q: Mengapa *Interface* tidak boleh berisi method yang ada isinya (sebelum Java 8)?**
 
@@ -551,12 +780,12 @@ Sistem perpustakaan membutuhkan manajemen pengguna.
 
 
 3. **Level Lanjut (Arsitektur Polimorfik Ganda)**
-Perpustakaan kini berekspansi ke layanan digital.
-* Buat interface baru bernama `AksesDigital` dengan method `bacaOnline()`.
-* Buat kelas baru bernama `EBook`.
-* Kelas `EBook` ini **harus** merupakan turunan (`extends`) dari kelas abstrak `Koleksi` (gunakan class `Koleksi` dari contoh modul).
-* Kelas `EBook` ini juga **harus** mengimplementasikan **dua antarmuka sekaligus**, yaitu `Pinjamable` dan `AksesDigital`.
-* Demonstrasikan logika `bacaOnline()` dan proses peminjaman *e-book* berjalan dengan baik di method `main()`.
+Perpustakaan kini berekspansi ke layanan audio.
+* Buat interface baru bernama `AksesDigital` dengan method `dengarkanOnline()`.
+* Buat kelas baru bernama `AudioBook`.
+* Kelas `AudioBook` ini **harus** merupakan turunan (`extends`) dari kelas abstrak `Buku` (gunakan class `Buku` dari contoh modul).
+* Kelas `AudioBook` ini juga **harus** mengimplementasikan **dua antarmuka sekaligus**, yaitu `Pinjamable` dan `AksesDigital`.
+* Demonstrasikan logika `dengarkanOnline()` dan proses peminjaman *audiobook* berjalan dengan baik di method `main()`.
 
 ![Footer](../assets/Footer.png)
 

@@ -5,40 +5,95 @@
 
 package model;
 
-public class Buku extends Koleksi implements Pinjamable {
-    private String penulis;
-    private int stok;
+// 'abstract' pada class berarti Buku TIDAK BISA di-instansiasi langsung
+// (tidak boleh ada "new Buku(...)"). Buku hanya boleh dipakai lewat
+// turunannya (BukuCetak, EBook) yang sudah "lengkap".
+public abstract class Buku {
 
-    public Buku(String idKoleksi, String judul, int tahunTerbit, String penulis, int stok) {
-        super(idKoleksi, judul, tahunTerbit);
-        this.penulis = penulis;
-        this.stok = stok;
+    private final String idBuku;
+
+    protected String judul;
+    protected String penulis;
+    protected int tahunTerbit;
+
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit) {
+        this.idBuku = idBuku;
+        setJudul(judul);
+        setPenulis(penulis);
+        setTahunTerbit(tahunTerbit);
     }
 
-    // Implementasi Abstract Method dari Koleksi
-    @Override
-    public void tampilkanInfo() {
-        System.out.printf("ID: %-5s | Judul: %-20s | Tahun: %-4d | Penulis: %-15s | Stok: %-3d [BUKU]\n", 
-                idKoleksi, judul, tahunTerbit, penulis, stok);
+    // ----- Getter & Setter (Encapsulation) -----
+
+    public String getIdBuku() {
+        return idBuku;
     }
 
-    // Implementasi Interface Pinjamable
-    @Override
-    public void pinjam() {
-        if (stok > 0) {
-            stok--;
-            System.out.println(">> SUCCESS: Buku '" + judul + "' berhasil dipinjam. Sisa stok: " + stok);
+    public String getJudul() {
+        return judul;
+    }
+
+    public void setJudul(String judul) {
+        if (judul != null && !judul.trim().isEmpty()) {
+            this.judul = judul;
         } else {
-            System.out.println(">> ERROR: Stok buku '" + judul + "' sedang habis!");
+            System.out.println(">> ERROR: Judul tidak boleh kosong!");
         }
     }
 
-    @Override
-    public void kembalikan() {
-        stok++;
-        System.out.println(">> SUCCESS: Buku '" + judul + "' dikembalikan. Stok sekarang: " + stok);
+    public String getPenulis() {
+        return penulis;
     }
 
-    public String getPenulis() { return penulis; }
-    public int getStok() { return stok; }
+    public void setPenulis(String penulis) {
+        if (penulis != null && !penulis.trim().isEmpty()) {
+            this.penulis = penulis;
+        } else {
+            System.out.println(">> ERROR: Penulis tidak boleh kosong!");
+        }
+    }
+
+    public int getTahunTerbit() {
+        return tahunTerbit;
+    }
+
+    public void setTahunTerbit(int tahunTerbit) {
+        if (tahunTerbit >= 1900 && tahunTerbit <= 2026) {
+            this.tahunTerbit = tahunTerbit;
+        } else {
+            System.out.println(">> ERROR: Tahun terbit harus antara 1900-2026!");
+        }
+    }
+
+    // Method KONKRIT biasa (ada isinya): tetap dipakai bersama oleh semua
+    // subclass supaya tidak perlu menulis ulang cetak data dasar.
+    protected void cetakDataDasar() {
+        System.out.println("ID Buku      : " + idBuku);
+        System.out.println("Judul        : " + judul);
+        System.out.println("Penulis      : " + penulis);
+        System.out.println("Tahun Terbit : " + tahunTerbit);
+    }
+
+    // ----- ABSTRACT METHOD -----
+    // Tidak punya isi/body (diakhiri titik koma). Setiap subclass
+    // (BukuCetak, EBook) DIPAKSA membuat implementasinya sendiri,
+    // karena tiap jenis buku punya cara tampil yang berbeda.
+    public abstract void tampilkanInfo();
+
+    // Overload tetap boleh ada meski versi tanpa parameternya abstract.
+    // Saat tampilkanInfo() dipanggil di baris di bawah, Java otomatis
+    // menjalankan versi milik objek aslinya (BukuCetak/EBook) -> polymorphism.
+    public void tampilkanInfo(boolean ringkas) {
+        if (ringkas) {
+            System.out.println(judul + " (" + idBuku + ")");
+        } else {
+            tampilkanInfo();
+        }
+    }
+
+    // 'final' pada method berarti method ini TIDAK BOLEH diubah
+    // perilakunya oleh kelas turunan mana pun.
+    public final void cetakStatusAset() {
+        System.out.println(">> Status Aset: Terdaftar sebagai koleksi perpustakaan");
+    }
 }

@@ -1,6 +1,6 @@
 // ===========================================================
 // Topik: Integrasi Database
-// Letakkan file ini pada src/dao/BukuDAO.java
+// Letakkan file ini pada src/model/BukuDAO.java
 // ===========================================================
 
 package model;

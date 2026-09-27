@@ -257,10 +257,10 @@ Buka folder `Project Files` lalu Buka file `pom.xml` di NetBeans, tambahkan tag 
 
 ---
 
-### Step 2: Membuat Kelas Koneksi (`src/koneksi/Koneksi.java`)
+### Step 2: Membuat Kelas Koneksi (`src/config/Koneksi.java`)
 
 ```java
-package koneksi;
+package config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -270,15 +270,23 @@ public class Koneksi {
 
     private static final String URL = "jdbc:mysql://localhost:3306/db_perpustakaan";
     private static final String USER = "root";
-    private static final String PASSWORD = ""; // sesuaikan dengan password MySQL Anda
+    private static final String PASS = "";
+    
+    //variabel statis untuk menyimpan koneksi
+    private static Connection conn;
 
     public static Connection getConnection() {
-        Connection conn = null;
         try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            // memeriksa koneksi belum ada atau sudah terputus
+            if (conn == null || conn.isClosed()) {
+                // Jika belum ada, membuat koneksi baru
+                conn = DriverManager.getConnection(URL, USER, PASS);
+            }
         } catch (SQLException e) {
-            System.out.println("Koneksi database GAGAL: " + e.getMessage());
+            System.out.println("Koneksi GAGAL: " + e.getMessage());
         }
+        
+        //Kembalikan koneksi yang sudah aman
         return conn;
     }
 }
@@ -289,29 +297,27 @@ public class Koneksi {
 
 ---
 
-### Step 3: Menguji Koneksi Awal (`src/main/TestKoneksi.java`)
+### Step 3: Menguji Koneksi Awal (`src/mconfig/TestKoneksi.java`)
 
 **Sebelum menulis kode CRUD apa pun**, wajib memastikan koneksi ke basis data sudah benar-benar terhubung.
 
 ```java
-package main;
-
+package config;
 import java.sql.Connection;
-import koneksi.Koneksi;
 
 public class TestKoneksi {
+    
     public static void main(String[] args) {
+        System.out.println("Mengecek koneksi ke database...");
+        
+        //Memanggil koneksi
         Connection conn = Koneksi.getConnection();
-
+        
+        //Mengecek variabel conn ada isinya atau kosong (null)
         if (conn != null) {
-            System.out.println("Koneksi ke database BERHASIL!");
-            try {
-                conn.close();
-            } catch (Exception e) {
-                System.out.println("Gagal menutup koneksi: " + e.getMessage());
-            }
+            System.out.println("STATUS: BERHASIL! Database siap digunakan.");
         } else {
-            System.out.println("Koneksi database GAGAL. Periksa kembali URL, USER, PASS, dan pastikan service MySQL sudah menyala.");
+            System.out.println("STATUS: GAGAL! Periksa kembali URL, USER, PASS, dan pastikan service MySQL sudah menyala.");
         }
     }
 }
@@ -327,79 +333,75 @@ public class TestKoneksi {
 package model;
 
 public class Buku {
-    private String idKoleksi;
-    private String judul;
-    private String penulis;
-    private int tahunTerbit;
-    private int stok;
+
+    protected String idBuku;
+    protected String judul;
+    protected String penulis;
+    protected int tahunTerbit;
+    protected int stok;
 
     public Buku() {
     }
-
-    public Buku(String idKoleksi, String judul, String penulis, int tahunTerbit, int stok) {
-        this.idKoleksi = idKoleksi;
+    
+    public Buku(String idBuku, String judul, String penulis, int tahunTerbit, int stok) {
+        this.idBuku = idBuku;
         this.judul = judul;
         this.penulis = penulis;
         this.tahunTerbit = tahunTerbit;
         this.stok = stok;
     }
 
-    public String getIdKoleksi() {
-        return idKoleksi;
-    }
-    public void setIdKoleksi(String idKoleksi) {
-        this.idKoleksi = idKoleksi;
-    }
-
-    public String getJudul() {
-        return judul;
-    }
-    public void setJudul(String judul) {
-        this.judul = judul;
-    }
-
-    public String getPenulis() {
-        return penulis;
-    }
-    public void setPenulis(String penulis) {
-        this.penulis = penulis;
-    }
-
-    public int getTahunTerbit() {
-        return tahunTerbit;
-    }
-    public void setTahunTerbit(int tahunTerbit) {
-        this.tahunTerbit = tahunTerbit;
-    }
-
-    public int getStok() {
-        return stok;
-    }
-    public void setStok(int stok) {
-        this.stok = stok;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("[%s] %s - %s (%d) | Stok: %d",
-                idKoleksi, judul, penulis, tahunTerbit, stok);
+    public String getIdBuku(){ 
+       return idBuku;
     }
     
+    public void setIdBuku(String idBuku){
+        this.idBuku = idBuku;
+    }
+
+    public String getJudul(){
+        return judul;
+    }
+    
+    public void setJudul(String judul){
+        this.judul = judul;
+    }
+
+    public String getPenulis(){
+        return penulis;
+    }
+    
+    public void setPenulis(String penulis){
+        this.penulis = penulis;
+    }
+
+    public int getTahunTerbit(){
+        return tahunTerbit;
+    }
+    
+    public void setTahunTerbit(int tahunTerbit){
+        this.tahunTerbit = tahunTerbit;
+    }
+
+    public int getStok(){
+        return stok;
+    }
+    
+    public void setStok(int stok){
+        this.stok = stok;
+    }
 }
 ```
 
 ---
 
-### Step 5: Membuat DAO (`src/dao/BukuDAO.java`)
+### Step 5: Membuat DAO (`src/model/BukuDAO.java`)
 
 Ini adalah **inti** dari materi satu-satunya kelas yang boleh berisi query SQL.
 
 ```java
-package dao;
-
-import koneksi.Koneksi;
-import model.Buku;
-
+package model;
+import config.Koneksi;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -409,114 +411,89 @@ import java.util.List;
 
 public class BukuDAO {
 
-    // CREATE
-    public boolean tambahBuku(Buku buku) {
-        String sql = "INSERT INTO buku (id_koleksi, judul, penulis, tahun_terbit, stok) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = Koneksi.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, buku.getIdKoleksi());
-            ps.setString(2, buku.getJudul());
-            ps.setString(3, buku.getPenulis());
-            ps.setInt(4, buku.getTahunTerbit());
-            ps.setInt(5, buku.getStok());
-
-            return ps.executeUpdate() > 0; // true jika ada baris yang berhasil ditambahkan
-
+    //CREATE
+    public void tambahBuku(Buku buku) {
+        String sql = "INSERT INTO buku (id_buku, judul, penulis, tahun_terbit, stok) VALUES (?, ?, ?, ?, ?)";
+        try {
+            Connection conn = Koneksi.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, buku.getIdBuku());
+            pstmt.setString(2, buku.getJudul());
+            pstmt.setString(3, buku.getPenulis());
+            pstmt.setInt(4, buku.getTahunTerbit());
+            pstmt.setInt(5, buku.getStok());
+            
+            pstmt.executeUpdate();
+            System.out.println("Buku berhasil ditambahkan!");
         } catch (SQLException e) {
-            System.out.println("Gagal menambah buku: " + e.getMessage());
-            return false;
+            System.out.println("Gagal menambah buku - " + e.getMessage());
         }
     }
 
-    // READ
-    public List<Buku> tampilkanSemuaBuku() {
-        List<Buku> daftarBuku = new ArrayList<>();
+    //READ
+    public List<Buku> getAllBuku() {
+        List<Buku> listBuku = new ArrayList<>();
         String sql = "SELECT * FROM buku";
-
-        try (Connection conn = Koneksi.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try {
+            Connection conn = Koneksi.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                Buku b = new Buku(
-                        rs.getString("id_koleksi"),
-                        rs.getString("judul"),
-                        rs.getString("penulis"),
-                        rs.getInt("tahun_terbit"),
-                        rs.getInt("stok")
-                );
-                daftarBuku.add(b);
+                Buku buku = new Buku();
+                buku.setIdBuku(rs.getString("id_buku"));
+                buku.setJudul(rs.getString("judul"));
+                buku.setPenulis(rs.getString("penulis"));
+                buku.setTahunTerbit(rs.getInt("tahun_terbit"));
+                buku.setStok(rs.getInt("stok"));
+                
+                listBuku.add(buku);
             }
-
         } catch (SQLException e) {
-            System.out.println("Gagal mengambil data buku: " + e.getMessage());
+            System.out.println("Gagal mengambil data buku - " + e.getMessage());
         }
-        return daftarBuku;
-    }
-
-    //READ ID
-    public Buku cariBukuById(String idKoleksi) {
-        String sql = "SELECT * FROM buku WHERE id_koleksi = ?";
-
-        try (Connection conn = Koneksi.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, idKoleksi);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new Buku(
-                            rs.getString("id_koleksi"),
-                            rs.getString("judul"),
-                            rs.getString("penulis"),
-                            rs.getInt("tahun_terbit"),
-                            rs.getInt("stok")
-                    );
-                }
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Gagal mencari buku: " + e.getMessage());
-        }
-        return null; // tidak ditemukan
+        return listBuku;
     }
 
     //UPDATE
-    public boolean updateBuku(Buku buku) {
-        String sql = "UPDATE buku SET judul = ?, penulis = ?, tahun_terbit = ?, stok = ? WHERE id_koleksi = ?";
-
-        try (Connection conn = Koneksi.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, buku.getJudul());
-            ps.setString(2, buku.getPenulis());
-            ps.setInt(3, buku.getTahunTerbit());
-            ps.setInt(4, buku.getStok());
-            ps.setString(5, buku.getIdKoleksi());
-
-            return ps.executeUpdate() > 0;
-
+    public void updateBuku(Buku buku) {
+        String sql = "UPDATE buku SET judul=?, penulis=?, tahun_terbit=?, stok=? WHERE id_buku=?";
+        try {
+            Connection conn = Koneksi.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, buku.getJudul());
+            pstmt.setString(2, buku.getPenulis());
+            pstmt.setInt(3, buku.getTahunTerbit());
+            pstmt.setInt(4, buku.getStok());
+            pstmt.setString(5, buku.getIdBuku());
+            
+            int barisBerubah = pstmt.executeUpdate();
+            if (barisBerubah > 0) {
+                System.out.println("Data buku berhasil diubah!");
+            } else {
+                System.out.println("ID buku tidak ditemukan.");
+            }
         } catch (SQLException e) {
-            System.out.println("Gagal update buku: " + e.getMessage());
-            return false;
+            System.out.println("Gagal mengubah data buku - " + e.getMessage());
         }
     }
 
-    // DELETE
-    public boolean hapusBuku(String idKoleksi) {
-        String sql = "DELETE FROM buku WHERE id_koleksi = ?";
-
-        try (Connection conn = Koneksi.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, idKoleksi);
-            return ps.executeUpdate() > 0;
-
+    //DELETE
+    public void hapusBuku(String idBuku) {
+        String sql = "DELETE FROM buku WHERE id_buku=?";
+        try {
+            Connection conn = Koneksi.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, idBuku);
+            
+            int barisBerubah = pstmt.executeUpdate();
+            if (barisBerubah > 0) {
+                System.out.println("Buku berhasil dihapus!");
+            } else {
+                System.out.println("ID buku tidak ditemukan.");
+            }
         } catch (SQLException e) {
-            System.out.println("Gagal menghapus buku: " + e.getMessage());
-            return false;
+            System.out.println("Gagal menghapus buku - " + e.getMessage());
         }
     }
 }
@@ -532,36 +509,41 @@ public class BukuDAO {
 
 ```java
 package controller;
-
-import dao.BukuDAO;
+import model.BukuDAO;
 import model.Buku;
-
-import java.util.List;
+import view.BukuView;
 
 public class BukuController {
+    BukuView view = new BukuView();
+    BukuDAO dao = new BukuDAO();
 
-    private BukuDAO bukuDAO = new BukuDAO();
+    public void mulai() {
+        int menu;
+        do {
+            menu = view.tampilkanMenu();
 
-    public boolean tambahBuku(String id, String judul, String penulis, int tahun, int stok) {
-        Buku buku = new Buku(id, judul, penulis, tahun, stok);
-        return bukuDAO.tambahBuku(buku);
-    }
+            switch (menu) {
+                case 1 -> {
+                    Buku bukuBaru = view.inputDataBuku();
+                    dao.tambahBuku(bukuBaru);
+                }
+                case 2 -> view.tampilkanData(dao.getAllBuku());
+                case 3 -> {
+                    view.tampilkanData(dao.getAllBuku());
+                    System.out.println("Ketik ulang ID yang mau diubah, lalu isi data barunya:");
+                    Buku bukuUbah = view.inputDataBuku();
+                    dao.updateBuku(bukuUbah);
+                }
+                case 4 -> {
+                    view.tampilkanData(dao.getAllBuku());
+                    String idHapus = view.inputId();
+                    dao.hapusBuku(idHapus);
+                }
+                case 0 -> System.out.println("Program Selesai.");
+                default -> System.out.println("Menu tidak ada!");
+            }
 
-    public List<Buku> getSemuaBuku() {
-        return bukuDAO.tampilkanSemuaBuku();
-    }
-
-    public Buku cariBuku(String id) {
-        return bukuDAO.cariBukuById(id);
-    }
-
-    public boolean updateBuku(String id, String judul, String penulis, int tahun, int stok) {
-        Buku buku = new Buku(id, judul, penulis, tahun, stok);
-        return bukuDAO.updateBuku(buku);
-    }
-
-    public boolean hapusBuku(String id) {
-        return bukuDAO.hapusBuku(id);
+        } while (menu != 0);
     }
 }
 ```
@@ -574,115 +556,78 @@ public class BukuController {
 
 ```java
 package view;
-
-import controller.BukuController;
-import model.Buku;
-
 import java.util.List;
 import java.util.Scanner;
+import model.Buku;
 
 public class BukuView {
 
-    private BukuController controller = new BukuController();
-    private Scanner scanner = new Scanner(System.in);
+    Scanner input = new Scanner(System.in);
 
-    public void tampilkanMenu() {
-        int pilihan;
-        do {
-            System.out.println("\n=== MENU PERPUSTAKAAN (db_perpustakaan) ===");
-            System.out.println("1. Tambah Buku");
-            System.out.println("2. Lihat Semua Buku");
-            System.out.println("3. Cari Buku berdasarkan ID");
-            System.out.println("4. Update Buku");
-            System.out.println("5. Hapus Buku");
-            System.out.println("0. Keluar");
-            System.out.print("Pilih menu: ");
-            pilihan = Integer.parseInt(scanner.nextLine());
-
-            switch (pilihan) {
-                case 1 -> tambahBuku();
-                case 2 -> lihatSemuaBuku();
-                case 3 -> cariBuku();
-                case 4 -> updateBuku();
-                case 5 -> hapusBuku();
-                case 0 -> System.out.println("Program selesai. Sampai jumpa!");
-                default -> System.out.println("Pilihan tidak valid.");
-            }
-        } while (pilihan != 0);
+    //Tampilkan Menu
+    public int tampilkanMenu() {
+        System.out.println("\n== MENU PERPUSTAKAAN ==");
+        System.out.println("1. Tambah Buku");
+        System.out.println("2. Tampil Buku");
+        System.out.println("3. Ubah Buku");
+        System.out.println("4. Hapus Buku");
+        System.out.println("0. Keluar");
+        System.out.print("Pilih menu: ");
+        
+        int pilihan = input.nextInt();
+        input.nextLine();
+        return pilihan;
     }
 
-    private void tambahBuku() {
-        System.out.print("ID Koleksi   : ");
-        String id = scanner.nextLine();
-        System.out.print("Judul        : ");
-        String judul = scanner.nextLine();
-        System.out.print("Penulis      : ");
-        String penulis = scanner.nextLine();
-        System.out.print("Tahun Terbit : ");
-        int tahun = Integer.parseInt(scanner.nextLine());
-        System.out.print("Stok         : ");
-        int stok = Integer.parseInt(scanner.nextLine());
-
-        boolean berhasil = controller.tambahBuku(id, judul, penulis, tahun, stok);
-        System.out.println(berhasil ? "Buku berhasil ditambahkan!" : "Gagal menambahkan buku.");
-    }
-
-    private void lihatSemuaBuku() {
-        List<Buku> daftarBuku = controller.getSemuaBuku();
-        System.out.println("\n--- DAFTAR SELURUH BUKU ---");
-        if (daftarBuku.isEmpty()) {
-            System.out.println("(Belum ada data buku)");
-        }
-        for (Buku b : daftarBuku) {
-            System.out.println(b);
+    public void tampilkanData(List<Buku> listBuku) {
+        System.out.println("\n--- DATA BUKU ---");
+        for (Buku b : listBuku) {
+            System.out.println(b.getIdBuku() + " | " + b.getJudul() + " | " + b.getPenulis() + " | " + b.getTahunTerbit() + " | Stok: " + b.getStok());
         }
     }
 
-    private void cariBuku() {
-        System.out.print("Masukkan ID Koleksi: ");
-        String id = scanner.nextLine();
-        Buku b = controller.cariBuku(id);
-        System.out.println(b != null ? b : "Buku dengan ID tersebut tidak ditemukan.");
+    public Buku inputDataBuku() {
+        System.out.print("ID Buku : ");
+        String id = input.nextLine();
+        System.out.print("Judul   : ");
+        String judul = input.nextLine();
+        System.out.print("Penulis : ");
+        String penulis = input.nextLine();
+        System.out.print("Tahun   : ");
+        int tahun = input.nextInt();
+        System.out.print("Stok    : ");
+        int stok = input.nextInt();
+        input.nextLine(); // Bersihkan enter lagi
+        
+        return new Buku(id, judul, penulis, tahun, stok);
     }
 
-    private void updateBuku() {
-        System.out.print("ID Koleksi yang akan diupdate : ");
-        String id = scanner.nextLine();
-        System.out.print("Judul baru        : ");
-        String judul = scanner.nextLine();
-        System.out.print("Penulis baru      : ");
-        String penulis = scanner.nextLine();
-        System.out.print("Tahun Terbit baru : ");
-        int tahun = Integer.parseInt(scanner.nextLine());
-        System.out.print("Stok baru         : ");
-        int stok = Integer.parseInt(scanner.nextLine());
-
-        boolean berhasil = controller.updateBuku(id, judul, penulis, tahun, stok);
-        System.out.println(berhasil ? "Buku berhasil diperbarui!" : "Gagal memperbarui buku.");
-    }
-
-    private void hapusBuku() {
-        System.out.print("ID Koleksi yang akan dihapus: ");
-        String id = scanner.nextLine();
-        boolean berhasil = controller.hapusBuku(id);
-        System.out.println(berhasil ? "Buku berhasil dihapus!" : "Gagal menghapus buku.");
+    public String inputId() {
+        System.out.print("Masukkan ID Buku: ");
+        return input.nextLine();
     }
 }
 ```
 
 ---
 
-### Step 8: Menjalankan Aplikasi (`src/main/MainApp.java`)
+### Step 8: Menjalankan Aplikasi (`src/main/Main.java`)
 
 ```java
 package main;
+import config.Koneksi;
+import controller.BukuController;
 
-import view.BukuView;
-
-public class MainApp {
+public class Main {
     public static void main(String[] args) {
-        BukuView view = new BukuView();
-        view.tampilkanMenu();
+
+        if (Koneksi.getConnection() != null) {
+            BukuController aplikasi = new BukuController();
+            aplikasi.mulai();
+            
+        } else {
+            System.out.println("Gagal terhubung ke Database. Program dihentikan.");
+        }
     }
 }
 ```

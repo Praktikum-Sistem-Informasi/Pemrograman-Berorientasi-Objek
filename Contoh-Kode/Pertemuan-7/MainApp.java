@@ -1,15 +1,21 @@
 // ===========================================================
 // Topik: Integrasi Database
-// Letakkan file ini pada src/main/MainApp.java
+// Letakkan file ini pada src/main/Main.java
 // ===========================================================
 
 package main;
+import config.Koneksi;
+import controller.BukuController;
 
-import view.BukuView;
-
-public class MainApp {
+public class Main {
     public static void main(String[] args) {
-        BukuView view = new BukuView();
-        view.tampilkanMenu();
+
+        if (Koneksi.getConnection() != null) {
+            BukuController aplikasi = new BukuController();
+            aplikasi.mulai();
+
+        } else {
+            System.out.println("Gagal terhubung ke Database. Program dihentikan.");
+        }
     }
 }

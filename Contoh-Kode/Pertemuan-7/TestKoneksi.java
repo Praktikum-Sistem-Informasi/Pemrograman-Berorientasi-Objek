@@ -1,26 +1,24 @@
 // ===========================================================
 // Topik: Integrasi Database
-// Letakkan file ini pada src/main/TestKoneksi.java
+// Letakkan file ini pada src/config/TestKoneksi.java
 // ===========================================================
 
-package main;
-
+package config;
 import java.sql.Connection;
-import koneksi.Koneksi;
 
 public class TestKoneksi {
+
     public static void main(String[] args) {
+        System.out.println("Mengecek koneksi ke database...");
+
+        //Memanggil koneksi
         Connection conn = Koneksi.getConnection();
 
+        //Mengecek variabel conn ada isinya atau kosong (null)
         if (conn != null) {
-            System.out.println("Koneksi ke database BERHASIL!");
-            try {
-                conn.close();
-            } catch (Exception e) {
-                System.out.println("Gagal menutup koneksi: " + e.getMessage());
-            }
+            System.out.println("STATUS: BERHASIL! Database siap digunakan.");
         } else {
-            System.out.println("Koneksi database GAGAL. Periksa kembali URL, USER, PASS, dan pastikan service MySQL sudah menyala.");
+            System.out.println("STATUS: GAGAL! Periksa kembali URL, USER, PASS, dan pastikan service MySQL sudah menyala.");
         }
     }
 }

@@ -1,9 +1,9 @@
 // ===========================================================
 // Topik: Integrasi Database
-// Letakkan file ini pada src/koneksi/Koneksi.java
+// Letakkan file ini pada src/config/Koneksi.java
 // ===========================================================
 
-package koneksi;
+package config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,15 +13,23 @@ public class Koneksi {
 
     private static final String URL = "jdbc:mysql://localhost:3306/db_perpustakaan";
     private static final String USER = "root";
-    private static final String PASSWORD = ""; // sesuaikan dengan password MySQL Anda
+    private static final String PASS = "";
+
+    //variabel statis untuk menyimpan koneksi
+    private static Connection conn;
 
     public static Connection getConnection() {
-        Connection conn = null;
         try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            // memeriksa koneksi belum ada atau sudah terputus
+            if (conn == null || conn.isClosed()) {
+                // Jika belum ada, membuat koneksi baru
+                conn = DriverManager.getConnection(URL, USER, PASS);
+            }
         } catch (SQLException e) {
-            System.out.println("Koneksi database GAGAL: " + e.getMessage());
+            System.out.println("Koneksi GAGAL: " + e.getMessage());
         }
+
+        //Kembalikan koneksi yang sudah aman
         return conn;
     }
 }

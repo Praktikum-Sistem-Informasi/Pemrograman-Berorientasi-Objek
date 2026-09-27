@@ -13,7 +13,7 @@ Setelah mengikuti pertemuan ini, Anda diharapkan mampu:
 3. ✅ Membangun koneksi ke basis data menggunakan `DriverManager` dan `Connection`, serta menguji apakah koneksi berhasil sebelum melangkah lebih jauh.
 4. ✅ Mengimplementasikan `PreparedStatement` untuk menjalankan query **CRUD** (*Create, Read, Update, Delete*) secara aman dari serangan *SQL Injection*.
 5. ✅ Mengolah hasil query menggunakan `ResultSet` dan memetakannya ke dalam objek `Model`.
-7. ✅ Memahami konsep dasar **ORM** (*Object-Relational Mapping*) sebagai pembanding tingkat lanjut dari JDBC murni.
+6. ✅ Memahami konsep dasar **ORM** (*Object-Relational Mapping*) sebagai pembanding tingkat lanjut dari JDBC murni.
 
 ---
 
@@ -44,7 +44,7 @@ Pada materi ini, terdapat 5 kata kunci utama yang wajib Anda pahami fungsi dan d
 | `BukuController.java` | Jembatan logika antara `view` dan `dao` |
 | `BukuView.java` | Tampilan antarmuka berbasis konsol |
 | `TestKoneksi.java` | Kelas uji coba koneksi awal ke basis data |
-| `MainApp.java` | Kelas utama untuk menjalankan aplikasi CRUD Perpustakaan |
+| `Main.java` | Kelas utama untuk menjalankan aplikasi CRUD Perpustakaan |
 
 ---
 
@@ -107,7 +107,7 @@ Alur baku penggunaan JDBC selalu mengikuti pola berikut:
 ```
 
 > 💡 **Praktik Terbaik: `try-with-resources`**
-> `Connection`, `PreparedStatement`, dan `ResultSet` adalah *resource* yang **wajib ditutup** setelah dipakai. Gunakan blok `try (...) { }` agar Java **menutupnya secara otomatis**, meskipun terjadi error di tengah jalan.
+> `PreparedStatement` dan `ResultSet` adalah *resource* yang **wajib ditutup** setelah dipakai. Gunakan blok `try (...) { }` agar Java **menutupnya secara otomatis**, meskipun terjadi error di tengah jalan. Pada materi ini, `Connection` dikelola secara khusus sebagai objek *singleton* (lihat Step 2), sehingga tidak ikut dibungkus try-with-resources — penjelasan lengkapnya ada di bagian DAO (Step 5).
 
 ---
 
@@ -125,8 +125,8 @@ Alur baku penggunaan JDBC selalu mengikuti pola berikut:
 ```java
 // ❌ BERBAHAYA — jangan pernah menulis kode seperti ini!
 String idInput = "B001' OR '1'='1"; // input jahat dari pengguna
-String sql = "SELECT * FROM buku WHERE id_koleksi = '" + idInput + "'";
-// Query yang terbentuk: SELECT * FROM buku WHERE id_koleksi = 'B001' OR '1'='1'
+String sql = "SELECT * FROM buku WHERE id_buku = '" + idInput + "'";
+// Query yang terbentuk: SELECT * FROM buku WHERE id_buku = 'B001' OR '1'='1'
 // Akibatnya: SELURUH DATA BUKU akan tampil, bukan hanya satu baris!
 ```
 
@@ -134,7 +134,7 @@ String sql = "SELECT * FROM buku WHERE id_koleksi = '" + idInput + "'";
 
 ```java
 // ✅ AMAN — input pengguna diperlakukan murni sebagai DATA, bukan perintah SQL
-String sql = "SELECT * FROM buku WHERE id_koleksi = ?";
+String sql = "SELECT * FROM buku WHERE id_buku = ?";
 PreparedStatement ps = conn.prepareStatement(sql);
 ps.setString(1, idInput); // Nilai "B001' OR '1'='1" tetap dianggap satu string biasa
 ```
@@ -143,26 +143,27 @@ ps.setString(1, idInput); // Nilai "B001' OR '1'='1" tetap dianggap satu string 
 
 ### 4. Struktur Folder Proyek (Arsitektur Berlapis)
 
-Agar kode rapi, mudah dirawat, dan siap dihubungkan ke GUI, kita memisahkan tanggung jawab tiap kelas ke dalam paket (*folder*) berikut:
+Agar kode rapi dan mudah dirawat, kita memisahkan tanggung jawab tiap kelas ke dalam paket (*folder*) berikut:
 
 ```
 src/
- ├── main/       → Titik masuk program (MainApp, TestKoneksi)
- ├── koneksi/    → Kelas penghubung ke basis data (Koneksi)
- ├── model/      → Blueprint objek yang merepresentasikan satu baris tabel (Buku)
- ├── dao/        → Data Access Object, berisi query SQL murni (BukuDAO)
- ├── controller/    → Jembatan logika antara view dan dao (BukuController)
+ ├── main/       → Titik masuk program (Main)
+ ├── config/     → Kelas penghubung ke basis data (Koneksi, TestKoneksi)
+ ├── model/      → Blueprint objek (Buku) & Data Access Object (BukuDAO)
+ ├── controller/ → Jembatan logika antara view dan model (BukuController)
  └── view/       → Tampilan antarmuka untuk pengguna (BukuView)
 ```
 
 | Lapisan | Tugas | Analoginya |
 | :--- | :--- | :--- |
-| **Model** | Menyimpan data satu entitas (atribut + getter/setter). | "Formulir kosong" data Buku. |
-| **DAO** | Satu-satunya lapisan yang **boleh** menulis SQL & bicara ke basis data. | "Petugas gudang" yang tahu cara mengambil/menaruh barang. |
+| **config** | Menyimpan konfigurasi & pembuatan koneksi ke basis data. | "Petugas keamanan" yang membukakan pintu gerbang. |
+| **model (Buku)** | Menyimpan data satu entitas (atribut + getter/setter). | "Formulir kosong" data Buku. |
+| **model (BukuDAO)** | Satu-satunya kelas yang **boleh** menulis SQL & bicara ke basis data. | "Petugas gudang" yang tahu cara mengambil/menaruh barang. |
 | **Controller** | Mengatur logika, memanggil DAO, meneruskan hasil ke View. | "Manajer" penghubung antara pelanggan dan gudang. |
 | **View** | Berinteraksi dengan pengguna (input/output). | "Kasir" yang melayani pelanggan langsung. |
 
-> 📌 Dengan pemisahan ini, kelak saat *view* berbasis konsol diganti menjadi GUI, **lapisan `dao` dan `controller` tidak perlu diubah sama sekali** — cukup ganti `view`-nya saja!
+> 📌 Dengan pemisahan ini, kelak saat *view* berbasis konsol diganti menjadi GUI, **`BukuDAO` dan `BukuController` tidak perlu diubah sama sekali** — cukup ganti `view`-nya saja!
+> 💡 Catatan: `Buku.java` (Model) dan `BukuDAO.java` (DAO) sengaja ditempatkan dalam satu package `model` pada praktik ini agar strukturnya lebih ringkas untuk pemula. Pada proyek yang lebih besar, DAO biasanya dipisah ke package `dao` tersendiri.
 
 ---
 
@@ -185,8 +186,8 @@ Setelah memahami JDBC murni, penting untuk mengenal **ORM** sebagai pendekatan a
 @Table(name = "buku")
 public class Buku {
     @Id
-    @Column(name = "id_koleksi")
-    private String idKoleksi;
+    @Column(name = "id_buku")
+    private String idBuku;
 
     private String judul;
     private String penulis;
@@ -235,7 +236,7 @@ INSERT INTO buku (id_buku, judul, penulis, tahun_terbit, stok) VALUES
 ('B003', 'Database MySQL Dasar', 'Citra Lestari', 2022, 5);
 ```
 
-> ✅ **Cek hasil:** Buka tabel `buku` di phpMyAdmin, pastikan 2 baris data contoh sudah muncul.
+> ✅ **Cek hasil:** Buka tabel `buku` di phpMyAdmin, pastikan 3 baris data contoh sudah muncul.
 
 ---
 
@@ -253,7 +254,7 @@ Buka folder `Project Files` lalu Buka file `pom.xml` di NetBeans, tambahkan tag 
 </dependencies>
 ```
 
-> 💡 Setelah menambahkan,bisa klik `Ctrl+S` atau klik kanan proyek → **Reload/Reimport Maven Project** agar NetBeans/IntelliJ mengunduh *library*-nya. Tanpa langkah ini, `import java.sql.*` bisa berjalan (bawaan JDK), tetapi Java **tidak akan menemukan driver MySQL yang cocok** saat koneksi dibuka.
+> 💡 Setelah menambahkan, bisa klik `Ctrl+S` atau klik kanan proyek → **Reload/Reimport Maven Project** agar NetBeans/IntelliJ mengunduh *library*-nya. Tanpa langkah ini, `import java.sql.*` bisa berjalan (bawaan JDK), tetapi Java **tidak akan menemukan driver MySQL yang cocok** saat koneksi dibuka.
 
 ---
 
@@ -271,7 +272,7 @@ public class Koneksi {
     private static final String URL = "jdbc:mysql://localhost:3306/db_perpustakaan";
     private static final String USER = "root";
     private static final String PASS = "";
-    
+
     //variabel statis untuk menyimpan koneksi
     private static Connection conn;
 
@@ -285,7 +286,7 @@ public class Koneksi {
         } catch (SQLException e) {
             System.out.println("Koneksi GAGAL: " + e.getMessage());
         }
-        
+
         //Kembalikan koneksi yang sudah aman
         return conn;
     }
@@ -297,7 +298,7 @@ public class Koneksi {
 
 ---
 
-### Step 3: Menguji Koneksi Awal (`src/mconfig/TestKoneksi.java`)
+### Step 3: Menguji Koneksi Awal (`src/config/TestKoneksi.java`)
 
 **Sebelum menulis kode CRUD apa pun**, wajib memastikan koneksi ke basis data sudah benar-benar terhubung.
 
@@ -306,13 +307,13 @@ package config;
 import java.sql.Connection;
 
 public class TestKoneksi {
-    
+
     public static void main(String[] args) {
         System.out.println("Mengecek koneksi ke database...");
-        
+
         //Memanggil koneksi
         Connection conn = Koneksi.getConnection();
-        
+
         //Mengecek variabel conn ada isinya atau kosong (null)
         if (conn != null) {
             System.out.println("STATUS: BERHASIL! Database siap digunakan.");
@@ -323,7 +324,7 @@ public class TestKoneksi {
 }
 ```
 
-> ✅ **Jalankan `TestKoneksi.java` terlebih dahulu** dengan klik kanan pada file lalu pilin `run file`. Jika muncul pesan "GAGAL", **jangan lanjut** ke tahap berikutnya periksa dulu service MySQL, nama database, atau password.
+> ✅ **Jalankan `TestKoneksi.java` terlebih dahulu** dengan klik kanan pada file lalu pilih `run file`. Jika muncul pesan "GAGAL", **jangan lanjut** ke tahap berikutnya, periksa dulu service MySQL, nama database, atau password.
 
 ---
 
@@ -342,7 +343,7 @@ public class Buku {
 
     public Buku() {
     }
-    
+
     public Buku(String idBuku, String judul, String penulis, int tahunTerbit, int stok) {
         this.idBuku = idBuku;
         this.judul = judul;
@@ -351,10 +352,10 @@ public class Buku {
         this.stok = stok;
     }
 
-    public String getIdBuku(){ 
+    public String getIdBuku(){
        return idBuku;
     }
-    
+
     public void setIdBuku(String idBuku){
         this.idBuku = idBuku;
     }
@@ -362,7 +363,7 @@ public class Buku {
     public String getJudul(){
         return judul;
     }
-    
+
     public void setJudul(String judul){
         this.judul = judul;
     }
@@ -370,7 +371,7 @@ public class Buku {
     public String getPenulis(){
         return penulis;
     }
-    
+
     public void setPenulis(String penulis){
         this.penulis = penulis;
     }
@@ -378,7 +379,7 @@ public class Buku {
     public int getTahunTerbit(){
         return tahunTerbit;
     }
-    
+
     public void setTahunTerbit(int tahunTerbit){
         this.tahunTerbit = tahunTerbit;
     }
@@ -386,7 +387,7 @@ public class Buku {
     public int getStok(){
         return stok;
     }
-    
+
     public void setStok(int stok){
         this.stok = stok;
     }
@@ -397,7 +398,7 @@ public class Buku {
 
 ### Step 5: Membuat DAO (`src/model/BukuDAO.java`)
 
-Ini adalah **inti** dari materi satu-satunya kelas yang boleh berisi query SQL.
+Ini adalah **inti** dari materi, satu-satunya kelas yang boleh berisi query SQL.
 
 ```java
 package model;
@@ -414,15 +415,15 @@ public class BukuDAO {
     //CREATE
     public void tambahBuku(Buku buku) {
         String sql = "INSERT INTO buku (id_buku, judul, penulis, tahun_terbit, stok) VALUES (?, ?, ?, ?, ?)";
-        try {
-            Connection conn = Koneksi.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        Connection conn = Koneksi.getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, buku.getIdBuku());
             pstmt.setString(2, buku.getJudul());
             pstmt.setString(3, buku.getPenulis());
             pstmt.setInt(4, buku.getTahunTerbit());
             pstmt.setInt(5, buku.getStok());
-            
+
             pstmt.executeUpdate();
             System.out.println("Buku berhasil ditambahkan!");
         } catch (SQLException e) {
@@ -430,14 +431,38 @@ public class BukuDAO {
         }
     }
 
-    //READ
+    //READ (by ID)
+    public Buku cariBukuById(String idBuku) {
+        String sql = "SELECT * FROM buku WHERE id_buku = ?";
+        Buku buku = null;
+        Connection conn = Koneksi.getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, idBuku);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    buku = new Buku();
+                    buku.setIdBuku(rs.getString("id_buku"));
+                    buku.setJudul(rs.getString("judul"));
+                    buku.setPenulis(rs.getString("penulis"));
+                    buku.setTahunTerbit(rs.getInt("tahun_terbit"));
+                    buku.setStok(rs.getInt("stok"));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Gagal mencari buku - " + e.getMessage());
+        }
+        return buku;
+    }
+
+    //READ (all)
     public List<Buku> getAllBuku() {
         List<Buku> listBuku = new ArrayList<>();
         String sql = "SELECT * FROM buku";
-        try {
-            Connection conn = Koneksi.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();
+        Connection conn = Koneksi.getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 Buku buku = new Buku();
@@ -446,7 +471,6 @@ public class BukuDAO {
                 buku.setPenulis(rs.getString("penulis"));
                 buku.setTahunTerbit(rs.getInt("tahun_terbit"));
                 buku.setStok(rs.getInt("stok"));
-                
                 listBuku.add(buku);
             }
         } catch (SQLException e) {
@@ -458,15 +482,15 @@ public class BukuDAO {
     //UPDATE
     public void updateBuku(Buku buku) {
         String sql = "UPDATE buku SET judul=?, penulis=?, tahun_terbit=?, stok=? WHERE id_buku=?";
-        try {
-            Connection conn = Koneksi.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        Connection conn = Koneksi.getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, buku.getJudul());
             pstmt.setString(2, buku.getPenulis());
             pstmt.setInt(3, buku.getTahunTerbit());
             pstmt.setInt(4, buku.getStok());
             pstmt.setString(5, buku.getIdBuku());
-            
+
             int barisBerubah = pstmt.executeUpdate();
             if (barisBerubah > 0) {
                 System.out.println("Data buku berhasil diubah!");
@@ -481,11 +505,11 @@ public class BukuDAO {
     //DELETE
     public void hapusBuku(String idBuku) {
         String sql = "DELETE FROM buku WHERE id_buku=?";
-        try {
-            Connection conn = Koneksi.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        Connection conn = Koneksi.getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, idBuku);
-            
+
             int barisBerubah = pstmt.executeUpdate();
             if (barisBerubah > 0) {
                 System.out.println("Buku berhasil dihapus!");
@@ -498,6 +522,8 @@ public class BukuDAO {
     }
 }
 ```
+
+> 💡 **Catatan penting soal `Connection` vs try-with-resources:** Perhatikan bahwa `Connection conn = Koneksi.getConnection();` **tidak** ikut dibungkus try-with-resources di semua method di atas. Ini disengaja, karena `Koneksi.java` mengelola `Connection` sebagai objek *singleton* (dipakai berulang selama program berjalan, lihat Step 2) — kalau `conn` ikut ditutup di setiap method, method DAO berikutnya yang dipanggil akan gagal karena koneksinya sudah tertutup. Yang **wajib** dibungkus try-with-resources adalah `PreparedStatement` dan `ResultSet`, karena keduanya dibuat ulang setiap kali sebuah query dijalankan.
 
 > 📌 Perhatikan pola `executeUpdate()` vs `executeQuery()`:
 > * `executeUpdate()` → dipakai untuk **INSERT, UPDATE, DELETE** (mengembalikan jumlah baris yang terpengaruh).
@@ -573,7 +599,7 @@ public class BukuView {
         System.out.println("4. Hapus Buku");
         System.out.println("0. Keluar");
         System.out.print("Pilih menu: ");
-        
+
         int pilihan = input.nextInt();
         input.nextLine();
         return pilihan;
@@ -598,7 +624,7 @@ public class BukuView {
         System.out.print("Stok    : ");
         int stok = input.nextInt();
         input.nextLine(); // Bersihkan enter lagi
-        
+
         return new Buku(id, judul, penulis, tahun, stok);
     }
 
@@ -624,7 +650,7 @@ public class Main {
         if (Koneksi.getConnection() != null) {
             BukuController aplikasi = new BukuController();
             aplikasi.mulai();
-            
+
         } else {
             System.out.println("Gagal terhubung ke Database. Program dihentikan.");
         }
@@ -658,15 +684,15 @@ public class Main {
 
 ### 🎯 Eksperimen 3: SQL Injection dengan `Statement` (Bukan `PreparedStatement`)
 
-**Tindakan:** Ganti sementara method `cariBukuById` menggunakan `Statement` dan *string concatenation*:
+**Tindakan:** Ganti sementara isi method `cariBukuById` di `BukuDAO.java` menggunakan `Statement` dan *string concatenation*:
 
 ```java
-String sql = "SELECT * FROM buku WHERE id_koleksi = '" + idKoleksi + "'";
+String sql = "SELECT * FROM buku WHERE id_buku = '" + idBuku + "'";
 Statement st = conn.createStatement();
 ResultSet rs = st.executeQuery(sql);
 ```
 
-Lalu jalankan program dan masukkan input berikut saat diminta ID Koleksi:
+Lalu jalankan program dan masukkan input berikut saat diminta ID Buku:
 
 ```
 B001' OR '1'='1
@@ -675,22 +701,44 @@ B001' OR '1'='1
 * **Hasil:** Alih-alih "tidak ditemukan", program justru menampilkan **seluruh isi tabel buku**.
 * **Pelajaran:** *String concatenation* memperlakukan input pengguna sebagai bagian dari **perintah SQL**, bukan sekadar data. Selalu gunakan `PreparedStatement` dengan `?` agar input pengguna murni diperlakukan sebagai **nilai**, bukan **perintah**.
 
+> ⚠️ Setelah eksperimen ini selesai, kembalikan isi method `cariBukuById` ke versi `PreparedStatement` semula (lihat Step 5) sebelum melanjutkan.
+
 ---
 
-### 🎯 Eksperimen 4: Lupa Menutup Koneksi (*Connection Leak*)
+### 🎯 Eksperimen 4: Connection Leak (Koneksi Tidak Pernah Ditutup)
 
-**Tindakan:** Tulis ulang salah satu method DAO **tanpa** `try-with-resources`, dan sengaja tidak memanggil `conn.close()`.
+**Konteks:** `Koneksi.java` pada materi ini sengaja dibuat *singleton* — `Koneksi.getConnection()` akan selalu mengembalikan objek `Connection` yang sama selama koneksi itu belum ditutup, sehingga tidak akan pernah ada lebih dari satu koneksi terbuka sekaligus. Supaya efek *connection leak* bisa benar-benar terlihat, kita perlu menonaktifkan sementara perilaku singleton tersebut.
+
+**Tindakan:**
+
+1. Ubah sementara `getConnection()` di `Koneksi.java` supaya **selalu** membuka koneksi baru setiap kali dipanggil (hapus pengecekan `if (conn == null || conn.isClosed())`):
 
 ```java
-// ❌ Berbahaya: koneksi tidak pernah ditutup
-Connection conn = Koneksi.getConnection();
-PreparedStatement ps = conn.prepareStatement(sql);
-ps.executeUpdate();
-// conn.close() tidak dipanggil!
+// ❌ Sengaja dibuat SELALU membuka koneksi baru, khusus untuk eksperimen ini
+public static Connection getConnection() {
+    try {
+        return DriverManager.getConnection(URL, USER, PASS);
+    } catch (SQLException e) {
+        System.out.println("Koneksi GAGAL: " + e.getMessage());
+        return null;
+    }
+}
 ```
 
-* **Hasil:** Jika method ini dipanggil berulang kali (misalnya lewat *looping*), lama-kelamaan akan muncul error `Too many connections` dari server MySQL.
-* **Pelajaran:** Setiap `Connection` yang dibuka **wajib ditutup**, idealnya menggunakan `try-with-resources` agar tertutup otomatis meski terjadi *exception*.
+2. Panggil salah satu method DAO berkali-kali dalam sebuah *loop*, misalnya lewat kelas uji coba sederhana:
+
+```java
+BukuDAO dao = new BukuDAO();
+for (int i = 0; i < 200; i++) {
+    dao.getAllBuku();
+    System.out.println("Percobaan ke-" + i);
+}
+```
+
+* **Hasil:** Setelah beberapa puluh hingga ratusan pemanggilan, MySQL akan menolak koneksi baru dan melempar `SQLException: Too many connections`, karena setiap koneksi yang dibuka tidak pernah ditutup sementara server MySQL punya batas maksimum koneksi aktif.
+* **Pelajaran:** Eksperimen ini menunjukkan **mengapa** `Koneksi.java` pada materi ini didesain sebagai singleton — pola itu justru **mencegah** kebocoran koneksi seperti ini terjadi dalam skenario CRUD sederhana. Namun pada aplikasi nyata (terutama aplikasi web atau multi-thread) di mana setiap request/thread membutuhkan koneksinya sendiri, disiplin menutup `Connection`, `PreparedStatement`, dan `ResultSet` — idealnya lewat `try-with-resources` — tetap **wajib**, karena di situasi seperti itu koneksi tidak bisa (dan tidak boleh) di-*share* seperti pola singleton ini.
+
+> ⚠️ **Setelah eksperimen selesai, kembalikan `Koneksi.java` ke versi semula** (dengan pengecekan `if (conn == null || conn.isClosed())` di Step 2) sebelum melanjutkan ke Challenge Praktikan.
 
 ---
 
@@ -702,7 +750,7 @@ ps.executeUpdate();
 | `Communications link failure` | Service MySQL/Laragon belum dinyalakan, atau port/host salah. | Nyalakan service MySQL di Laragon, cek kembali URL koneksi. |
 | `Access denied for user` | *Username* atau *password* pada `Koneksi.java` salah. | Samakan dengan kredensial MySQL yang sebenarnya. |
 | `Unknown database 'db_perpustakaan'` | Database belum dibuat / salah ketik nama database. | Jalankan ulang script `db_perpustakaan.sql`. |
-| `Too many connections` | Koneksi (`Connection`) tidak pernah ditutup (*connection leak*). | Gunakan `try-with-resources` pada setiap operasi DAO. |
+| `Too many connections` | Koneksi (`Connection`) tidak pernah ditutup (*connection leak*). | Pastikan `Koneksi.java` kembali ke pola singleton, dan gunakan `try-with-resources` pada `PreparedStatement`/`ResultSet` di setiap operasi DAO. |
 | Data hilang saat program ditutup | Masih memakai `ArrayList` sebagai penyimpanan, bukan tabel database. | Pastikan operasi CRUD memanggil `BukuDAO`, bukan koleksi di RAM. |
 
 ---
@@ -713,9 +761,9 @@ ps.executeUpdate();
 
 > **A:** Prinsip *"divide and conquer"* dalam debugging. Jika koneksi ke database saja belum berhasil, maka fitur CRUD apa pun **pasti akan gagal** dan pesan error-nya bisa membingungkan karena bercampur dengan logika CRUD. Dengan menguji koneksi terlebih dahulu secara terpisah, kita bisa memastikan "jalur dasar" sudah benar sebelum membangun fitur di atasnya.
 
-**Q: Kenapa `dao` harus dipisah dari `controller`? Bukankah bisa saja query SQL langsung ditulis di `controller`?**
+**Q: Kenapa `BukuDAO` harus dipisah dari `BukuController`? Bukankah bisa saja query SQL langsung ditulis di controller?**
 
-> **A:** Bisa saja secara teknis, tetapi akan menyulitkan perawatan kode. Dengan memisahkan `dao`, seluruh query SQL terkumpul di satu tempat. Jika suatu saat basis data berpindah dari MySQL ke PostgreSQL, atau bahkan berganti ke pendekatan ORM, **cukup ubah isi `dao`** — `controller` dan `view` tidak perlu disentuh sama sekali.
+> **A:** Bisa saja secara teknis, tetapi akan menyulitkan perawatan kode. Dengan memisahkan DAO, seluruh query SQL terkumpul di satu tempat. Jika suatu saat basis data berpindah dari MySQL ke PostgreSQL, atau bahkan berganti ke pendekatan ORM, **cukup ubah isi DAO-nya** — `controller` dan `view` tidak perlu disentuh sama sekali.
 
 **Q: Apakah `ORM` akan sepenuhnya menggantikan JDBC?**
 

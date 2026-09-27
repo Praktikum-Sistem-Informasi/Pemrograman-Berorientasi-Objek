@@ -218,20 +218,21 @@ Buku b = entityManager.find(Buku.class, "B001");
 Jalankan script berikut di phpMyAdmin / MySQL Workbench / terminal MySQL:
 
 ```sql
-CREATE DATABASE IF NOT EXISTS db_perpustakaan;
+CREATE DATABASE db_perpustakaan;
 USE db_perpustakaan;
 
 CREATE TABLE buku (
-    id_koleksi   VARCHAR(10)  PRIMARY KEY,
-    judul        VARCHAR(150) NOT NULL,
-    penulis      VARCHAR(100) NOT NULL,
-    tahun_terbit INT          NOT NULL,
-    stok         INT          NOT NULL DEFAULT 0
+    id_buku VARCHAR(20) PRIMARY KEY,
+    judul VARCHAR(100) NOT NULL,
+    penulis VARCHAR(100) NOT NULL,
+    tahun_terbit INT NOT NULL,
+    stok INT NOT NULL
 );
 
-INSERT INTO buku VALUES
-('B001', 'Pemrograman Java Dasar', 'James Gosling', 2023, 5),
-('B002', 'Struktur Data & Algoritma', 'Ada Lovelace', 2022, 3);
+INSERT INTO buku (id_buku, judul, penulis, tahun_terbit, stok) VALUES
+('B001', 'Belajar Java untuk Pemula', 'Budi Santoso', 2023, 10),
+('B002', 'Penerapan Konsep OOP', 'Andi Wijaya', 2024, 15),
+('B003', 'Database MySQL Dasar', 'Citra Lestari', 2022, 5);
 ```
 
 > ✅ **Cek hasil:** Buka tabel `buku` di phpMyAdmin, pastikan 2 baris data contoh sudah muncul.

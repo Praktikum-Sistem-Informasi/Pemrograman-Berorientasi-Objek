@@ -8,11 +8,12 @@
 
 Setelah mengikuti pertemuan ini, Anda diharapkan mampu:
 
-1. Memahami konsep *Graphical User Interface* (GUI) dalam Pemrograman Berorientasi Objek.
-2. Merancang antarmuka aplikasi desktop menggunakan komponen Java Swing (seperti `JFrame`, `JPanel`, `JLabel`, `JTextField`, dan `JButton`).
-3. Menggunakan `JTable` dan `DefaultTableModel` untuk menampung dan menampilkan data sementara di dalam memori.
-4. Menerapkan *Event Handling* (`ActionListener`) untuk merespons interaksi pengguna seperti klik tombol.
-5. Mengubah aplikasi berbasis konsol (*command-line*) menjadi aplikasi visual yang interaktif.
+1. Memahami apa itu Graphical User Interface (GUI) dan perbedaannya dengan aplikasi berbasis konsol.
+2. Membuat tampilan aplikasi menggunakan lima komponen dasar Java Swing: JFrame, JLabel, JTextField, JButton, dan JTable.
+3. Menampilkan dan memperbarui isi JTable menggunakan DefaultTableModel.
+4. Membuat tombol dan tabel yang bereaksi terhadap klik pengguna (event handling).
+5. Menghubungkan tampilan GUI dengan database melalui BukuController dan BukuDAO untuk membuat aplikasi CRUD sederhana: Tambah, Edit, Lihat, dan Hapus data buku.
+6. Menampilkan notifikasi (JOptionPane) ketika pengguna salah mengisi data
 
 ---
 
@@ -20,24 +21,28 @@ Setelah mengikuti pertemuan ini, Anda diharapkan mampu:
 
 Pada materi ini, terdapat komponen dan konsep utama yang wajib Anda pahami fungsinya:
 
-* **`JFrame`** : Kanvas utama atau *top-level-container* untuk menampung seluruh komponen GUI aplikasi.
-* **`JPanel`** : Kontainer pengelompokan yang diletakkan di atas `JFrame` untuk merapikan tata letak komponen (*content pane*).
-* **`Swing Components`** : Komponen visual interaktif seperti `JButton` (tombol), `JLabel` (teks/gambar statis), dan `JTextField` (kolom input teks).
-* **`JTable`** : Komponen untuk menampilkan data dalam bentuk baris dan kolom secara terstruktur.
-* **`DefaultTableModel`** : Model data internal yang mengelola dan memanipulasi baris/kolom pada sebuah `JTable` (sebelum dihubungkan ke database).
-* **`ActionListener`** : Antarmuka pendengar (*listener*) yang bertugas menangkap dan memproses aksi pengguna (misalnya, saat tombol ditekan).
+* **`GUI`** : *Graphical User Interface*, yaitu tampilan aplikasi berupa jendela, tombol, dan kolom isian, sehingga pengguna cukup mengeklik dan mengetik, bukan menjalankan perintah teks.
+* **`JFrame`** : Jendela utama aplikasi. Semua komponen lain diletakkan di atasnya.
+* **`Komponen Swing`** : Bagian-bagian tampilan yang kita susun, yaitu `JLabel` (teks keterangan), `JTextField` (kolom isian), dan `JButton` (tombol).
+* **`JTable`** : Komponen untuk menampilkan data dalam bentuk baris dan kolom. Fungsinya hanya sebagai **tampilan**.
+* **`DefaultTableModel`** : "Isi" dari sebuah `JTable`. Menambah atau mengosongkan baris tabel dilakukan lewat model ini.
+* **`Event` dan `ActionListener`** : *Event* adalah kejadian yang dilakukan pengguna (misalnya klik tombol). `ActionListener` adalah "telinga" yang mendengarkan kejadian itu lalu menjalankan kode yang kita siapkan.
+* **`Controller`** : Perantara antara tampilan dan database. Tugasnya memeriksa isian dari form, lalu meneruskannya ke `BukuDAO`.
 
 ---
 
 ## 📂 RESOURCES
 
-> 💡 **File demo tersedia di folder `Contoh-Kode/Pertemuan-8`**
+> 💡 **File demo dan database tersedia di folder `Contoh-Kode/Pertemuan-8`**
 
 | File | Deskripsi |
 | :--- | :--- |
-| `src/view/MainFrame.java` | Kelas utama GUI (Form) yang memuat rancangan visual Swing |
-| `src/controller/DataController.java` | (Opsional) Kelas untuk memisahkan logika dari tampilan |
-| `src/main/App.java` | *Entry point* untuk memanggil dan memunculkan `MainFrame` |
+| `db_perpustakaan_mini.sql` | Script SQL pembuatan database mini dan tabel `buku` |
+| `src/model/Buku.java` | *Blueprint* objek `Buku` |
+| `src/model/dao/BukuDAO.java` | Kumpulan query CRUD dengan JDBC |
+| `src/controller/BukuController.java` | Perantara antara form dan DAO, sekaligus memeriksa isian form |
+| `src/view/FormBuku.java` | Form GUI berisi kolom isian, empat tombol CRUD, dan tabel |
+| `src/main/Main.java` | *Entry point* untuk menampilkan `FormBuku` |
 
 ---
 
@@ -46,318 +51,575 @@ Pada materi ini, terdapat komponen dan konsep utama yang wajib Anda pahami fungs
 Sebelum memulai materi ini, pastikan Anda sudah memahami dasar-dasar pemrograman Java dari materi sebelumnya, terutama:
 
 * [ ] Apache NetBeans IDE sudah terbuka dan JDK terkonfigurasi dengan benar.
-* [ ] Memahami pembuatan *Project* baru dan struktur *Packages* di Java.
-* [ ] Memahami fitur "Design" dan "Source" pada NetBeans IDE.
-* [ ] Menyiapkan *Window Palette* dan *Properties* di NetBeans (Gunakan `Ctrl+Shift+8` jika *Palette* tidak muncul).
+* [ ] Laragon / XAMPP sudah terinstall dan **service MySQL sudah berjalan (Start)**.
+* [ ] Project praktik sederhana dari Pertemuan 7 sudah tersedia, berisi class `Koneksi`, `Buku`, dan `BukuDAO`.
+* [ ] *Dependency* `mysql-connector-j` sudah terpasang di `pom.xml`.
+* [ ] `TestKoneksi` pernah dijalankan dan menampilkan pesan **STATUS: BERHASIL**.
 
 ---
 
 ## 🚀 PART 1: Pemahaman Konsep
-
 ```text
-                  ┌──────────────────────────────┐
-                  │    JFrame (Top-Level)      │
-                  └──────────────┬───────────────┘
-                                 │ (menampung)
-                  ┌──────────────┴───────────────┐
-                  │      JPanel (Container)      │
-                  └──────────────┬───────────────┘
-                                 │ (berisi komponen)
-         ┌───────────────────────┼───────────────────────┐
-         │                       │                       │
-┌────────┴────────┐     ┌────────┴────────┐     ┌────────┴────────┐
-│     JLabel      │     │   JTextField    │     │    JButton      │
-│ (Teks Statis)   │     │  (Input Data)   │     │  (Aksi/Event)   │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-
+                 ┌──────────────────────────────┐
+                 │     JFrame (FormBuku)        │
+                 └──────────────┬───────────────┘
+                                │ (berisi komponen)
+      ┌──────────────┬──────────┼───────────┬───────────────┐
+      │              │          │           │               │
+┌─────┴─────┐ ┌──────┴─────┐ ┌──┴───────┐ ┌─┴──────────────┐
+│  JLabel   │ │ JTextField │ │ JButton  │ │ JTable         │
+│ (Teks)    │ │ (Isian)    │ │ (Tombol) │ │ (Tampilan data)│
+└───────────┘ └────────────┘ └──────────┘ └───────┬────────┘
+                                                  │
+                                         ┌────────┴────────┐
+                                         │DefaultTableModel│
+                                         │ (Isi tabel)     │
+                                         └─────────────────┘
 ```
 
 > 📌 **ANALOGI DUNIA NYATA:**
-> * **Aplikasi Konsol (CLI)** ibarat pelayan warung tradisional yang mencatat pesanan Anda baris demi baris secara linier. Jika salah ketik format perintah, program terhenti.
-> * **Aplikasi GUI (Java Swing)** ibarat layar sentuh pesanan mandiri (*Kiosk*). Ada instruksi tak kasat mata (`JPanel`), label informasi (`JLabel`), kolom catatan (`JTextField`), dan tombol raksasa (`JButton`). Pengguna bebas menyentuh bagian mana saja secara acak. Sistem hanya akan merespons saat terjadi ketukan nyata (*Event*).
-> 
-> 
-
+> * **Aplikasi Konsol** ibarat pelayan warung tradisional yang mencatat pesanan Anda baris demi baris. Kalau salah mengetik, program langsung berhenti.
+> * **Aplikasi GUI** ibarat layar pemesanan mandiri di restoran cepat saji. Ada tulisan petunjuk (`JLabel`), kolom isian (`JTextField`), dan tombol (`JButton`). Pelanggan bebas menyentuh bagian mana saja, dan mesin baru bekerja ketika layar benar-benar disentuh.
+ 
 ---
-
-### 1. Apa itu Java Swing?
-
-Java Swing adalah bagian dari API Java yang digunakan untuk membangun antarmuka pengguna grafis (GUI) dalam aplikasi desktop. Berbeda dengan program *command-line* yang dieksekusi secara sekuensial, aplikasi berbasis GUI bersifat **Event-Driven** (dikendalikan oleh peristiwa/aksi). Aplikasi hanya akan bereaksi ketika *user* melakukan suatu aksi, seperti mengeklik tombol atau mengetik karakter.
-
-### 2. Membedakan JFrame dan JPanel
-
-* **JFrame:** Bingkai dasar aplikasi Anda (*window*) yang memiliki tombol bawaan OS seperti *minimize*, *maximize*, dan *close*. Komponen tidak disarankan ditempelkan langsung pada JFrame.
-
-
-* **JPanel:** Kanvas kosong atau alas (*content pane*) yang diletakkan di atas JFrame. Anda meletakkan semua tombol, tabel, dan kolom input di atas JPanel agar tata letaknya mudah diatur dan dikelompokkan.
-
-
-
-### 3. Komponen Input & Pilihan
-
-Swing menawarkan berbagai komponen kontrol untuk pengguna, di antaranya:
-
-* **`JLabel`** : Menampilkan teks informasi atau gambar yang sifatnya *unselectable*.
-
-
-* **`JTextField`** : Memungkinkan *user* memasukkan teks bebas (huruf, angka, simbol).
-
-
-* **`JRadioButton`** : Digunakan untuk pilihan yang saling eksklusif (hanya satu yang bisa dipilih). Wajib dibungkus menggunakan `ButtonGroup`.
-
-
-* **`JCheckBox`** : Digunakan jika *user* diizinkan memilih lebih dari satu opsi sekaligus.
-
-
-
-### 4. Menangkap Aksi dengan ActionListener
-
-Komponen interaktif seperti `JButton` akan tetap bisu jika tidak diikat dengan *Event*. Saat pengguna mengeklik sebuah tombol, tombol tersebut menembakkan sinyal. Kita harus "menangkap" sinyal tersebut menggunakan fungsi `actionPerformed`.
-
+ 
+### 1. Apa itu GUI dan Java Swing?
+ 
+**GUI** adalah tampilan aplikasi yang bisa dilihat dan diklik, seperti aplikasi yang biasa kita pakai sehari-hari. **Java Swing** adalah kumpulan komponen bawaan Java untuk membuat GUI pada aplikasi desktop.
+ 
+Aplikasi konsol berjalan **berurutan**: program bertanya, kita menjawab, lalu lanjut ke pertanyaan berikutnya. Aplikasi GUI berbeda. Program **menunggu**, dan baru bekerja saat pengguna melakukan sesuatu, seperti mengeklik tombol. Itulah mengapa aplikasi GUI disebut bekerja berdasarkan *event* (kejadian).
+ 
+### 2. Komponen yang Dipakai pada CRUD Buku
+ 
+Swing memiliki banyak komponen, misalnya kotak pilihan dan menu. Namun, untuk membuat CRUD sederhana, **lima komponen berikut sudah cukup**:
+ 
+| Komponen | Fungsi | Dipakai untuk |
+| :--- | :--- | :--- |
+| `JFrame` | Jendela utama aplikasi | Wadah seluruh tampilan (`FormBuku`) |
+| `JLabel` | Menampilkan teks keterangan | Tulisan "ID Buku", "Judul Buku", "Stok Buku" |
+| `JTextField` | Kolom tempat pengguna mengetik. Isinya diambil dengan `getText()` dan **selalu berupa teks (`String`)** | Mengisi ID, judul, dan stok buku |
+| `JButton` | Tombol yang memicu aksi saat diklik | Tombol Tambah, Edit, Lihat, dan Hapus |
+| `JTable` | Menampilkan data dalam baris dan kolom | Menampilkan daftar buku dari database |
+ 
+> 💡 Pada form sederhana, komponen langsung diletakkan di atas `JFrame`. Komponen `JPanel` baru diperlukan jika tampilan sudah besar dan perlu dikelompokkan, misalnya satu panel untuk form isian dan satu panel untuk tabel.
+ 
+### 3. JTable dan DefaultTableModel
+ 
+`JTable` ibarat **kaca etalase toko**: ia hanya memajang. Barang yang dipajang disimpan di dalam **`DefaultTableModel`**. Karena itu, untuk menambah atau mengosongkan baris, yang kita ubah adalah **model**-nya, bukan tabelnya.
+ 
 ```java
-private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {
-    // 1. Mengambil data dari JTextField menggunakan getText()
-    // 2. Memproses logika data (Validasi / Perhitungan)
-    // 3. Menampilkan hasil pada JTable atau JOptionPane
-}
-
+DefaultTableModel tabelModel = new DefaultTableModel();   // 1. Buat model (isi tabel)
+tabelModel.addColumn("ID Buku");                          // 2. Tentukan kolomnya
+tblBuku.setModel(tabelModel);                             // 3. Pasang model ke tabel
+tabelModel.addRow(new Object[]{"B001", "Java", 5});       // 4. Tambah satu baris lewat model
 ```
-
-### 5. Memanipulasi JTable dengan DefaultTableModel
-
-`JTable` hanya bertugas menampilkan gambar kotak-kotak tabel. Untuk menambah, menghapus, atau mengubah data di dalamnya, Anda harus memanipulasi "otak" dari tabel tersebut, yaitu **`DefaultTableModel`**.
-
+ 
+### 4. Event dan ActionListener
+ 
+Sebuah tombol tidak akan melakukan apa-apa sebelum kita memberi tahu apa yang harus dikerjakan saat diklik. Di NetBeans, caranya mudah: **double-click** tombolnya di mode Design. NetBeans akan menuliskan dua hal:
+ 
+```java
+// 1. Di dalam initComponents() (bagian kode abu-abu, dibuat otomatis):
+//    "Telinga" yang mendengarkan klik pada tombol Tambah
+btnTambah.addActionListener(this::btnTambahActionPerformed);
+ 
+// 2. Method kosong, tempat kita menulis apa yang terjadi saat tombol diklik
+private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {
+    // kode kita ditulis di sini
+}
+```
+ 
+Artinya: *"Setiap kali tombol Tambah diklik, jalankan method `btnTambahActionPerformed`."* Kita hanya perlu mengisi bagian kedua.
+ 
+### 5. GUI dalam Struktur MVC
+ 
+Pada Pertemuan 7, tampilan aplikasi berupa konsol. Sekarang tampilan itu kita ganti dengan GUI (`FormBuku`). Agar kode tetap rapi, tugas dibagi ke empat bagian:
+ 
+```text
+src/
+ ├── main/        → Main (menjalankan form)
+ ├── config/      → Koneksi, TestKoneksi
+ ├── model/       → Buku (bentuk data)
+ │    └── dao/    → BukuDAO (query SQL)
+ ├── controller/  → BukuController (perantara dan pemeriksa isian)
+ └── view/        → FormBuku (tampilan GUI)
+```
+ 
+| Bagian | Tugasnya | Yang tidak boleh dilakukan |
+| :--- | :--- | :--- |
+| `FormBuku` (view) | Menampilkan form, mengambil teks dari kolom isian, menampilkan hasil dan notifikasi | Menyentuh `BukuDAO` atau SQL |
+| `BukuController` (controller) | Memeriksa isian, mengubahnya menjadi objek `Buku`, lalu meneruskan ke DAO | Menulis SQL, atau menampilkan jendela (`JOptionPane`) |
+| `BukuDAO` (model.dao) | Menjalankan query SQL ke database | Mengetahui apa pun tentang tampilan |
+ 
+Alur kerja ketika tombol **Tambah** diklik:
+ 
+```text
+FormBuku (view)        mengirim teks mentah dari kolom isian
+      │
+      ▼
+BukuController         memeriksa isian
+      │                  ├─ salah  → mengirim pesan kesalahan ke FormBuku (berhenti di sini)
+      ▼                  └─ benar  → membuat objek Buku
+BukuDAO                objek diubah menjadi perintah SQL INSERT
+      │
+      ▼
+MySQL                  data tersimpan di tabel buku
+      │
+      ▼
+FormBuku               tampilData() mengambil ulang data, tabel diperbarui
+```
+ 
+Aturan sederhananya: arah panggilan hanya **satu arah**, yaitu View → Controller → DAO → Database. `FormBuku` tidak boleh memanggil `BukuDAO` secara langsung.
+ 
+> 📌 Pada Pertemuan 7, `BukuController` berisi perulangan menu konsol. Pada pertemuan ini isinya diganti: tidak ada menu lagi, karena alur digerakkan oleh klik tombol. Tugas barunya adalah memeriksa isian lalu meneruskannya ke DAO.
+ 
+### 6. Notifikasi Kesalahan Input
+ 
+Bagaimana controller memberi tahu form bahwa isian salah? Controller tidak boleh menampilkan jendela sendiri (itu tugas tampilan). Caranya dengan **melempar error** yang berisi pesan, lalu form **menangkapnya** dengan `try-catch` dan menampilkannya.
+ 
+```java
+// Di BukuController: jika isian salah, kirim error berisi pesan untuk pengguna
+throw new IllegalArgumentException("Stok harus berupa angka!");
+ 
+// Di FormBuku: tangkap error itu, lalu tampilkan pesannya dalam popup
+try {
+    controller.tambahBuku(...);
+} catch (IllegalArgumentException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage());
+}
+```
+ 
+`IllegalArgumentException` adalah error bawaan Java yang artinya "data yang diberikan tidak valid". `JOptionPane.showMessageDialog(...)` menampilkan jendela popup kecil berisi pesan.
+ 
 ---
-
+ 
 ## 💻 PART 2: Live Coding
-
-Pada sesi ini, kita akan merancang aplikasi visual untuk menginput data Mahasiswa, lalu menampilkannya secara langsung di dalam Tabel (tanpa koneksi database).
-
-### Step 1: Membuat JFrame Form
-
-1. Pada *Project* Anda, klik kanan pada *package* `view` -> Pilih **New** -> **JFrame Form...**
-2. Beri nama *Class Name*: `MainFrame` dan klik Finish.
-
-![Tampilan awal](images/image-1.png)
-
-### Step 2: Desain Antarmuka (Drag & Drop)
-
-Gunakan *Window Palette* di sisi kanan untuk melakukan *drag n drop* komponen ke area `MainFrame`:
-
-* Tambahkan 3 buah **Label** (`JLabel`) untuk teks pendamping: "Nama", "NIM", dan "Kelas".
-
-
-* Tambahkan 3 buah **Text Field** (`JTextField`) di sebelah masing-masing Label.
-
-
-* Tambahkan 1 buah **Button** (`JButton`) di bawahnya. Ubah teksnya menjadi "Simpan Data" (Klik kanan -> *Edit Text*).
-
-
-* Tambahkan 1 buah **Table** (`JTable`) di bagian bawah/samping form.
-
-
-
-![Tampilan form lengkap dengan label, textfield, button, dan tabel](images/image-2.png)
-
-### Step 3: Mengubah Variable Name (Naming Convention)
-
-Sangat penting mengubah nama variabel setiap komponen agar kita tidak kebingungan saat masuk ke mode pemrograman *Source Code*. Gunakan gaya *Camel Case*:
-
-* Klik kanan pada *Text Field* Nama -> **Change Variable Name...** -> Ketik `txtNama`.
-
-
-* Lakukan hal sama pada *Text Field* NIM -> `txtNIM`.
-
-
-* Lakukan pada *Text Field* Kelas -> `txtKelas`.
-
-
-* Klik kanan pada tombol Simpan -> `btnSimpan`.
-
-
-* Klik kanan pada Tabel -> `tblMahasiswa`.
-
-
-
-![Tampilan saat Change Variable Name pada salah satu komponen](images/image-3.png)
-
-### Step 4: Konfigurasi Header Tabel (JTable)
-
-1. Klik kanan pada `tblMahasiswa`, lalu pilih **Table Contents...**.
-
-
-2. Masuk ke tab **Columns**. Ubah *Title* pada kolom yang tersedia menjadi: `NIM`, `Nama Mahasiswa`, dan `Kelas`.
-
-
-3. Hapus kolom sisa (jika ada) menggunakan tombol *Delete*.
-
-
-4. Masuk ke tab **Rows** dan atur *Count* menjadi `0` agar tabel bersih (kosong) saat program baru dijalankan.
-
-
-
-![Tampilan jendela customizer dialog pada bagian Tab Columns](images/image-4.png)
-
-### Step 5: Menambahkan Event Handling pada Tombol
-
-Klik kanan pada tombol **Simpan Data** (`btnSimpan`) -> Pilih **Events** -> **Action** -> **actionPerformed**.
-
-NetBeans akan membawa Anda ke mode *Source*, tepat di dalam metode tombol tersebut. Ketikkan kode berikut:
-
+ 
+Pada sesi ini kita membuat aplikasi **CRUD Buku** dengan empat tombol: **Tambah**, **Edit**, **Lihat**, dan **Hapus**. Data tersimpan permanen di database MySQL.
+ 
+### Step 1: Membuat `BukuController`
+ 
+1. Klik kanan **Source Packages** → **New** → **Java Package** → beri nama `controller`.
+2. Klik kanan package `controller` → **New** → **Java Class** → beri nama `BukuController`.
+3. Isi dengan kode berikut:
 ```java
-private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {                                          
-    // 1. Mengambil nilai teks dari komponen JTextField
-    String nama = txtNama.getText();
-    String nim = txtNIM.getText();
-    String kelas = txtKelas.getText();
-    
-    // 2. Validasi sederhana agar input tidak kosong
-    if(nama.isEmpty() || nim.isEmpty() || kelas.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Semua data wajib diisi!");
-        return; // Hentikan eksekusi
+package controller;
+ 
+import java.util.List;
+import model.Buku;
+import model.dao.BukuDAO;
+ 
+public class BukuController {
+ 
+    private final BukuDAO dao = new BukuDAO();   // Hanya controller yang memegang DAO
+ 
+    // LIHAT: meminta semua buku dari DAO
+    public List<Buku> ambilSemuaBuku() {
+        return dao.ambilSemuaBuku();
     }
-    
-    // 3. Memanggil dan me-load model kerangka dari JTable
-    javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblMahasiswa.getModel();
-    
-    // 4. Memasukkan data ke dalam Array Object dan menambahkannya sebagai baris baru
-    Object[] barisBaru = {nim, nama, kelas};
-    model.addRow(barisBaru);
-    
-    // 5. Mengosongkan form input visual setelah data berhasil diproses ke dalam tabel
-    txtNama.setText("");
-    txtNIM.setText("");
-    txtKelas.setText("");
-    
-    // Menampilkan pesan pop-up sukses
-    javax.swing.JOptionPane.showMessageDialog(this, "Data Mahasiswa berhasil ditambahkan!");
+ 
+    // TAMBAH: periksa isian, lalu simpan lewat DAO
+    public void tambahBuku(String id, String judul, String stokText) {
+        Buku buku = buatBuku(id, judul, stokText);
+        dao.tambahBuku(buku);
+    }
+ 
+    // EDIT: periksa isian, lalu ubah lewat DAO
+    public void ubahBuku(String id, String judul, String stokText) {
+        Buku buku = buatBuku(id, judul, stokText);
+        dao.updateBuku(buku);
+    }
+ 
+    // HAPUS: hapus lewat DAO
+    public void hapusBuku(String id) {
+        dao.hapusBuku(id.trim());
+    }
+ 
+    // Memeriksa isian dari form. Jika salah, kirim error berisi pesan untuk pengguna
+    private Buku buatBuku(String id, String judul, String stokText) {
+        if (id.trim().isEmpty() || judul.trim().isEmpty() || stokText.trim().isEmpty()) {
+            throw new IllegalArgumentException("Semua data harus diisi!");
+        }
+        try {
+            int stok = Integer.parseInt(stokText.trim());          // Teks diubah menjadi angka
+            if (stok < 0) {
+                throw new IllegalArgumentException("Stok tidak boleh negatif!");
+            }
+            return new Buku(id.trim(), judul.trim(), stok);        // Dibungkus menjadi objek Buku
+        } catch (NumberFormatException e) {                        // Gagal menjadi angka (misal "abc")
+            throw new IllegalArgumentException("Stok harus berupa angka!");
+        }
+    }
 }
-
 ```
-
-
-![Tampilan source pada btnSimpanActionPerformed](images/image-5.png)
-
-### Step 6: Menjalankan Program
-
-Lihat pada *sidebar* (panel Projects) yang ada pada NetBeans dan temukan file `MainFrame.java`, klik kanan pada file tersebut lalu cari dan pilih opsi **Run File**. Silakan isi form teks pada jendela yang muncul, lalu tekan tombol Simpan Data untuk memastikan baris baru berhasil muncul di dalam tabel.
-
-
-
-![Run File](images/image-6.png)
-
-
-
-![Pop up Pertama](images/image-7.png)
-
-
-
-![Mengisi text field](images/image-8.png)
-
-
-
-![Hasil](images/image-9.png)
-
-
-
+ 
+Hal yang perlu diperhatikan:
+ 
+* `BukuController` **tidak** mengimpor satu pun class Swing, jadi ia tidak bergantung pada tampilan.
+* Method `buatBuku` dipakai oleh Tambah dan Edit, sehingga aturan pemeriksaannya cukup ditulis satu kali.
+* `trim()` membuang spasi di awal dan akhir teks, sehingga isian yang hanya berisi spasi tetap dianggap kosong.
 ---
-
+ 
+### Step 2: Membuat JFrame Form
+ 
+1. Klik kanan **Source Packages** → **New** → **Java Package** → beri nama `view`.
+2. Klik kanan package `view` → **New** → **JFrame Form...** (jika tidak terlihat: **Other** → **Swing GUI Forms** → **JFrame Form**).
+3. Isi *Class Name* dengan `FormBuku`, lalu klik **Finish**.
+![Tampilan awal](images/image-1.png)
+ 
+> ⚠️ Bagian kode berwarna abu-abu (`initComponents`) dibuat otomatis oleh NetBeans dan **tidak boleh diubah**. Ubah tampilan melalui mode **Design** dan panel **Properties**.
+ 
+---
+ 
+### Step 3: Desain Antarmuka (Drag & Drop)
+ 
+Gunakan *Palette* untuk menambahkan komponen berikut ke `FormBuku`:
+ 
+| Komponen | Jumlah | Teks |
+| :--- | :---: | :--- |
+| `JLabel` | 3 | ID Buku, Judul Buku, Stok Buku |
+| `JTextField` | 3 | (dikosongkan, diletakkan di bawah masing-masing label) |
+| `JButton` | 4 | Tambah, Edit, Lihat, Hapus |
+| `JTable` | 1 | (otomatis berada di dalam `JScrollPane`) |
+ 
+Cara mengubah teks: klik komponen, lalu isi bagian `text` di panel **Properties** (atau klik kanan → **Edit Text**).
+ 
+Susunan tampilan: label dan kolom isian berjajar di bagian atas, empat tombol di bawahnya, dan tabel di bagian paling bawah.
+ 
+<!-- TODO: tambahkan screenshot desain FormBuku yang sudah selesai disusun -->
+ 
+---
+ 
+### Step 4: Mengubah Variable Name (Naming Convention)
+ 
+Nama bawaan seperti `jTextField1` dan `jButton3` membingungkan saat kode sudah banyak. Ubah nama setiap komponen agar jelas jenis dan fungsinya. Klik kanan komponen → **Change Variable Name...**
+ 
+| Komponen | Variable Name |
+| :--- | :--- |
+| Kolom isian ID Buku | `txtIdBuku` |
+| Kolom isian Judul Buku | `txtJudulBuku` |
+| Kolom isian Stok Buku | `txtStokBuku` |
+| Tombol Tambah | `btnTambah` |
+| Tombol Edit | `btnEdit` |
+| Tombol Lihat | `btnLihat` |
+| Tombol Hapus | `btnHapus` |
+| Tabel | `tblBuku` |
+ 
+Awalan `txt`, `btn`, dan `tbl` menandakan jenis komponennya (*text field*, *button*, *table*).
+ 
+![Tampilan saat Change Variable Name](images/image-3.png)
+ 
+> ⚠️ Nama di kode harus **sama persis**, termasuk huruf besar dan kecil, dengan nama di mode Design.
+ 
+---
+ 
+### Step 5: Menulis Kode Dasar pada `FormBuku`
+ 
+Buka tab **Source**. Tambahkan `import` dan isi bagian atas class seperti berikut. Bagian `initComponents()` dibiarkan apa adanya.
+ 
+```java
+package view;
+ 
+import controller.BukuController;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.Buku;
+ 
+public class FormBuku extends javax.swing.JFrame {
+ 
+    BukuController controller = new BukuController();         // Perantara ke DAO (form tidak memegang DAO)
+    DefaultTableModel tabelModel = new DefaultTableModel();   // Isi tabel
+ 
+    public FormBuku() {
+        initComponents();
+        setLocationRelativeTo(null);          // Jendela muncul di tengah layar
+ 
+        tabelModel.addColumn("ID Buku");      // Menentukan kolom tabel
+        tabelModel.addColumn("Judul Buku");
+        tabelModel.addColumn("Stok Buku");
+        tblBuku.setModel(tabelModel);         // Memasang model ke tabel
+    }
+ 
+    // Mengisi tabel dengan data terbaru dari database
+    public void tampilData() {
+        tabelModel.setRowCount(0);                           // Kosongkan tabel dulu agar data tidak dobel
+        List<Buku> daftar = controller.ambilSemuaBuku();     // Minta semua buku lewat controller
+        for (Buku b : daftar) {                              // Untuk setiap buku, tambahkan satu baris
+            tabelModel.addRow(new Object[]{b.getIdBuku(), b.getJudul(), b.getStok()});
+        }
+    }
+ 
+    // Mengosongkan semua kolom isian
+    public void bersihkanForm() {
+        txtIdBuku.setText("");
+        txtJudulBuku.setText("");
+        txtStokBuku.setText("");
+    }
+ 
+    // ... initComponents() dan kode lain dari NetBeans dibiarkan apa adanya ...
+}
+```
+ 
+> 💡 `tampilData()` dibuat sebagai method tersendiri karena dipanggil dari empat tombol. Dengan begitu, kodenya cukup ditulis satu kali.
+>
+> Perhatikan bahwa `FormBuku` hanya mengenal `BukuController`. Tidak ada `BukuDAO` maupun `Integer.parseInt(...)` di sini.
+ 
+---
+ 
+### Step 6: Menambahkan Event pada Tombol
+ 
+Di mode **Design**, **double-click** tombolnya (atau klik kanan → **Events** → **Action** → **actionPerformed**). NetBeans akan membawa Anda ke mode **Source**, tepat di dalam method tombol tersebut. Isi seperti berikut.
+ 
+**Tombol Lihat (Read)**
+ 
+```java
+private void btnLihatActionPerformed(java.awt.event.ActionEvent evt) {
+    tampilData();   // Ambil data dari database lalu tampilkan di tabel
+}
+```
+ 
+**Tombol Tambah (Create)**
+ 
+```java
+private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {
+    try {
+        controller.tambahBuku(txtIdBuku.getText(), txtJudulBuku.getText(), txtStokBuku.getText());
+        tampilData();      // Muat ulang tabel agar data baru terlihat
+        bersihkanForm();   // Kosongkan kolom isian
+    } catch (IllegalArgumentException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage());   // Tampilkan pesan kesalahan dari controller
+    }
+}
+```
+ 
+**Tombol Edit (Update)**
+ 
+```java
+private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {
+    try {
+        controller.ubahBuku(txtIdBuku.getText(), txtJudulBuku.getText(), txtStokBuku.getText());
+        tampilData();
+        bersihkanForm();
+    } catch (IllegalArgumentException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage());
+    }
+}
+```
+ 
+**Tombol Hapus (Delete)**
+ 
+```java
+private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {
+    controller.hapusBuku(txtIdBuku.getText());   // Hapus buku sesuai ID di kolom isian
+    tampilData();
+    bersihkanForm();
+}
+```
+ 
+> 📌 Ketika isian salah, popup muncul dan kolom isian **tidak dikosongkan**, sehingga pengguna cukup memperbaiki bagian yang salah.
+ 
+<!-- TODO: tambahkan screenshot tampilan popup kesalahan input -->
+ 
+---
+ 
+### Step 7: Event Klik Baris Tabel
+ 
+Agar Edit dan Hapus tidak perlu mengetik ID satu per satu, buat event yang mengisi kolom isian secara otomatis saat sebuah baris diklik.
+ 
+Klik kanan pada **tabel** → **Events** → **Mouse** → **mouseClicked**, lalu isi:
+ 
+```java
+private void tblBukuMouseClicked(java.awt.event.MouseEvent evt) {
+    int baris = tblBuku.getSelectedRow();    // Nomor baris yang diklik (dimulai dari 0)
+    txtIdBuku.setText(tblBuku.getValueAt(baris, 0).toString());     // Kolom 0 = ID
+    txtJudulBuku.setText(tblBuku.getValueAt(baris, 1).toString());  // Kolom 1 = Judul
+    txtStokBuku.setText(tblBuku.getValueAt(baris, 2).toString());   // Kolom 2 = Stok
+}
+```
+ 
+---
+ 
+### Step 8: Menjalankan Program
+ 
+Ubah isi `src/main/Main.java`:
+ 
+```java
+package main;
+ 
+import view.FormBuku;
+ 
+public class Main {
+    public static void main(String[] args) {
+        FormBuku form = new FormBuku();   // Membuat objek form
+        form.setVisible(true);            // Menampilkan form di layar
+    }
+}
+```
+ 
+Lalu periksa `pom.xml`. Nilai berikut harus sama dengan nama class yang menjadi titik masuk program:
+ 
+```xml
+<exec.mainClass>main.Main</exec.mainClass>
+```
+ 
+Klik kanan project → **Clean and Build**, lalu jalankan dengan **Run Project (F6)**, atau klik kanan `Main.java` → **Run File**.
+ 
+> 💡 NetBeans juga membuat method `main` di dalam `FormBuku` (lengkap dengan baris `logger`). Biarkan saja. Method itu memungkinkan `FormBuku.java` dijalankan langsung lewat **Run File**.
+ 
+<!-- TODO: tambahkan screenshot hasil akhir aplikasi (form dan tabel terisi data) -->
+ 
+---
+ 
+### Step 9: Uji Coba CRUD
+ 
+| No | Yang dicoba | Hasil yang diharapkan |
+| :---: | :--- | :--- |
+| 1 | Program terbuka | Tabel masih kosong |
+| 2 | Klik **Lihat** | Tiga data contoh dari database muncul |
+| 3 | Isi `B004`, `Belajar Basis Data`, `8`, lalu klik **Tambah** | Baris baru muncul di tabel |
+| 4 | Klik satu baris di tabel | Tiga kolom isian terisi otomatis |
+| 5 | Ubah judul atau stok, lalu klik **Edit** | Data di tabel berubah |
+| 6 | Klik satu baris, lalu klik **Hapus** | Baris hilang dari tabel |
+| 7 | Kosongkan judul, lalu klik **Tambah** | Popup "Semua data harus diisi!" |
+| 8 | Isi stok dengan `abc`, lalu klik **Tambah** | Popup "Stok harus berupa angka!" |
+| 9 | Isi stok dengan `-5`, lalu klik **Tambah** | Popup "Stok tidak boleh negatif!" |
+| 10 | Tutup program, buka lagi, lalu klik **Lihat** | Data masih ada (tersimpan permanen) |
+| 11 | Buka tabel `buku` di phpMyAdmin | Isinya sama dengan yang tampil di aplikasi |
+ 
+> 📌 Pesan dari `System.out.println` di `BukuDAO` muncul di panel **Output** NetBeans (bagian bawah layar), bukan di jendela form.
+ 
+---
+ 
 ## ⚡ PART 3: EKSPERIMEN ERROR
-
-Lakukan skenario pengujian berikut secara sengaja untuk melatih kemampuan pemecahan masalah (*troubleshooting*) grafis Anda.
-
-### 🎯 Eksperimen 1: Nama Variabel yang Salah (NullPointerException)
-
-* **Tindakan:** Pada tampilan mode *Design*, klik kanan `txtNama` dan ganti namanya menjadi `inputNama`. Namun, di mode *Source*, biarkan baris kode memanggil data secara manual melalui `txtNama.getText()`.
-* **Hasil:** Kode akan digarisbawahi merah (*compile error*) karena NetBeans tidak dapat menemukan objek bernama `txtNama`.
-* **Pelajaran:** Nama variabel antar-sistem (*Design* dan *Source*) tidak otomatis memaafkan penulisan acak. Pengubahsuaian manual di *Source* yang tidak sejalan dengan deklarasi *Design* akan memicu kerusakan integritas program.
-
-### 🎯 Eksperimen 2: Menghapus Model Tabel secara Paksa
-
-* **Tindakan:** Pada mode *Source* di dalam metode `btnSimpan`, coba hindari penggunaan `DefaultTableModel` dan langsung tambahkan baris dengan sintaks: `tblMahasiswa.addRow(barisBaru);`.
-* **Hasil:** *Compile Error*. Method `addRow` tidak tersedia di dalam objek grafis murni `JTable`.
-* **Pelajaran:** Objek `JTable` hanyalah jendela presentasi visual. Anda tidak diizinkan memanipulasi *baris data* dari kacanya. Anda wajib menggunakan komponen "otak" di balik tabel tersebut, yaitu antarmuka `DefaultTableModel`.
-
-
-
+ 
+Lakukan skenario berikut secara sengaja untuk melatih kemampuan *troubleshooting*.
+ 
+### 🎯 Eksperimen 1: Salah Mengisi Data
+ 
+**Tindakan:** Coba tiga kondisi satu per satu lalu klik **Tambah**: (a) kosongkan judul, (b) isi stok dengan `abc`, (c) isi stok dengan `-5`.
+ 
+* **Hasil:** Setiap kondisi memunculkan popup dengan pesan yang berbeda, dan tidak ada data baru yang masuk ke database.
+* **Pelajaran:** `BukuController` memeriksa isian **sebelum** data diteruskan ke `BukuDAO`. Karena itu data yang tidak valid tidak pernah sampai ke database.
 ---
-
+ 
+### 🎯 Eksperimen 2: Pesan Error yang Tidak Ramah
+ 
+**Tindakan:** Di `BukuController`, pada method `buatBuku`, ubah sementara isi `catch (NumberFormatException e)` menjadi `throw e;`, lalu isi stok dengan `abc` dan klik **Tambah**.
+ 
+* **Hasil:** Popup tetap muncul, tetapi isinya pesan teknis seperti `For input string: "abc"`, bukan "Stok harus berupa angka!".
+* **Pelajaran:** Bagian `catch` pada controller berfungsi **menerjemahkan** error teknis menjadi pesan yang mudah dipahami pengguna.
+> ⚠️ Kembalikan kode ke versi semula setelah eksperimen selesai.
+ 
+---
+ 
+### 🎯 Eksperimen 3: Menambah Baris Langsung ke JTable
+ 
+**Tindakan:** Di dalam `tampilData()`, ganti `tabelModel.addRow(...)` menjadi `tblBuku.addRow(...)`.
+ 
+* **Hasil:** *Compile Error*. Method `addRow` tidak tersedia pada `JTable`.
+* **Pelajaran:** `JTable` hanya tampilan (ibarat kaca etalase). Menambah baris harus dilakukan lewat `DefaultTableModel` (isi etalase).
+> ⚠️ Kembalikan kode ke versi semula setelah eksperimen selesai.
+ 
+---
+ 
+### 🎯 Eksperimen 4: Kesalahan yang Tidak Terdeteksi Controller
+ 
+**Tindakan (a):** Tambahkan buku dengan ID yang sudah ada, misalnya `B001`.
+ 
+* **Hasil (a):** Tidak ada popup, kolom isian dikosongkan seolah berhasil, dan data tidak bertambah. Panel **Output** menampilkan pesan `Gagal menambah buku - Duplicate entry 'B001' ...`.
+* **Pelajaran (a):** Controller hanya memeriksa **isian**. ID kembar baru ketahuan oleh database, dan `BukuDAO` saat ini hanya mencetak pesannya di panel Output, sehingga form tidak tahu. Agar pesan seperti ini sampai ke pengguna, DAO perlu meneruskan error ke atas (lihat Challenge nomor 5).
+**Tindakan (b):** Ketik ID yang tidak ada (misalnya `B999`), lalu klik **Edit** atau **Hapus**.
+ 
+* **Hasil (b):** Tidak ada perubahan dan tidak ada pesan di form.
+* **Pelajaran (b):** Sama seperti (a), DAO belum melaporkan hasilnya ke atas.
+**Tindakan (c):** Hapus baris `tampilData();` dari `btnTambahActionPerformed`, lalu tambahkan buku dengan ID baru.
+ 
+* **Hasil (c):** Tabel di form tidak berubah, padahal data sudah masuk ke database (cek di phpMyAdmin). Data baru terlihat setelah klik **Lihat**.
+* **Pelajaran (c):** Tabel di form hanyalah cerminan database pada saat terakhir dimuat. Setiap kali data di database berubah, tabel harus dimuat ulang.
+> ⚠️ Kembalikan kode ke versi semula setelah eksperimen selesai.
+ 
+---
+ 
 ## 🚨 TROUBLESHOOTING RINGKAS
-
-| Kendala / Pesan Error | Penyebab Utama | Solusi |
+ 
+| Pesan Error / Gejala | Penyebab | Solusi |
 | --- | --- | --- |
-| **Tombol diklik tetapi tabel tetap kosong** | Kode ditempatkan di luar method `actionPerformed` atau *event* terputus. | Pastikan mengikat *event* ulang (Klik kanan tombol -> *Events* -> *Action* -> *actionPerformed*).
-
- |
-| **Sel di dalam Tabel bisa diedit atau diketik ulang oleh user** | Secara *default*, parameter grafis mengizinkan sel tabel dimodifikasi. | Buka *Table Contents* -> Tab *Columns* -> Hilangkan centang pada bilah **Editable** untuk memblokir modifikasi.
-
- |
-| **Peringatan `cannot find symbol` pada nama komponen teks** | Ketidakkonsistenan penulisan variabel (Misal: `Txtnama` ditulis padahal nama di *Design* adalah `txtNama`). | Java bersifat *Case Sensitive*. Sesuaikan tulisan huruf kapital/kecil dengan deklarasi properti di dalam mode *Design*.
-
- |
-| **Area kode `initComponents()` tidak bisa dimodifikasi / diblok abu-abu** | Anda mencoba mengubah *auto-generated code* milih sistem NetBeans.
-
- | Pengaturan komponen grafis wajib dilakukan melalui bilah **Properties** di sisi kanan dalam mode *Design*.
-
- |
-
+| Tombol diklik tetapi tidak terjadi apa-apa | *Event* belum dibuat, atau kode ditulis di luar method `actionPerformed`. | Double-click tombol di mode Design, lalu isi kode di dalam method yang dibuat NetBeans. |
+| `cannot find symbol` pada nama komponen (`txtIdBuku`, dll.) | Nama di kode berbeda dengan nama di mode Design. | Samakan namanya (perhatikan huruf besar-kecil), atau ubah lewat **Change Variable Name**. |
+| `cannot find symbol: class Buku` di `BukuDAO` atau `BukuController` | Lupa `import model.Buku;`. | Tambahkan baris `import model.Buku;` di bagian atas file. |
+| `cannot find symbol: class BukuDAO` di `BukuController` | Lupa `import model.dao.BukuDAO;`, atau `BukuDAO` belum dipindah ke `model.dao`. | Tambahkan *import* tersebut, dan pastikan baris pertama `BukuDAO` adalah `package model.dao;`. |
+| `cannot find symbol: class JOptionPane` di `FormBuku` | Lupa `import javax.swing.JOptionPane;`. | Tambahkan *import* tersebut. |
+| `cannot find symbol: logger` | Baris `logger` bawaan NetBeans terhapus, padahal method `main` di `FormBuku` masih memakainya. | Kembalikan baris `logger`, atau hapus seluruh method `main` di `FormBuku`. |
+| `No suitable driver` atau `Koneksi GAGAL` | *Dependency* MySQL belum terpasang, atau service MySQL belum berjalan. | Periksa `pom.xml`, jalankan **Clean and Build**, lalu nyalakan MySQL. |
+| **Run Project** gagal / `class not found` | `exec.mainClass` di `pom.xml` tidak sesuai dengan nama class. | Isi dengan `main.Main`. |
+| Popup berisi pesan aneh seperti `For input string: "abc"` | Bagian `catch (NumberFormatException e)` di controller hilang atau diubah. | Kembalikan ke versi di Step 2. |
+| Tabel kosong padahal data ada di database | Belum menekan tombol **Lihat**, atau nama tabel/kolom berbeda. | Klik **Lihat**, dan periksa nama kolom di database. |
+| Klik **Tambah** tidak menambah data dan tidak ada popup | ID sudah ada di database (*primary key* tidak boleh kembar). | Lihat pesan di panel **Output**, lalu gunakan ID yang berbeda. |
+| Klik **Edit** atau **Hapus** tetapi data tidak berubah | ID yang diketik tidak ada di database. | Klik baris di tabel agar ID terisi benar. |
+| Error saat mengklik area kosong pada tabel | Tidak ada baris yang terpilih, sehingga `getSelectedRow()` bernilai `-1`. | Tambahkan pengecekan `if (baris >= 0)` (lihat Challenge nomor 3). |
+| Isi sel tabel bisa diketik ulang oleh pengguna | Secara bawaan, sel `JTable` boleh diedit. Perubahan ini hanya di tampilan, **tidak** masuk ke database. | Klik **Lihat** untuk memuat ulang. Untuk melarang pengeditan sel, lihat Challenge nomor 4. |
+| Area kode `initComponents()` tidak bisa diubah (berwarna abu-abu) | Itu kode otomatis milik NetBeans. | Ubah pengaturan komponen lewat panel **Properties** di mode **Design**. |
+ 
 ---
-
+ 
 ## ❓ FREQUENTLY ASKED QUESTIONS (FAQ)
-
-**Q: Apakah data mahasiswa di dalam tabel ini tersimpan permanen saat aplikasi ditutup?**
-
-> **A:** Tidak. Karena kita membatasi materi hari ini pada komponen memori sistem (`DefaultTableModel`). Seluruh tumpukan baris ini berada di dalam RAM, sehingga ketika antarmuka ditutup, isinya dikosongkan. Penguncian data memerlukan metode koneksi ke *Database* lewat JDBC/ORM.
-> 
-> 
-
-**Q: Mengapa saya tidak disarankan menambahkan *Component* visual langsung di atas `JFrame`?**
-
-> **A:** Karena `JFrame` adalah rangka (*top-level*) absolut. Komposisi modern mewajibkan kerangka diletakkan sebuah `JPanel` (kertas lapisan dasar) di atasnya. Jika sistem Anda bertambah rumit, `JPanel` dapat dihapus atau diganti tata letaknya tanpa harus menghancurkan jendela utama OS.
-> 
-> 
-
-**Q: Apa fungsi ikon bohlam peringatan berwarna kuning di sebelah margin kode saat memakai JCheckBox?**
-
-> **A:** Ikon tersebut adalah alat bantu impor dari NetBeans IDE. Karena beberapa utilitas tambahan seperti `StringJoiner` memerlukan modul perpustakaan dasar (`java.util`), Anda harus mengizinkan NetBeans menekan fungsi otomatis *Add import*.
-> 
-> 
-
+ 
+**Q: Apakah data buku yang tampil di tabel tersimpan permanen saat aplikasi ditutup?**
+ 
+> **A:** Ya. Data disimpan di database MySQL lewat `BukuDAO`, bukan di memori. Tabel di form hanya menampilkan isi database pada saat terakhir dimuat. Jika aplikasi ditutup lalu dibuka lagi, klik **Lihat** dan data akan muncul kembali.
+ 
+**Q: Kenapa `FormBuku` tidak langsung memanggil `BukuDAO`? Bukankah lebih singkat?**
+ 
+> **A:** Memang lebih singkat, tetapi tugas jadi bercampur. Dengan `BukuController` di tengah, `FormBuku` hanya mengurus tampilan, `BukuController` mengurus pemeriksaan isian, dan `BukuDAO` hanya mengurus SQL. Jika suatu saat aturan isian berubah (misalnya stok maksimal 1000), cukup ubah satu tempat, yaitu controller.
+ 
+**Q: Kenapa controller melempar error, bukan langsung menampilkan popup sendiri?**
+ 
+> **A:** Menampilkan popup adalah urusan tampilan. Jika controller memanggil `JOptionPane`, ia jadi bergantung pada Swing dan tidak bisa dipakai kembali untuk tampilan lain (misalnya versi konsol). Dengan melempar error berisi pesan, controller hanya berkata "isian ini salah karena ...", dan form yang memutuskan cara menampilkannya.
+ 
+**Q: Kenapa harus memakai `DefaultTableModel`? Tidak bisa langsung menambah baris ke `JTable`?**
+ 
+> **A:** `JTable` hanya bertugas menampilkan, sedangkan data yang ditampilkan disimpan di model. Karena itu, menambah dan mengosongkan baris dilakukan lewat `DefaultTableModel`. Inilah yang dicoba pada Eksperimen 3.
+ 
+**Q: Kenapa mengisi tabel dibuat menjadi method `tampilData()` tersendiri?**
+ 
+> **A:** Karena dibutuhkan di banyak tempat: tombol Lihat, Tambah, Edit, dan Hapus. Dengan satu method, kodenya cukup ditulis sekali, dan jika ada yang perlu diperbaiki, perubahannya hanya di satu tempat.
+ 
+**Q: Kenapa `BukuDAO` berada di `model.dao`, bukan di `controller`?**
+ 
+> **A:** `BukuDAO` hanya berisi SQL dan pemetaan ke objek `Buku`, sehingga lebih dekat ke data (model). Package `controller` dipakai untuk class yang menjadi perantara antara tampilan dan data, yaitu `BukuController`.
+ 
+**Q: Kenapa komponen langsung diletakkan di `JFrame`, bukan di `JPanel`?**
+ 
+> **A:** Untuk form sederhana seperti ini, hal itu sudah cukup. `JPanel` berguna jika tampilan sudah besar dan perlu dikelompokkan, misalnya memisahkan area form isian dan area tabel agar tata letaknya lebih mudah diatur.
+ 
 ---
-
+ 
+## 📚 Daftar Referensi
+ 
+[1] Oracle Docs, "Creating a GUI With Swing — The Java Tutorials". Tersedia di: [tautan](https://docs.oracle.com/javase/tutorial/uiswing/index.html)
+ 
+[2] Oracle Docs, "How to Use Tables — The Java Tutorials". Tersedia di: [tautan](https://docs.oracle.com/javase/tutorial/uiswing/components/table.html)
+ 
+[3] Oracle Docs, "How to Write an Action Listener — The Java Tutorials". Tersedia di: [tautan](https://docs.oracle.com/javase/tutorial/uiswing/events/actionlistener.html)
+ 
+[4] Apache NetBeans, "Designing a Swing GUI in NetBeans IDE". Tersedia di: [tautan](https://netbeans.apache.org/tutorial/main/kb/docs/java/quickstart-gui/)
+ 
+---
+ 
 ## 🏆 CHALLENGE PRAKTIKAN
-
-Untuk menguji pemahaman, bangun kembali *Form* antarmuka GUI beserta logikanya dari nol dengan tantangan fungsional di bawah ini:
-
-### Challenge 1 — Level Dasar (Logika Operasi Murni)
-
-Rancang **Aplikasi Kalkulator Mini**.
-
-1. Sediakan 2 buah `JTextField` berdampingan untuk menerima Angka 1 dan Angka 2.
-2. Tambahkan deretan 4 `JButton` untuk operasi matematis utama (Tambah, Kurang, Kali, Bagi).
-3. Buat 1 `JLabel` menonjol untuk memunculkan skor dari operasi tersebut.
-4. *Event*: Saat pengguna menekan salah satu tombol operasi, ekstraksi nilai di dalam *text field*, eksekusi proses hitungnya, dan ubah *set text* pada `JLabel` tersebut menjadi hasilnya.
-
-### Challenge 2 — Level Menengah (Komponen Seleksi Visual)
-
-Rancang aplikasi kasir mandiri bertajuk **Formulir Pemesanan Makanan**.
-
-1. Manfaatkan `JRadioButton` (dilengkapi `ButtonGroup`) agar pembeli dapat memilih Jenis Kelamin.
-
-
-2. Gunakan komponen `JCheckBox` ganda (dipisahkan menggunakan fungsi `StringJoiner`) agar *user* bisa memilih kombinasi Makanan Pendamping sekaligus.
-
-
-3. Pada metode penekanan *Button* utama, kumpulkan seluruh data *Radio* serta *Check box* untuk disuntikkan secara hierarkis ke dalam baris `JTable` pesanan.
-
-### Challenge 3 — Level Lanjut (Tabel Mahasiswa Tingkat Tinggi)
-
-Adaptasikan proyek *Live Coding* sebelumnya dengan fitur **Eksekusi Hapus Baris** untuk aplikasi absen mahasiswa.
-
-1. Rakit tombol `JButton` baru berwarna merah yang dilabeli "Hapus Data Terpilih".
-2. Terapkan perintah pendeteksi `tblMahasiswa.getSelectedRow()` pada tombol ini untuk mengetahui di indeks *row* mana pengguna menyiagakan kursornya pada tabel.
-3. Di dalam logika internal, operasikan metode `model.removeRow(index)` agar tabel dapat menghancurkan baris tersebut secara *real-time*. Tambahkan proteksi validasi bersyarat `if(index >= 0)` agar program tidak hancur saat pengguna menekan tombol sebelum memilih data.
-
+ 
+1. Buat program sesuai instruksi berikut (validasi untuk tombol Hapus):
+   a) Pada `BukuController`, tambahkan pengecekan di method `hapusBuku`. Jika ID kosong, lempar `IllegalArgumentException("Pilih buku yang akan dihapus!")`.
+   b) Pada `btnHapusActionPerformed` di `FormBuku`, bungkus pemanggilan `controller.hapusBuku(...)` dengan `try-catch` agar pesan tersebut tampil dalam popup.
+2. Buat program sesuai instruksi berikut (konfirmasi sebelum menghapus):
+   a) Pada tombol **Hapus**, tampilkan kotak konfirmasi dengan `JOptionPane.showConfirmDialog(...)`.
+   b) Hapus data hanya jika pengguna memilih **Yes**.
+3. Buat program sesuai instruksi berikut (tombol Bersih dan pengaman klik tabel):
+   a) Tambahkan tombol baru bernama `btnBersih` yang memanggil `bersihkanForm()` saat diklik.
+   b) Pada `tblBukuMouseClicked`, tambahkan pengecekan `if (baris >= 0)` agar program tidak error saat tidak ada baris yang terpilih.
+4. **(Eksplorasi Mandiri)** Cari tahu cara membuat sel pada `JTable` tidak bisa diketik ulang oleh pengguna (petunjuk: method `isCellEditable` pada `DefaultTableModel`). Terapkan pada tabel di `FormBuku`, lalu jelaskan hasilnya.
+5. **(Eksplorasi Mandiri)** Pada Eksperimen 4, kita melihat bahwa pesan "ID sudah ada" dan "ID tidak ditemukan" tidak sampai ke pengguna. Pikirkan perubahan apa yang diperlukan pada `BukuDAO` (petunjuk: `executeUpdate() > 0` dan meneruskan `SQLException` ke atas dengan `throws`), lalu jelaskan kenapa notifikasi "Data berhasil ditambahkan" tidak akurat selama DAO belum diubah.
 ![Footer](../assets/Footer.png)
-
+ 
 <p align="center"><a href="#top">Kembali ke atas</a></p>

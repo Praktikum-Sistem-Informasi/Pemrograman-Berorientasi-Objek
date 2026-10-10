@@ -265,7 +265,7 @@ Hal yang perlu diperhatikan:
 1. Klik kanan **Source Packages** → **New** → **Java Package** → beri nama `view`.
 2. Klik kanan package `view` → **New** → **JFrame Form...** (jika tidak terlihat: **Other** → **Swing GUI Forms** → **JFrame Form**).
 3. Isi *Class Name* dengan `FormBuku`, lalu klik **Finish**.
-![Tampilan awal](images/image-1.png)
+![Membuat JFrame Form](Images/Membuat-JFrame-Form.png)
  
 > ⚠️ Bagian kode berwarna abu-abu (`initComponents`) dibuat otomatis oleh NetBeans dan **tidak boleh diubah**. Ubah tampilan melalui mode **Design** dan panel **Properties**.
  
@@ -285,8 +285,7 @@ Gunakan *Palette* untuk menambahkan komponen berikut ke `FormBuku`:
 Cara mengubah teks: klik komponen, lalu isi bagian `text` di panel **Properties** (atau klik kanan → **Edit Text**).
  
 Susunan tampilan: label dan kolom isian berjajar di bagian atas, empat tombol di bawahnya, dan tabel di bagian paling bawah.
- 
-<!-- TODO: tambahkan screenshot desain FormBuku yang sudah selesai disusun -->
+![Desain Antarmuka](Images/Desain-Antarmuka.png)
  
 ---
  
@@ -307,7 +306,7 @@ Nama bawaan seperti `jTextField1` dan `jButton3` membingungkan saat kode sudah b
  
 Awalan `txt`, `btn`, dan `tbl` menandakan jenis komponennya (*text field*, *button*, *table*).
  
-![Tampilan saat Change Variable Name](images/image-3.png)
+![Mengubah Variable Name](Images/Mengubah-Variable-Name.png)
  
 > ⚠️ Nama di kode harus **sama persis**, termasuk huruf besar dan kecil, dengan nama di mode Design.
  
